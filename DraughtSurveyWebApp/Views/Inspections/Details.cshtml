@@ -1,0 +1,113 @@
+﻿@model DraughtSurveyWebApp.Models.Inspection
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Inspection</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-3">
+            @Html.DisplayNameFor(model => model.VesselName)
+        </dt>
+        <dd class = "col-sm-9">
+            @Html.DisplayFor(model => model.VesselName)
+        </dd>
+        <dt class = "col-sm-3">
+            @Html.DisplayNameFor(model => model.Port)
+        </dt>
+        <dd class = "col-sm-9">
+            @Html.DisplayFor(model => model.Port)
+        </dd>
+        <dt class = "col-sm-3">
+            @Html.DisplayNameFor(model => model.CompanyReference)
+        </dt>
+        <dd class = "col-sm-9">
+            @Html.DisplayFor(model => model.CompanyReference)
+        </dd>
+        <dt class = "col-sm-3">
+            @Html.DisplayNameFor(model => model.OperationType)
+        </dt>
+        <dd class = "col-sm-9">
+            @Html.DisplayFor(model => model.OperationType)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to Inspections List</a>    
+</div>
+
+
+@if(Model.VesselInput != null)
+{
+    <h4 class="mt-3">Vessel Information</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">IMO</dt>
+        <dd class="col-sm-9">@Model.VesselInput.IMO</dd>
+
+        <dt class="col-sm-3">LBP</dt>
+        <dd class="col-sm-9">@Model.VesselInput.LBP</dd>
+
+        <dt class="col-sm-3">BM</dt>
+        <dd class="col-sm-9">@Model.VesselInput.BM</dd>
+
+        <dt class="col-sm-3">LS</dt>
+        <dd class="col-sm-9">@Model.VesselInput.LS</dd>
+
+        <dt class="col-sm-3">SDWT</dt>
+        <dd class="col-sm-9">@Model.VesselInput.SDWT</dd>
+
+        <dt class="col-sm-3">Declared Constant</dt>
+        <dd class="col-sm-9">@Model.VesselInput.DeclaredConstant</dd>
+    </dl>
+
+    <a asp-action="Edit" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id">Edit</a>
+}
+else
+{
+    <hr/>
+    <span class="text-muted">No vessel information provided yet |</span>
+    <a asp-action="Create" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id">Add Vessel Info</a>
+}
+
+@if (Model.CargoInput != null)
+{
+    <h4 class="mt-3">Cargo Information</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Cargo Name</dt>
+        <dd class="col-sm-9">@Model.CargoInput.CargoName</dd>
+
+        <dt class="col-sm-3">Declared Weight</dt>
+        <dd class="col-sm-9">@Model.CargoInput.DeclaredWeight</dd>
+
+        <dt class="col-sm-3">Loading Terminal</dt>
+        <dd class="col-sm-9">@Model.CargoInput.LoadingTerminal</dd>
+
+        <dt class="col-sm-3">Berth No.</dt>
+        <dd class="col-sm-9">@Model.CargoInput.BerthNumber</dd>
+    </dl>
+
+    <a asp-action="Edit" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Edit</a>
+}
+else
+{
+    <hr />
+    <span class="text-muted">No cargo information provided yet |</span>
+    <a asp-action="Create" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Add Cargo Info</a>
+}
+
+@if(Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Initial))
+{
+    @* <a asp-action="Edit" asp-controller="DraughtSurveyBlock" asp-route-inspectionId></a> *@
+}
+else
+{
+    <hr />
+    <a asp-action="Create" asp-controller="DraughtSurveyBlock" asp-route-inspectionId="@Model.Id" asp-route-surveyType="Initial">Add Initial Survey</a>
+}

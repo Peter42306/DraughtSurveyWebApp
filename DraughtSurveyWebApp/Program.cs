@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using DraughtSurveyWebApp.Data;
 using DraughtSurveyWebApp.Interfaces;
-using DraughtSurveyWebApp.Mappings;
+//using DraughtSurveyWebApp.Mappings;
 using DraughtSurveyWebApp.Models;
 using DraughtSurveyWebApp.Services;
 
@@ -28,7 +28,7 @@ namespace DraughtSurveyWebApp
 
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IImageService, ImageService>();
-            builder.Services.AddAutoMapper(typeof(MappingProfile));
+            //builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             builder.Services.ConfigureApplicationCookie(options =>
             {

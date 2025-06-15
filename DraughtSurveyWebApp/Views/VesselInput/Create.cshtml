@@ -1,0 +1,61 @@
+﻿@model DraughtSurveyWebApp.ViewModels.VesselInputViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+<h4>Vessel Info</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="InspectionId"/>
+
+            <div class="form-group">
+                <label asp-for="IMO"></label>
+                <input asp-for="IMO" class="form-control"/>
+                <span asp-validation-for="IMO" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LBP"></label>
+                <input asp-for="LBP" class="form-control" />
+                <span asp-validation-for="LBP" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="BM"></label>
+                <input asp-for="BM" class="form-control" />
+                <span asp-validation-for="BM" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LS"></label>
+                <input asp-for="LS" class="form-control" />
+                <span asp-validation-for="LS" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SDWT"></label>
+                <input asp-for="SDWT" class="form-control" />
+                <span asp-validation-for="SDWT" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DeclaredConstant"></label>
+                <input asp-for="DeclaredConstant" class="form-control" />
+                <span asp-validation-for="DeclaredConstant" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>    
+
+<div>
+    <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId">Back</a>
+</div>
+                
