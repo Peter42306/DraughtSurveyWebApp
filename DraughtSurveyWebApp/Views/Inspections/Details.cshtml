@@ -104,10 +104,44 @@ else
 
 @if(Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Initial))
 {
+    var initialBlock = Model.DraughtSurveyBlocks.First(ds => ds.SurveyType == SurveyType.Initial);
+    <hr />
+    <h4>Initial Survey Steps</h4>
+
+    <p>
+        <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-blockId="@initialBlock.Id">Edit Times</a>
+    </p>
+
+    <p>
+        <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-blockId="@initialBlock.Id">Edit Draughts</a>
+    </p>
+
+    <p>
+        <a asp-action="Edit" asp-controller="DistancesInput" asp-route-blockId="@initialBlock.Id">Edit Distances</a>
+    </p>
+
+    <p>
+        <a asp-action="Edit" asp-controller="HydrostaticsInput" asp-route-blockId="@initialBlock.Id">Edit Hydrostatic Data</a>
+    </p>
+
+    <p>
+        <a asp-action="Edit" asp-controller="DockWaterInput" asp-route-blockId="@initialBlock.Id">Edit Dock Water Density</a>
+    </p>
+
+    <p>
+        <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-blockId="@initialBlock.Id">Edit Deductibles</a>
+    </p>
+
     @* <a asp-action="Edit" asp-controller="DraughtSurveyBlock" asp-route-inspectionId></a> *@
 }
 else
 {
     <hr />
-    <a asp-action="Create" asp-controller="DraughtSurveyBlock" asp-route-inspectionId="@Model.Id" asp-route-surveyType="Initial">Add Initial Survey</a>
+    <h4>Initial Survey</h4>
+
+    <p>
+        <span class="text-muted">Initial survey not started |</span>
+        <a asp-action="Create" asp-controller="DraughtSurveyBlock" asp-route-inspectionId="@Model.Id" asp-route-surveyType="Initial">Start Initial Survey</a>
+    </p>   
+    
 }
