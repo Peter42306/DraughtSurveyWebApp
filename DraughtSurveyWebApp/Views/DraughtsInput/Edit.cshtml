@@ -1,0 +1,188 @@
+﻿@model DraughtSurveyWebApp.ViewModels.DraughtsInputViewModel
+
+@{
+    ViewData["Title"] = "Edit Draught";
+}
+
+<h4>Edit Draughts</h4>
+<hr />
+
+<div class="row">
+
+    
+    
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="InspectionId" />       
+            <input type="hidden" asp-for="DraughtSurveyBlockId" />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Apparent Draughts</h6>
+                    <hr />
+                    <div class="row mb-2">
+                        <div class="col-4">
+                            <label asp-for="DraughtFwdPS" class="control-label"></label>
+                            <input asp-for="DraughtFwdPS" class="form-control" type="number" step="0.01"/>
+                            <span asp-validation-for="DraughtFwdPS" class="text-danger"></span>
+                        </div>
+                        <div class="col-4">
+                            <label asp-for="DraughtFwdSS" class="control-label"></label>
+                            <input asp-for="DraughtFwdSS" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="DraughtFwdSS" class="text-danger"></span>
+                        </div>
+                        <div class="col-4">
+                            <label asp-for="DraughtMeanFwd"></label>
+                            <input id="fwdMean" class="form-control" value="@Model.DraughtMeanFwd?.ToString("0.000")" readonly />
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-4">
+                            <label asp-for="DraughtMidPS" class="control-label"></label>
+                            <input asp-for="DraughtMidPS" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="DraughtMidPS" class="text-danger"></span>
+                        </div>
+                        <div class="col-4">
+                            <label asp-for="DraughtMidSS" class="control-label"></label>
+                            <input asp-for="DraughtMidSS" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="DraughtMidSS" class="text-danger"></span>
+                        </div>
+                        <div class="col-4">
+                            <label asp-for="DraughtMeanMid"></label>
+                            <input id="midMean" class="form-control" value="@Model.DraughtMeanMid?.ToString("0.000")" readonly />
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-4">
+                            <label asp-for="DraughtAftPS" class="control-label"></label>
+                            <input asp-for="DraughtAftPS" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="DraughtAftPS" class="text-danger"></span>
+                        </div>
+                        <div class="col-4">
+                            <label asp-for="DraughtAftSS" class="control-label"></label>
+                            <input asp-for="DraughtAftSS" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="DraughtAftSS" class="text-danger"></span>
+                        </div>
+                        <div class="col-4">
+                            <label asp-for="DraughtMeanAft"></label>
+                            <input id="aftMean" class="form-control" value="@Model.DraughtMeanAft?.ToString("0.000")" readonly />
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-8">
+                            
+                        </div>                        
+                        <div class="col-4">                            
+                            <label asp-for="TrimApparent"></label>
+                            <input class="form-control" value="@Model.TrimApparent?.ToString("0.000")" readonly />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <h6>Corrections</h6>
+                    <hr />
+                    <div class="row mb-2">
+                        <div class="col-4">
+                            <label asp-for="DistanceFwd" class="control-label"></label>
+                            <input asp-for="DistanceFwd" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="DistanceFwd" class="text-danger"></span>
+                        </div>
+                        <div class="col-4">
+                            <label asp-for="DraughtCorrectionFwd"></label>
+                            <input class="form-control" value="@Model.DraughtCorrectionFwd?.ToString("0.000")" readonly />
+                        </div>
+                        <div class="col-4">
+                            <label></label>
+                            <input id="aftMean" class="form-control" readonly />
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+
+                        <div class="col-4">
+                            <label asp-for="DistanceMid" class="control-label"></label>
+                            <input asp-for="DistanceMid" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="DistanceMid" class="text-danger"></span>
+                        </div>
+                        <div class="col-4">
+                            <label asp-for="DraughtCorrectionMid"></label>
+                            <input class="form-control" value="@Model.DraughtCorrectionMid?.ToString("0.000")" readonly />
+                        </div>
+                        <div class="col-4">
+                            <label></label>
+                            <input id="aftMean" class="form-control" readonly />
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-4">
+                            <label asp-for="DistanceAft" class="control-label"></label>
+                            <input asp-for="DistanceAft" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="DistanceAft" class="text-danger"></span>
+                        </div>
+                        <div class="col-4">
+                            <label asp-for="DraughtCorrectionAft"></label>
+                            <input class="form-control" value="@Model.DraughtCorrectionAft?.ToString("0.000")" readonly />
+                        </div>
+                        <div class="col-4">
+                            <label></label>
+                            <input id="aftMean" class="form-control" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>            
+
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    
+</div>
+
+<div>
+    <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId">Back</a>
+</div>
+
+@section Scripts {
+    <script>
+
+        function calculateApparentMeam(){
+            const fwdPS = parseFloat(document.getElementById("DraughtFwdPS").value) || 0;
+            const fwdSS = parseFloat(document.getElementById("DraughtFwdSS").value) || 0;
+            const midPS = parseFloat(document.getElementById("DraughtMidPS").value) || 0;
+            const midSS = parseFloat(document.getElementById("DraughtMidSS").value) || 0;
+            const aftPS = parseFloat(document.getElementById("DraughtAftPS").value) || 0;
+            const aftSS = parseFloat(document.getElementById("DraughtAftSS").value) || 0;
+
+            const fwdMean = ((fwdPS + fwdSS)/2).toFixed(3);
+            const midMean = ((midPS + midSS)/2).toFixed(3);
+            const aftMean = ((aftPS + aftSS)/2).toFixed(3);
+
+            document.getElementById("fwdMean").value = fwdMean;
+            document.getElementById("midMean").value = midMean;
+            document.getElementById("aftMean").value = aftMean;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const fields = [
+                "DraughtFwdPS", "DraughtFwdSS", 
+                "DraughtMidPS", "DraughtMidSS", 
+                "DraughtAftPS", "DraughtAftSS"
+            ];
+
+            fields.forEach(id => {
+                const input = document.getElementById(id);
+
+                if(input){
+                    input.addEventListener("input", calculateApparentMeam);
+                }
+            });
+
+            calculateApparentMeam();
+        });
+
+    </script>
+}

@@ -38,21 +38,23 @@ namespace DraughtSurveyWebApp.Controllers
         // GET: Inspections/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            var inspection = await _context.Inspections
-                .Include(i => i.VesselInput)
-                .Include(i => i.CargoInput)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
             if (id == null)
             {
                 return NotFound();
             }
-            
+
+            var inspection = await _context.Inspections
+                .Include(i => i.VesselInput)
+                .Include(i => i.CargoInput)
+                .Include(i => i.DraughtSurveyBlocks)
+                    .ThenInclude(b => b.DraughtsInput)
+                .FirstOrDefaultAsync(m => m.Id == id);
+                        
             if (inspection == null)
             {
                 return NotFound();
             }
-
+            
             return View(inspection);
         }
 
@@ -74,12 +76,34 @@ namespace DraughtSurveyWebApp.Controllers
                 return View(viewModel);
             }
 
+            var now = DateTime.Now;
+
             var inspection = new Inspection
             {
                 VesselName = viewModel.VesselName,
                 Port = viewModel.Port,
                 CompanyReference = viewModel.CompanyReference,
-                OperationType = viewModel.OperationType
+                OperationType = viewModel.OperationType,
+
+                DraughtSurveyBlocks = new List<DraughtSurveyBlock>
+                {
+                    new DraughtSurveyBlock
+                    {
+                        SurveyType = SurveyType.Initial,
+                        SurveyTimeStart = now,
+                        SurveyTimeEnd = now,
+                        CargoOperationsDateTime = now,
+                        Notes = ""
+                    },
+                    new DraughtSurveyBlock
+                    {
+                        SurveyType = SurveyType.Final,
+                        SurveyTimeStart = now,
+                        SurveyTimeEnd = now,
+                        CargoOperationsDateTime = now,
+                        Notes = ""
+                    },
+                }
             };
 
             _context.Inspections.Add(inspection);

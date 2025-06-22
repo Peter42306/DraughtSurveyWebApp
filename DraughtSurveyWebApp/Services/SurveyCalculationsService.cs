@@ -1,0 +1,58 @@
+﻿namespace DraughtSurveyWebApp.Services
+{
+    public class SurveyCalculationsService
+    {
+        public double CalculateApparentMean(double port, double starboard)
+        {
+            double result = Math.Round((port+starboard)/2, 3);
+            return result;
+        }
+
+        public double CalculateTrim(double forward, double aft)
+        {
+            double result = Math.Round((aft-forward), 3);
+            return result;
+        }
+
+        public double CalculateHoggingSagging(double forward, double mid, double aft)
+        {
+            double result = Math.Round(mid-((forward+aft)/2), 3);
+            return result;
+        }
+
+        public double CalculateHeel(double draughtMidPS, double draughtMidSS, double BM)
+        {
+            double result = Math.Round(CalculateRadToDeg(Math.Atan(Math.Abs(draughtMidPS-draughtMidSS)))/BM, 3);
+            return result;
+        }
+
+        public double CalculateRadToDeg(double radians)
+        {
+            double result = radians * (100 / Math.PI);
+            return result;
+        }
+
+        public double CalculateTrimCorrection(double distance, double apparentTrim, double LBD)
+        {
+            double result = Math.Round(distance*apparentTrim/LBD, 3);
+            return result;
+        }
+
+        public double CorrectedDraught(double draughtApparentMean, double correctionForDistasnce)
+        {
+            double result = Math.Round(draughtApparentMean + correctionForDistasnce);
+            return result;
+        }
+
+        public double CalculateMeanOfMean(double draughtMeanFwd, double draughtMeanAft, double draughtMeanMid)
+        {
+            double result = Math.Round((draughtMeanFwd + draughtMeanAft + draughtMeanMid*6)/8, 3);
+            return result;
+        }
+
+        //internal double CalculateApparentMean(double? draughtFwdPS, double? draughtFwdSS)
+        //{
+        //    throw new NotImplementedException();
+        //}
+    }
+}

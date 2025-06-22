@@ -28,6 +28,7 @@ namespace DraughtSurveyWebApp
 
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IImageService, ImageService>();
+            builder.Services.AddScoped<SurveyCalculationsService>();
             //builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             builder.Services.ConfigureApplicationCookie(options =>

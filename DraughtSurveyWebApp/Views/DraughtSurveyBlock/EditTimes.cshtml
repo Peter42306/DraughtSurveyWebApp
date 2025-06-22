@@ -1,0 +1,43 @@
+﻿@model DraughtSurveyWebApp.ViewModels.EditSurveyTimesViewModel
+
+@{
+    ViewData["Title"] = "Edit Survey Times";
+}
+
+<h4>Edit Survey Times</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="EditTimes" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="DraughtSurveyBlockId" />
+
+            <div class="form-group">
+                <label asp-for="SurveyTimeStart" class="control-label"></label>
+                <input asp-for="SurveyTimeStart" type="datetime-local" class="form-control"/>
+                <span asp-validation-for="SurveyTimeStart" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SurveyTimeEnd" class="control-label"></label>
+                <input asp-for="SurveyTimeEnd" type="datetime-local" class="form-control" />
+                <span asp-validation-for="SurveyTimeEnd" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CargoOperationsDateTime" class="control-label"></label>
+                <input asp-for="CargoOperationsDateTime" type="datetime-local" class="form-control" />
+                <span asp-validation-for="CargoOperationsDateTime" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save</button>
+
+
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Inspections" asp-action="Details" asp-route-id="@ViewBag.InspectionId">Back</a>
+</div>

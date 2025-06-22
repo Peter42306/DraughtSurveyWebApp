@@ -109,27 +109,31 @@ else
     <h4>Initial Survey Steps</h4>
 
     <p>
-        <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-blockId="@initialBlock.Id">Edit Times</a>
+        <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Times</a>
     </p>
 
     <p>
-        <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-blockId="@initialBlock.Id">Edit Draughts</a>
+        <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Draughts</a>
     </p>
 
     <p>
-        <a asp-action="Edit" asp-controller="DistancesInput" asp-route-blockId="@initialBlock.Id">Edit Distances</a>
+        <a asp-action="Edit" asp-controller="DistancesInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Distances</a>
     </p>
 
     <p>
-        <a asp-action="Edit" asp-controller="HydrostaticsInput" asp-route-blockId="@initialBlock.Id">Edit Hydrostatic Data</a>
+        <a asp-action="Edit" asp-controller="DistancesInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Keel Correction</a>
     </p>
 
     <p>
-        <a asp-action="Edit" asp-controller="DockWaterInput" asp-route-blockId="@initialBlock.Id">Edit Dock Water Density</a>
+        <a asp-action="Edit" asp-controller="HydrostaticsInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Hydrostatic Data</a>
     </p>
 
     <p>
-        <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-blockId="@initialBlock.Id">Edit Deductibles</a>
+        <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Dock Water Density</a>
+    </p>
+
+    <p>
+        <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Deductibles</a>
     </p>
 
     @* <a asp-action="Edit" asp-controller="DraughtSurveyBlock" asp-route-inspectionId></a> *@
@@ -144,4 +148,48 @@ else
         <a asp-action="Create" asp-controller="DraughtSurveyBlock" asp-route-inspectionId="@Model.Id" asp-route-surveyType="Initial">Start Initial Survey</a>
     </p>   
     
+}
+
+@if (Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Final))
+{
+    var finalBlock = Model.DraughtSurveyBlocks.First(ds => ds.SurveyType == SurveyType.Final);
+    <hr />
+    <h4>Final Survey Steps</h4>
+
+    <p>
+        <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Times</a>
+    </p>
+
+    <p>
+        <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Draughts</a>
+    </p>
+
+    <p>
+        <a asp-action="Edit" asp-controller="DistancesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Distances</a>
+    </p>    
+
+    <p>
+        <a asp-action="Edit" asp-controller="HydrostaticsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Hydrostatic Data</a>
+    </p>
+
+    <p>
+        <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Dock Water Density</a>
+    </p>
+
+    <p>
+        <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Deductibles</a>
+    </p>
+
+    @* <a asp-action="Edit" asp-controller="DraughtSurveyBlock" asp-route-inspectionId></a> *@
+}
+else
+{
+    <hr />
+    <h4>Final Survey</h4>
+
+    <p>
+        <span class="text-muted">Final survey not started |</span>
+        <a asp-action="Create" asp-controller="DraughtSurveyBlock" asp-route-inspectionId="@Model.Id" asp-route-surveyType="Final">Start Final Survey</a>
+    </p>
+
 }

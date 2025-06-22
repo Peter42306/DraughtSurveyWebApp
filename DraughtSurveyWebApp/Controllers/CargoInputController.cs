@@ -1,5 +1,6 @@
 ﻿using DraughtSurveyWebApp.Data;
 using DraughtSurveyWebApp.Models;
+using DraughtSurveyWebApp.Services;
 using DraughtSurveyWebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,11 +10,11 @@ namespace DraughtSurveyWebApp.Controllers
 {
     public class CargoInputController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;        
 
         public CargoInputController(ApplicationDbContext context)
         {
-            _context = context;
+            _context = context;            
         }
 
         // GET: CargoInput/Create?inspectionId=5
