@@ -20,3 +20,9 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+.small-label {
+    font-size: 0.8rem;
+    color: #555;
+}

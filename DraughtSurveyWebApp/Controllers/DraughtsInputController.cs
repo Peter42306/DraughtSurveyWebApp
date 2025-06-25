@@ -50,6 +50,9 @@ namespace DraughtSurveyWebApp.Controllers
                 DistanceMid = inputs?.DistanceMid,
                 DistanceAft = inputs?.DistanceAft,
 
+                KeelCorrection = inputs?.KeelCorrection,
+                SeaWaterDensity = inputs?.SeaWaterDensity,
+
                 DraughtMeanFwd = results?.DraughtMeanFwd,
                 DraughtMeanMid = results?.DraughtMeanMid,
                 DraughtMeanAft = results?.DraughtMeanAft,
@@ -58,7 +61,15 @@ namespace DraughtSurveyWebApp.Controllers
                 DraughtCorrectionMid = results?.DraughtCorrectionMid,
                 DraughtCorrectionAft = results?.DraughtCorrectionAft,
 
-                TrimApparent = results?.TrimApparent
+                DraughtCorrectedFwd = results?.DraughtCorrectedFwd,
+                DraughtCorrectedMid = results?.DraughtCorrectedMid,
+                DraughtCorrectedAft = results?.DraughtCorrectedAft,
+
+                TrimApparent = results?.TrimApparent,
+                TrimCorrected = results?.TrimCorrected,
+                Heel = results?.Heel,
+                HoggingSagging = results?.HoggingSagging,
+                MeanAdjustedDraught = results?.MeanAdjustedDraught                
             };
 
             return View(viewModel);
@@ -108,6 +119,9 @@ namespace DraughtSurveyWebApp.Controllers
             input.DistanceMid = viewModel.DistanceMid ?? 0;
             input.DistanceAft = viewModel.DistanceAft ?? 0;
 
+            input.SeaWaterDensity = viewModel.SeaWaterDensity ?? 0;
+            input.KeelCorrection = viewModel.KeelCorrection ?? 0;
+
             
             double fwdMean = _surveyCalculationsService.CalculateApparentMean(input.DraughtFwdPS, input.DraughtFwdSS);
             double midMean = _surveyCalculationsService.CalculateApparentMean(input.DraughtMidPS, input.DraughtMidSS);
@@ -119,15 +133,20 @@ namespace DraughtSurveyWebApp.Controllers
             double bm = draughtSurveyBlock.Inspection?.VesselInput?.BM ?? 0;
             double lbp = draughtSurveyBlock.Inspection?.VesselInput?.LBP ?? 0;            
 
-            double lbd = lbp + input.DistanceFwd - input.DistanceAft;
+            double lbd = lbp + input.DistanceFwd - input.DistanceAft;            
 
             double draughtCorrectionFwd = _surveyCalculationsService.CalculateTrimCorrection(input.DistanceFwd, trimApparent, lbd);
             double draughtCorrectionMid = _surveyCalculationsService.CalculateTrimCorrection(input.DistanceMid, trimApparent, lbd);
             double draughtCorrectionAft = _surveyCalculationsService.CalculateTrimCorrection(input.DistanceAft, trimApparent, lbd);
-            //double draughtCorrectionFwd = input.DistanceFwd * trimApparent / bm;
 
+            double draughtCorrectedFwd = _surveyCalculationsService.CalculateCorrectedDraught(fwdMean, draughtCorrectionFwd);
+            double draughtCorrectedMid = _surveyCalculationsService.CalculateCorrectedDraught(midMean, draughtCorrectionMid);
+            double draughtCorrectedAft = _surveyCalculationsService.CalculateCorrectedDraught(aftMean, draughtCorrectionAft);
 
+            double trimCorrected = _surveyCalculationsService.CalculateTrim(draughtCorrectedFwd, draughtCorrectedAft);
             double heel = _surveyCalculationsService.CalculateHeel(input.DraughtMidPS, input.DraughtMidSS, bm);
+            double hogSag = _surveyCalculationsService.CalculateHoggingSagging(draughtCorrectedFwd, draughtCorrectedMid, draughtCorrectedAft);
+            double meanAdjustedDraught = _surveyCalculationsService.CalculateMeanOfMean(draughtCorrectedFwd, draughtCorrectedMid, draughtCorrectedAft);
 
 
 
@@ -154,12 +173,21 @@ namespace DraughtSurveyWebApp.Controllers
             results.DraughtMeanFwd = fwdMean;
             results.DraughtMeanMid = midMean;
             results.DraughtMeanAft = aftMean;
+
             results.TrimApparent = trimApparent;
+
             results.DraughtCorrectionFwd = draughtCorrectionFwd;
             results.DraughtCorrectionMid = draughtCorrectionMid;
             results.DraughtCorrectionAft = draughtCorrectionAft;
 
+            results.DraughtCorrectedFwd = draughtCorrectedFwd;
+            results.DraughtCorrectedMid = draughtCorrectedMid;
+            results.DraughtCorrectedAft = draughtCorrectedAft;
+
+            results.TrimCorrected = trimCorrected;
             results.Heel = heel;
+            results.HoggingSagging = hogSag;
+            results.MeanAdjustedDraught = meanAdjustedDraught;
 
             await _context.SaveChangesAsync();
 

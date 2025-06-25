@@ -22,13 +22,16 @@
 
         public double CalculateHeel(double draughtMidPS, double draughtMidSS, double BM)
         {
-            double result = Math.Round(CalculateRadToDeg(Math.Atan(Math.Abs(draughtMidPS-draughtMidSS)))/BM, 3);
+            double differenceBetweenPsAndSs = Math.Abs((draughtMidPS-draughtMidSS)/BM);
+            double atan = Math.Atan(differenceBetweenPsAndSs);
+            double degrees = CalculateRadToDeg(atan);
+            double result = Math.Round(degrees, 3);            
             return result;
         }
 
         public double CalculateRadToDeg(double radians)
         {
-            double result = radians * (100 / Math.PI);
+            double result = radians * (180 / Math.PI);
             return result;
         }
 
@@ -38,15 +41,15 @@
             return result;
         }
 
-        public double CorrectedDraught(double draughtApparentMean, double correctionForDistasnce)
+        public double CalculateCorrectedDraught(double draughtApparentMean, double correctionForDistasnce)
         {
-            double result = Math.Round(draughtApparentMean + correctionForDistasnce);
+            double result = Math.Round(draughtApparentMean + correctionForDistasnce, 3);
             return result;
         }
 
-        public double CalculateMeanOfMean(double draughtMeanFwd, double draughtMeanAft, double draughtMeanMid)
+        public double CalculateMeanOfMean(double draughtMeanFwd, double draughtMeanMid, double draughtMeanAft)
         {
-            double result = Math.Round((draughtMeanFwd + draughtMeanAft + draughtMeanMid*6)/8, 3);
+            double result = Math.Round((draughtMeanFwd + draughtMeanAft + (draughtMeanMid*6))/8, 3);
             return result;
         }
 

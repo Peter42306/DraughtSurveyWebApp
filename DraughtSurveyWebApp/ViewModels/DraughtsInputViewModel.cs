@@ -7,8 +7,9 @@ namespace DraughtSurveyWebApp.ViewModels
         public int InspectionId { get; set; }
         public int DraughtSurveyBlockId { get; set; }
 
-        // Data input
 
+        //====================== Data input ======================
+        
         [Display(Name = "Forward PS")]
         public double? DraughtFwdPS { get; set; }
 
@@ -38,14 +39,16 @@ namespace DraughtSurveyWebApp.ViewModels
         public double? DistanceAft { get; set; }
 
 
-        [Display(Name = "Forward PS")]
+        [Display(Name = "Dock Water Density")]
+        [Range(0.99, 1.039, ErrorMessage = "Density must be between 0.990 and 1.039 t/m³")]
         public double? SeaWaterDensity { get; set; }
         
-        [Display(Name = "Forward PS")]
+        [Display(Name = "Keel Correction")]
         public double? KeelCorrection { get; set; }
 
 
-        // Results for viewModel
+        //================== Results for viewModel ==================
+        
         [Display(Name = "Mean Fwd")]
         public double? DraughtMeanFwd { get; set; }
 
@@ -55,18 +58,25 @@ namespace DraughtSurveyWebApp.ViewModels
         [Display(Name = "Mean Aft")]
         public double? DraughtMeanAft { get; set; }
 
-        [Display(Name = "Apparent Trim")]
-        public double? TrimApparent { get; set; }
 
-        [Display(Name = "Hogging or Sagging")]
+
+        [Display(Name = "Apparent Trim")]
+        public double? TrimApparent { get; set; }        
+
+        [Display(Name = "Hog/Sag")]
         public double? HoggingSagging { get; set; }
 
         [Display(Name = "Heel")]
         public double? Heel { get; set; }
-
+        
+        [Display(Name = "Corrected Trim")]
         public double? TrimCorrected { get; set; }
+
+        [Display(Name = "Mean Adjusted Draught")]
         public double? MeanAdjustedDraught { get; set; }
 
+
+        
         [Display(Name = "Correction Fwd")]
         public double? DraughtCorrectionFwd { get; set; }
 
@@ -76,8 +86,15 @@ namespace DraughtSurveyWebApp.ViewModels
         [Display(Name = "Correction Aft")]
         public double? DraughtCorrectionAft { get; set; }
 
-        public double DraughtCorrectedFwd { get; set; }
-        public double DraughtCorrectedMid { get; set; }
-        public double DraughtCorrectedAft { get; set; }
+
+
+        [Display(Name = "Corrected Fwd")]
+        public double? DraughtCorrectedFwd { get; set; }
+
+        [Display(Name = "Corrected Mid")]
+        public double? DraughtCorrectedMid { get; set; }
+
+        [Display(Name = "Corrected Aft")]
+        public double? DraughtCorrectedAft { get; set; }
     }
 }
