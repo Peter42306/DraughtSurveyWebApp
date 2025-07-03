@@ -53,6 +53,31 @@
             return result;
         }
 
+        public double CalculateDraughtForMTCAbovePlus50(double tableDraughtAbove)
+        {
+            double result = tableDraughtAbove + 0.5;
+            return result;
+        }
+
+        public double CalculateDraughtForMTCAboveMinus50(double tableDraughtAbove)
+        {
+            double result = tableDraughtAbove - 0.5;
+            return result;
+        }
+
+        public double CalculateDraughtForMTCBelowPlus50(double tableDraughtBelow)
+        {
+            double result = tableDraughtBelow + 0.5;
+            return result;
+        }
+
+        public double CalculateDraughtForMTCBelowMinus50(double tableDraughtBelow)
+        {
+            double result = tableDraughtBelow - 0.5;
+            return result;
+        }
+
+
         //internal double CalculateApparentMean(double? draughtFwdPS, double? draughtFwdSS)
         //{
         //    throw new NotImplementedException();

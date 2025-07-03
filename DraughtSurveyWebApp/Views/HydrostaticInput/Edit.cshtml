@@ -1,0 +1,174 @@
+﻿@model DraughtSurveyWebApp.ViewModels.HydrostaticInputViewModel
+
+@{
+    ViewData["Title"] = "Edit Hydrostatic";
+}
+
+<h4>Edit Hydrostatic</h4>
+<hr />
+
+<div class="row">
+
+    <form asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="InspectionId" />
+        <input type="hidden" asp-for="DraughtSurveyBlockId" />
+
+        <div class="row">
+            <div class="col-md-6">
+                <h6>???</h6>
+                <div class="row mb-2">
+                    <div class="col-3">
+                        <label></label>                        
+                    </div>
+                    <div class="col-3">
+                        <label>D</label>
+                    </div>
+                    <div class="col-3">
+                        <label>TPC</label>                        
+                    </div>
+                    <div class="col-3">
+                        <label>LCF</label>                        
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-3">
+                        <label asp-for="DraughtAbove" class="control-label small-label"></label>
+                        <input asp-for="DraughtAbove" class="form-control" type="number" step="0.001"/>
+                        <span asp-validation-for="DraughtAbove" class="text-danger"></span>
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="DisplacementAbove" class="control-label small-label"></label>
+                        <input asp-for="DisplacementAbove" class="form-control" type="number" step="0.001" />
+                        <span asp-validation-for="DisplacementAbove" class="text-danger"></span>
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="TPCAbove" class="control-label small-label"></label>
+                        <input asp-for="TPCAbove" class="form-control" type="number" step="0.001" />
+                        <span asp-validation-for="TPCAbove" class="text-danger"></span>
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="LCFAbove" class="control-label small-label"></label>
+                        <input asp-for="LCFAbove" class="form-control" type="number" step="0.001" />
+                        <span asp-validation-for="LCFAbove" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-3">
+                        <label asp-for="MeanAdjustedDraught" class="small-label"></label>
+                        <input class="form-control" value="@Model.MeanAdjustedDraught?.ToString("0.000")" readonly />
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="DisplacementFromTable" class="small-label"></label>
+                        <input class="form-control" value="@Model.DisplacementFromTable?.ToString("0.000")" readonly />
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="TPCFromTable" class="small-label"></label>
+                        <input class="form-control" value="@Model.TPCFromTable?.ToString("0.000")" readonly />
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="LCFFromTable" class="small-label"></label>
+                        <input class="form-control" value="@Model.LCFFromTable?.ToString("0.000")" readonly />
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-3">
+                        <label asp-for="DraughtBelow" class="control-label small-label"></label>
+                        <input asp-for="DraughtBelow" class="form-control" type="number" step="0.001" />
+                        <span asp-validation-for="DraughtBelow" class="text-danger"></span>
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="DisplacementBelow" class="control-label small-label"></label>
+                        <input asp-for="DisplacementBelow" class="form-control" type="number" step="0.001" />
+                        <span asp-validation-for="DisplacementBelow" class="text-danger"></span>
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="TPCBelow" class="control-label small-label"></label>
+                        <input asp-for="TPCBelow" class="form-control" type="number" step="0.001" />
+                        <span asp-validation-for="TPCBelow" class="text-danger"></span>
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="LCFBelow" class="control-label small-label"></label>
+                        <input asp-for="LCFBelow" class="form-control" type="number" step="0.001" />
+                        <span asp-validation-for="LCFBelow" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h6>???</h6>
+                <div class="row mb-2">
+                    <div class="col-3">
+                        <label></label>
+                    </div>
+                    <div class="col-3">
+                        <label>MTC +50 cm</label>
+                    </div>
+                    <div class="col-3">
+                        <label></label>
+                    </div>
+                    <div class="col-3">
+                        <label>MTC -50 cm</label>
+                    </div>
+                </div>                
+                <div class="row mb-2">                    
+                    <div class="col-3">
+                        <label asp-for="DraughtAboveMTCPlus50" class="small-label"></label>
+                        <input class="form-control" value="@Model.DraughtAboveMTCPlus50?.ToString("0.000")" readonly />                        
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="MTCPlus50Above" class="control-label small-label"></label>
+                        <input asp-for="MTCPlus50Above" class="form-control" type="number" step="0.001" />
+                        <span asp-validation-for="MTCPlus50Above" class="text-danger"></span>
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="DraughtAboveMTCMinus50" class="small-label"></label>
+                        <input class="form-control" value="@Model.DraughtAboveMTCMinus50?.ToString("0.000")" readonly />
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="MTCMinus50Above" class="control-label small-label"></label>
+                        <input asp-for="MTCMinus50Above" class="form-control" type="number" step="0.001" />
+                        <span asp-validation-for="MTCMinus50Above" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-3">
+                        <label></label>                        
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="MTCPlus50FromTable" class="small-label"></label>
+                        <input class="form-control" value="@Model.MTCPlus50FromTable?.ToString("0.000")" readonly />
+                    </div>
+                    <div class="col-3">
+                        <label></label>                        
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="MTCMinus50FromTable" class="small-label"></label>
+                        <input class="form-control" value="@Model.MTCPlus50FromTable?.ToString("0.000")" readonly />
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-3">
+                        <label asp-for="DraughtBelowMTCMinus50" class="small-label"></label>
+                        <input class="form-control" value="@Model.DraughtBelowMTCMinus50?.ToString("0.000")" readonly />
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="MTCPlus50Below" class="control-label small-label"></label>
+                        <input asp-for="MTCPlus50Below" class="form-control" type="number" step="0.001" />
+                        <span asp-validation-for="MTCPlus50Below" class="text-danger"></span>
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="DraughtBelowMTCMinus50" class="small-label"></label>
+                        <input class="form-control" value="@Model.DraughtBelowMTCMinus50?.ToString("0.000")" readonly />
+                    </div>
+                    <div class="col-3">
+                        <label asp-for="MTCMinus50Below" class="control-label small-label"></label>
+                        <input asp-for="MTCMinus50Below" class="form-control" type="number" step="0.001" />
+                        <span asp-validation-for="MTCMinus50Below" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
