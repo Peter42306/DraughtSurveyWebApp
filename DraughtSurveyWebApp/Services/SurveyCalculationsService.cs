@@ -53,28 +53,27 @@
             return result;
         }
 
-        public double CalculateDraughtForMTCAbovePlus50(double tableDraughtAbove)
+        public double CalculateDraughtForMTCPlus50(double tableDraught)
         {
-            double result = tableDraughtAbove + 0.5;
+            double result = tableDraught + 0.5;
             return result;
         }
 
-        public double CalculateDraughtForMTCAboveMinus50(double tableDraughtAbove)
+        public double CalculateDraughtForMTCMinus50(double tableDraught)
         {
-            double result = tableDraughtAbove - 0.5;
+            double result = tableDraught - 0.5;
             return result;
-        }
+        }        
 
-        public double CalculateDraughtForMTCBelowPlus50(double tableDraughtBelow)
+        public double CalculateLinearInterpolation(double x0, double y0, double x1, double y1, double x)
         {
-            double result = tableDraughtBelow + 0.5;
-            return result;
-        }
+            if (x1 == x0)
+            {
+                return Math.Round(y0, 3);
+            }
 
-        public double CalculateDraughtForMTCBelowMinus50(double tableDraughtBelow)
-        {
-            double result = tableDraughtBelow - 0.5;
-            return result;
+            double y = y0 + ((y1 - y0) / (x1 - x0)) * (x - x0);
+            return Math.Round(y, 3);
         }
 
 

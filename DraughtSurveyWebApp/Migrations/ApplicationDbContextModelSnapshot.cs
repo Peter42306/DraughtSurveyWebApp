@@ -434,10 +434,22 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<double>("FirstTrimCorrection")
                         .HasColumnType("REAL");
 
+                    b.Property<double>("LCFFromTable")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("MTCMinus50FromTable")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("MTCPlus50FromTable")
+                        .HasColumnType("REAL");
+
                     b.Property<double>("NettoDisplacement")
                         .HasColumnType("REAL");
 
                     b.Property<double>("SecondTrimCorrection")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("TPCFromTable")
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");

@@ -30,7 +30,10 @@ namespace DraughtSurveyWebApp.ViewModels
         public double? DraughtBelowMTCPlus50 { get; set; }
 
         //[Display(Name = "-50 cm")]
-        public double? DraughtBelowMTCMinus50 { get; set; }
+        public double? DraughtBelowMTCMinus50 { get; set; }        
+
+
+        public bool IsLCFForward { get; set; }
 
 
         // ==================== Values for "above" ====================
@@ -49,7 +52,7 @@ namespace DraughtSurveyWebApp.ViewModels
         public double? MTCMinus50Below { get; set; }
         public double? LCFfromAftBelow { get; set; }
 
-
+        
 
         // ==================== Results ===============================
 

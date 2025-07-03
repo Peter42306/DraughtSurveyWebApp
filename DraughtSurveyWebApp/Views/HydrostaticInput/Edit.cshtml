@@ -16,7 +16,9 @@
 
         <div class="row">
             <div class="col-md-6">
-                <h6>???</h6>
+                <h6>Initial Displacement, TPC, LCF</h6>
+                <hr />
+
                 <div class="row mb-2">
                     <div class="col-3">
                         <label></label>                        
@@ -92,11 +94,30 @@
                         <input asp-for="LCFBelow" class="form-control" type="number" step="0.001" />
                         <span asp-validation-for="LCFBelow" class="text-danger"></span>
                     </div>
+                </div>                
+                <hr />
+
+                <div class="row mb-2">
+                    <div class="col-6">                        
+                    </div>                                        
+                    <div class="col-6">
+                        <label class="form-label">LCF location relative to midship</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" asp-for="IsLCFForward" value="true" id="lcfForward"/>
+                            <label class="form-check-label" for="lcfForward">LCF is Forward of Midship</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" asp-for="IsLCFForward" value="false" id="lcfAft" />
+                            <label class="form-check-label" for="lcfAft">LCF is Aft of Midship</label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="col-md-6">
-                <h6>???</h6>
+                <h6>Initial MTC +/-50 cm</h6>
+                <hr />
+                
                 <div class="row mb-2">
                     <div class="col-3">
                         <label></label>
@@ -144,13 +165,13 @@
                     </div>
                     <div class="col-3">
                         <label asp-for="MTCMinus50FromTable" class="small-label"></label>
-                        <input class="form-control" value="@Model.MTCPlus50FromTable?.ToString("0.000")" readonly />
+                        <input class="form-control" value="@Model.MTCMinus50FromTable?.ToString("0.000")" readonly />
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-3">
-                        <label asp-for="DraughtBelowMTCMinus50" class="small-label"></label>
-                        <input class="form-control" value="@Model.DraughtBelowMTCMinus50?.ToString("0.000")" readonly />
+                        <label asp-for="DraughtBelowMTCPlus50" class="small-label"></label>
+                        <input class="form-control" value="@Model.DraughtBelowMTCPlus50?.ToString("0.000")" readonly />
                     </div>
                     <div class="col-3">
                         <label asp-for="MTCPlus50Below" class="control-label small-label"></label>
@@ -167,8 +188,16 @@
                         <span asp-validation-for="MTCMinus50Below" class="text-danger"></span>
                     </div>
                 </div>
+                <hr />
+
             </div>
         </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
     </form>
+
+    <div>
+        <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId">Back</a>
+    </div>
 
 </div>

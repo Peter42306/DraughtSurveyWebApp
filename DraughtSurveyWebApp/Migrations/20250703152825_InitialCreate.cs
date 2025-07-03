@@ -420,6 +420,10 @@ namespace DraughtSurveyWebApp.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     DisplacementFromTable = table.Column<double>(type: "REAL", nullable: false),
+                    TPCFromTable = table.Column<double>(type: "REAL", nullable: false),
+                    LCFFromTable = table.Column<double>(type: "REAL", nullable: false),
+                    MTCPlus50FromTable = table.Column<double>(type: "REAL", nullable: false),
+                    MTCMinus50FromTable = table.Column<double>(type: "REAL", nullable: false),
                     FirstTrimCorrection = table.Column<double>(type: "REAL", nullable: false),
                     SecondTrimCorrection = table.Column<double>(type: "REAL", nullable: false),
                     DisplacementCorrectedForTrim = table.Column<double>(type: "REAL", nullable: false),
