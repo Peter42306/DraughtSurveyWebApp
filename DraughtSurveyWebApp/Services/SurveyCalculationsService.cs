@@ -35,10 +35,43 @@
             return result;
         }
 
-        public double CalculateTrimCorrection(double distance, double apparentTrim, double LBD)
+        public double CalculatLBD(double lbp, double distanceFwd, bool distanceFwdShiftedToFwd, double distanceAft, bool distanceAftShiftedToFwd)
         {
-            double result = Math.Round(distance*apparentTrim/LBD, 3);
-            return result;
+            if (distanceFwdShiftedToFwd == false)
+            {
+                distanceFwd *= -1;
+            }
+            
+            if (distanceAftShiftedToFwd == true)
+            {
+                distanceAft *= -1;
+            }
+
+            double result = lbp + distanceFwd + distanceAft;
+
+            return Math.Round(result, 3);
+        }
+
+        public double CalculateTrimCorrection(double distance, double apparentTrim, bool isDraughtShiftedToForward, double LBD)
+        {
+            if (LBD == 0)
+            {
+                throw new ArgumentException("LBP cannot be zero", nameof(LBD));
+            }
+
+            double result = 0;
+
+            if (apparentTrim == 0)
+            {
+                result = 0;
+                return result;
+            }           
+
+            int sign = (isDraughtShiftedToForward == (apparentTrim < 0)) ? -1 : 1;
+
+            result = sign * Math.Abs(distance*apparentTrim/LBD);
+
+            return Math.Round(result, 3);
         }
 
         public double CalculateCorrectedDraught(double draughtApparentMean, double correctionForDistasnce)
@@ -74,6 +107,83 @@
 
             double y = y0 + ((y1 - y0) / (x1 - x0)) * (x - x0);
             return Math.Round(y, 3);
+        }
+
+        public double CalculateFirstTrimCorrection(double correctedTrim, double LCF, bool isLCFForward, double TPC, double LBP)
+        {
+            if (LBP == 0)
+            {
+                throw new ArgumentException("LBP cannot be zero", nameof(LBP));
+            }
+
+            double result = 0;
+            
+            if (correctedTrim == 0)
+            {
+                result = 0;
+                return result;
+            }
+
+            bool isTrimForward = false;
+
+            if(correctedTrim < 0)
+            {
+                isTrimForward = true;
+            }            
+
+            int sign = (isLCFForward == isTrimForward) ? 1 : -1;                        
+            
+            result = sign * Math.Abs((correctedTrim * LCF * TPC * 100) / LBP);
+
+            return Math.Round(result, 3);
+        }
+
+        public double CalculateSecondTrimCorrection(double correctedTrim, double MTC1, double MTC2, double LBP)
+        {
+            if (LBP == 0)
+            {
+                throw new ArgumentException("LBP cannot be zero", nameof(LBP));
+            }
+
+            double result = 0;
+            
+            if (correctedTrim == 0)
+            {
+                result = 0;
+                return result;
+            }
+
+            result = (correctedTrim * correctedTrim * Math.Abs(MTC1 - MTC2) * 50) / LBP;
+
+            return Math.Round(result, 3);
+        }
+
+        public double CalculateDisplacementCorrectedForTrim(double tableDisplacement, double firstTrimCorrection, double secondTrimCorrection)
+        {           
+            double result = tableDisplacement + firstTrimCorrection + secondTrimCorrection;
+
+            return Math.Round(result, 3);
+        }
+
+        public double CalculateDisplacementCorrectedForDensity(double displacementCorrectedForTrim, double seaWaterDensity)
+        {            
+            double result = displacementCorrectedForTrim * seaWaterDensity / 1.025;
+
+            return Math.Round(result, 3);
+        }
+
+        public double CalculateNettoDisplacement(double displacementCorrectedForDensity, double totalDeductibles)
+        {
+            double result = displacementCorrectedForDensity - totalDeductibles;
+
+            return Math.Round(result, 3);
+        }
+
+        public double CalculateCargoPlusConstant(double nettoDisplacement, double lightShip)
+        {
+            double result = nettoDisplacement - lightShip;
+
+            return Math.Round(result, 3);
         }
 
 

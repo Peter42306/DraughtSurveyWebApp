@@ -3,6 +3,7 @@ using System;
 using DraughtSurveyWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DraughtSurveyWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250704072624_AddIsLCFForward")]
+    partial class AddIsLCFForward
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.15");
@@ -206,8 +209,7 @@ namespace DraughtSurveyWebApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DraughtSurveyBlockId")
-                        .IsUnique();
+                    b.HasIndex("DraughtSurveyBlockId");
 
                     b.ToTable("DeductiblesResults");
                 });
@@ -284,15 +286,6 @@ namespace DraughtSurveyWebApp.Migrations
 
                     b.Property<double>("SeaWaterDensity")
                         .HasColumnType("REAL");
-
-                    b.Property<bool>("isAftDistanceToFwd")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("isFwdDistancetoFwd")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("isMidDistanceToFwd")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -382,7 +375,7 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<int>("DraughtSurveyBlockId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsLCFForward")
+                    b.Property<bool?>("IsLCFForward")
                         .HasColumnType("INTEGER");
 
                     b.Property<double>("LCFAbove")
@@ -703,8 +696,8 @@ namespace DraughtSurveyWebApp.Migrations
             modelBuilder.Entity("DraughtSurveyWebApp.Models.DeductiblesResults", b =>
                 {
                     b.HasOne("DraughtSurveyWebApp.Models.DraughtSurveyBlock", "DraughtSurveyBlock")
-                        .WithOne("DeductiblesResults")
-                        .HasForeignKey("DraughtSurveyWebApp.Models.DeductiblesResults", "DraughtSurveyBlockId")
+                        .WithMany()
+                        .HasForeignKey("DraughtSurveyBlockId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -831,8 +824,6 @@ namespace DraughtSurveyWebApp.Migrations
             modelBuilder.Entity("DraughtSurveyWebApp.Models.DraughtSurveyBlock", b =>
                 {
                     b.Navigation("DeductiblesInput");
-
-                    b.Navigation("DeductiblesResults");
 
                     b.Navigation("DraughtsInput");
 

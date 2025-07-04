@@ -1,4 +1,5 @@
 ﻿using DraughtSurveyWebApp.Data;
+using DraughtSurveyWebApp.Models;
 using DraughtSurveyWebApp.Services;
 using DraughtSurveyWebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -46,23 +47,10 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 draughtAboveMTCPlus50 = _surveyCalculationsService.CalculateDraughtForMTCPlus50(inputs.DraughtAbove);
                 draughtAboveMTCMinus50 = _surveyCalculationsService.CalculateDraughtForMTCMinus50(inputs.DraughtAbove);
-
                 draughtBelowMTCPlus50 = _surveyCalculationsService.CalculateDraughtForMTCPlus50(inputs.DraughtBelow);                
                 draughtBelowMTCMinus50 = _surveyCalculationsService.CalculateDraughtForMTCMinus50(inputs.DraughtBelow);
             }
 
-
-
-
-
-            //double? meanAdjustedDraught = results?.MeanAdjustedDraught;
-
-            //double? DraughtAboveMTCPlus50 = null;
-            //double? DraughtBelowMTC
-            //if (meanAdjustedDraught.HasValue)
-            //{
-            //    DraughtAboveMTCPlus50 = _surveyCalculationsService.CalculateDraughtForMTCPlus50(meanAdjustedDraught.Value);
-            //}
 
 
             var viewModel = new HydrostaticInputViewModel
@@ -85,6 +73,7 @@ namespace DraughtSurveyWebApp.Controllers
                 LCFAbove = inputs?.LCFAbove,
                 LCFBelow = inputs?.LCFBelow,
                 LCFFromTable = resultsHydrostatic?.LCFFromTable,
+                IsLCFForward = inputs?.IsLCFForward,
 
 
                 DraughtAboveMTCPlus50 = draughtAboveMTCPlus50,
@@ -98,7 +87,14 @@ namespace DraughtSurveyWebApp.Controllers
                 MTCMinus50Below = inputs?.MTCMinus50Below,
 
                 MTCPlus50FromTable = resultsHydrostatic?.MTCPlus50FromTable,
-                MTCMinus50FromTable = resultsHydrostatic?.MTCMinus50FromTable
+                MTCMinus50FromTable = resultsHydrostatic?.MTCMinus50FromTable,
+
+                FirstTrimCorrection = resultsHydrostatic?.FirstTrimCorrection,
+                SecondTrimCorrection = resultsHydrostatic?.SecondTrimCorrection,
+                DisplacementCorrectedForTrim = resultsHydrostatic?.DisplacementCorrectedForTrim,
+                DisplacementCorrectedForDensity = resultsHydrostatic?.DisplacementCorrectedForDensity,
+                NettoDisplacement = resultsHydrostatic?.NettoDisplacement,
+                CargoPlusConstant = resultsHydrostatic?.CargoPlusConstant
             };
 
             return View(viewModel);
@@ -120,6 +116,7 @@ namespace DraughtSurveyWebApp.Controllers
                 .Include(r => r.DraughtsResults)
                 .Include(h => h.HydrostaticInput)
                 .Include(r => r.HydrostaticResults)
+                .Include(r => r.DeductiblesResults)
                 .Include(i => i.Inspection)
                     .ThenInclude(i => i.VesselInput)
                 .FirstOrDefaultAsync(b => b.Id == viewModel.DraughtSurveyBlockId);
@@ -151,6 +148,7 @@ namespace DraughtSurveyWebApp.Controllers
             input.TPCBelow = viewModel.TPCBelow ?? 0;
             input.LCFAbove = viewModel.LCFAbove ?? 0;
             input.LCFBelow = viewModel.LCFBelow ?? 0;
+            input.IsLCFForward = viewModel.IsLCFForward ?? true;
 
             input.MTCPlus50Above = viewModel.MTCPlus50Above ?? 0;
             input.MTCPlus50Below = viewModel.MTCPlus50Below ?? 0;
@@ -192,14 +190,8 @@ namespace DraughtSurveyWebApp.Controllers
             double mTCMinus50FromTable = 0;
 
 
-            if (resultsDraughts?.MeanAdjustedDraught != null
-
-                //viewModel.DraughtAboveMTCPlus50 != null ||
-                //viewModel.DraughtBelowMTCPlus50 != null ||
-                //viewModel.DraughtAboveMTCMinus50 != null ||
-                //viewModel.DraughtBelowMTCMinus50 != null                
-
-                )
+            // Calculation of draughts +/- 50 cm, above and below 
+            if (resultsDraughts?.MeanAdjustedDraught != null)
             {
                 mTCPlus50FromTable = _surveyCalculationsService.CalculateLinearInterpolation(
                     input.DraughtAbove + 0.5,
@@ -215,31 +207,60 @@ namespace DraughtSurveyWebApp.Controllers
                     input.DraughtBelow - 0.5,
                     input.MTCMinus50Below,
                     resultsDraughts.MeanAdjustedDraught - 0.5
-                    );
-
-
-                //mTCPlus50FromTable = _surveyCalculationsService.CalculateLinearInterpolation(
-                //    viewModel.DraughtAboveMTCPlus50.Value,
-                //    input.MTCPlus50Above,
-                //    viewModel.DraughtBelowMTCPlus50.Value,
-                //    input.MTCPlus50Below,
-                //    resultsDraughts.MeanAdjustedDraught + 0.5
-                //    );
-
-                //mTCMinus50FromTable = _surveyCalculationsService.CalculateLinearInterpolation(
-                //    viewModel.DraughtAboveMTCMinus50.Value,
-                //    input.MTCMinus50Above,
-                //    viewModel.DraughtBelowMTCMinus50.Value,
-                //    input.MTCMinus50Below,
-                //    resultsDraughts.MeanAdjustedDraught - 0.5
-                //    );
+                    );                
             }
 
+            // Calculation of the 1st trim corrrection            
+
+            double firstTrimCorrection = _surveyCalculationsService.CalculateFirstTrimCorrection(
+                draughtSurveyBlock.DraughtsResults.TrimCorrected,
+                draughtSurveyBlock.HydrostaticResults.LCFFromTable,
+                draughtSurveyBlock.HydrostaticInput.IsLCFForward,
+                draughtSurveyBlock.HydrostaticResults.TPCFromTable,
+                draughtSurveyBlock.Inspection.VesselInput.LBP
+                );
+
+
+            // Calculcation of the 2nd trim correction
+            double secondTrimCorrection = _surveyCalculationsService.CalculateSecondTrimCorrection(
+                draughtSurveyBlock.DraughtsResults.TrimCorrected,
+                draughtSurveyBlock.HydrostaticResults.MTCMinus50FromTable,
+                draughtSurveyBlock.HydrostaticResults.MTCPlus50FromTable,
+                draughtSurveyBlock.Inspection.VesselInput.LBP
+                );
+
+
+            // Calculation of Displacement corrected for trim corrections
+            double displacementCorrectedForTrim = _surveyCalculationsService.CalculateDisplacementCorrectedForTrim(
+                draughtSurveyBlock.HydrostaticResults.DisplacementFromTable,
+                firstTrimCorrection,
+                secondTrimCorrection
+                );
+
+            // Calculation of Displacement corrected for density
+            double displacementCorrectedForDensity = _surveyCalculationsService.CalculateDisplacementCorrectedForDensity(
+                displacementCorrectedForTrim,
+                draughtSurveyBlock.DraughtsInput.SeaWaterDensity
+                );
+
+            // Calculation of NETTO displacement
+            double nettoDisplacement = _surveyCalculationsService.CalculateNettoDisplacement(
+                displacementCorrectedForDensity,
+                draughtSurveyBlock.DeductiblesResults.TotalDeductibles
+                );
+
+            // Calculation of Cargo + Constant
+            double cargoPlusConstant = _surveyCalculationsService.CalculateCargoPlusConstant(
+                nettoDisplacement,
+                draughtSurveyBlock.Inspection.VesselInput.LS
+                );
 
 
 
-            var results = await _context.HydrostaticResults
-                .FirstOrDefaultAsync(r => r.DraughtSurveyBlockId == draughtSurveyBlock.Id);
+            var results = draughtSurveyBlock.HydrostaticResults;
+
+            //var results = await _context.HydrostaticResults
+            //    .FirstOrDefaultAsync(r => r.DraughtSurveyBlockId == draughtSurveyBlock.Id);
 
             if (results == null)
             {
@@ -250,26 +271,25 @@ namespace DraughtSurveyWebApp.Controllers
                 };
 
                 _context.HydrostaticResults.Add(results);
+                draughtSurveyBlock.HydrostaticResults = results;
             }
 
             results.DisplacementFromTable = displacementFromTable;
             results.TPCFromTable = tPCFromTable;
             results.LCFFromTable = lCFFromTable;
             results.MTCPlus50FromTable = mTCPlus50FromTable;
-            results.MTCMinus50FromTable = mTCMinus50FromTable;
+            results.MTCMinus50FromTable = mTCMinus50FromTable;            
+            results.FirstTrimCorrection = firstTrimCorrection;
+            results.SecondTrimCorrection = secondTrimCorrection;
+            results.DisplacementCorrectedForTrim = displacementCorrectedForTrim;
+            results.DisplacementCorrectedForDensity = displacementCorrectedForDensity;
+            results.NettoDisplacement = nettoDisplacement;
+            results.CargoPlusConstant = cargoPlusConstant;
 
 
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
         }
-
-
-
-
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
     }
 }

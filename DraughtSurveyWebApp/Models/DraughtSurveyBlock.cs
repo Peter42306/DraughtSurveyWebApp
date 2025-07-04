@@ -22,6 +22,7 @@
 
         public DraughtsResults? DraughtsResults { get; set; }
         public HydrostaticResults? HydrostaticResults { get; set; }        
+        public DeductiblesResults? DeductiblesResults { get; set; }
 
         public string? Notes { get; set; } // for Letter of Reserve details, or any notes
 

@@ -17,6 +17,12 @@
         public double DistanceMid { get; set; }
         public double DistanceAft { get; set; }
 
+        public bool isFwdDistancetoFwd { get; set; }
+        public bool isMidDistanceToFwd { get; set; }
+        public bool isAftDistanceToFwd { get; set; }
+
+
+
         public double SeaWaterDensity { get; set; }
         public double? KeelCorrection { get; set; }
 

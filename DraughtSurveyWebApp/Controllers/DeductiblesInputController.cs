@@ -1,0 +1,131 @@
+﻿using DraughtSurveyWebApp.Data;
+using DraughtSurveyWebApp.Models;
+using DraughtSurveyWebApp.Services;
+using DraughtSurveyWebApp.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace DraughtSurveyWebApp.Controllers
+{
+    public class DeductiblesInputController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly SurveyCalculationsService _surveyCalculationsService;
+
+        public DeductiblesInputController(ApplicationDbContext context, SurveyCalculationsService surveyCalculationsService)
+        {
+            _context = context;
+            _surveyCalculationsService = surveyCalculationsService;
+        }
+
+        // GET: DeductiblesInput/Edit?draughtSurveyBlockId=1
+        public async Task<IActionResult> Edit(int draughtSurveyBlockId)
+        {
+            var draughtSurveyBlock = await _context.DraughtSurveyBlocks
+                .Include(d => d.DeductiblesInput)
+                .Include(d => d.DeductiblesResults)
+                .FirstOrDefaultAsync(b => b.Id == draughtSurveyBlockId);
+
+            if (draughtSurveyBlock == null)
+            {
+                return NotFound();
+            }
+
+            var inputs = draughtSurveyBlock.DeductiblesInput;
+            var results = draughtSurveyBlock.DeductiblesResults;
+
+            var viewModel = new DeductiblesInputViewModel
+            {
+                InspectionId = draughtSurveyBlock.InspectionId,
+                DraughtSurveyBlockId = draughtSurveyBlock.Id,
+
+                Ballast = inputs?.Ballast,
+                FreshWater = inputs?.FreshWater,
+                FuelOil = inputs?.FuelOil,
+                DieselOil = inputs?.DieselOil,
+                LubOil = inputs?.LubOil,
+                Others = inputs?.Others,
+
+                TotalDeductibles = results?.TotalDeductibles
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(DeductiblesInputViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            var draughtSurveyBlock = await _context.DraughtSurveyBlocks
+                .Include(d => d.DeductiblesInput)
+                .Include(d => d.DeductiblesResults)
+                .FirstOrDefaultAsync(b => b.Id == viewModel.DraughtSurveyBlockId);
+
+            if (draughtSurveyBlock == null)
+            {
+                return NotFound();
+            }
+
+            if(draughtSurveyBlock.DeductiblesInput == null)
+            {
+                draughtSurveyBlock.DeductiblesInput = new Models.DeductiblesInput
+                {
+                    DraughtSurveyBlockId = viewModel.DraughtSurveyBlockId,
+                    DraughtSurveyBlock = draughtSurveyBlock
+                };
+
+                _context.DeductiblesInputs.Add(draughtSurveyBlock.DeductiblesInput);
+            }
+            
+            var inputs = draughtSurveyBlock.DeductiblesInput;
+
+            inputs.Ballast = viewModel.Ballast ?? 0;
+            inputs.FreshWater = viewModel.FreshWater ?? 0;
+            inputs.FuelOil = viewModel.FuelOil ?? 0;
+            inputs.DieselOil = viewModel.DieselOil ?? 0;
+            inputs.LubOil = viewModel.LubOil ?? 0;
+            inputs.Others = viewModel.Others ?? 0;
+
+
+            double totalDeductible = 
+                inputs.Ballast + 
+                inputs.FreshWater + 
+                inputs.FuelOil + 
+                inputs.DieselOil + 
+                inputs.LubOil + 
+                inputs.Others;
+
+            var results = draughtSurveyBlock.DeductiblesResults;
+
+            if (results == null)
+            {
+                results = new Models.DeductiblesResults
+                {
+                    DraughtSurveyBlockId = draughtSurveyBlock.Id,
+                    DraughtSurveyBlock = draughtSurveyBlock
+                };
+
+                _context.DeductiblesResults.Add(results);
+            }
+
+            results.TotalDeductibles = totalDeductible;            
+
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
+        }
+
+
+        //public IActionResult Index()
+        //{
+        //    return View();
+        //}
+    }
+}

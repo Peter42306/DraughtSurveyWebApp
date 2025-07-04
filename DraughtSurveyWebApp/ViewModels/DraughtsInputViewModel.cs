@@ -47,8 +47,13 @@ namespace DraughtSurveyWebApp.ViewModels
         public double? KeelCorrection { get; set; }
 
 
+        public bool? IsFwdDistancetoFwd { get; set; }
+        public bool? IsMidDistanceToFwd { get; set; }
+        public bool? IsAftDistanceToFwd { get; set; }
+
+
         //================== Results for viewModel ==================
-        
+
         [Display(Name = "Mean Fwd")]
         public double? DraughtMeanFwd { get; set; }
 
@@ -77,13 +82,13 @@ namespace DraughtSurveyWebApp.ViewModels
 
 
         
-        [Display(Name = "Correction Fwd")]
+        [Display(Name = "Correction")]
         public double? DraughtCorrectionFwd { get; set; }
 
-        [Display(Name = "Correction Mid")]
+        [Display(Name = "Correction")]
         public double? DraughtCorrectionMid { get; set; }
 
-        [Display(Name = "Correction Aft")]
+        [Display(Name = "Correction")]
         public double? DraughtCorrectionAft { get; set; }
 
 

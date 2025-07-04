@@ -24,6 +24,8 @@
         public double MTCMinus50Below { get; set; }
         public double? LCFfromAftBelow { get; set; }
 
+        public bool IsLCFForward { get; set; }
+
         public int DraughtSurveyBlockId { get; set; }
         public required DraughtSurveyBlock DraughtSurveyBlock { get; set; }
     }

@@ -53,6 +53,11 @@ namespace DraughtSurveyWebApp.Controllers
                 KeelCorrection = inputs?.KeelCorrection,
                 SeaWaterDensity = inputs?.SeaWaterDensity,
 
+                IsFwdDistancetoFwd = inputs?.isFwdDistancetoFwd,
+                IsMidDistanceToFwd = inputs?.isMidDistanceToFwd,
+                IsAftDistanceToFwd = inputs?.isAftDistanceToFwd,
+
+
                 DraughtMeanFwd = results?.DraughtMeanFwd,
                 DraughtMeanMid = results?.DraughtMeanMid,
                 DraughtMeanAft = results?.DraughtMeanAft,
@@ -69,7 +74,8 @@ namespace DraughtSurveyWebApp.Controllers
                 TrimCorrected = results?.TrimCorrected,
                 Heel = results?.Heel,
                 HoggingSagging = results?.HoggingSagging,
-                MeanAdjustedDraught = results?.MeanAdjustedDraught                
+                MeanAdjustedDraught = results?.MeanAdjustedDraught
+                
             };
 
             return View(viewModel);
@@ -119,34 +125,93 @@ namespace DraughtSurveyWebApp.Controllers
             input.DistanceMid = viewModel.DistanceMid ?? 0;
             input.DistanceAft = viewModel.DistanceAft ?? 0;
 
+            input.isFwdDistancetoFwd = viewModel.IsFwdDistancetoFwd ?? false;
+            input.isMidDistanceToFwd = viewModel.IsMidDistanceToFwd ?? false;
+            input.isAftDistanceToFwd = viewModel.IsAftDistanceToFwd ?? false;
+
             input.SeaWaterDensity = viewModel.SeaWaterDensity ?? 0;
             input.KeelCorrection = viewModel.KeelCorrection ?? 0;
 
-            
-            double fwdMean = _surveyCalculationsService.CalculateApparentMean(input.DraughtFwdPS, input.DraughtFwdSS);
-            double midMean = _surveyCalculationsService.CalculateApparentMean(input.DraughtMidPS, input.DraughtMidSS);
-            double aftMean = _surveyCalculationsService.CalculateApparentMean(input.DraughtAftPS, input.DraughtAftSS);
 
-            double trimApparent = _surveyCalculationsService.CalculateTrim(fwdMean, aftMean);
+            
+            double fwdMean = _surveyCalculationsService.CalculateApparentMean(
+                input.DraughtFwdPS, 
+                input.DraughtFwdSS
+                );
+            double midMean = _surveyCalculationsService.CalculateApparentMean(
+                input.DraughtMidPS, 
+                input.DraughtMidSS
+                );
+            double aftMean = _surveyCalculationsService.CalculateApparentMean(
+                input.DraughtAftPS, 
+                input.DraughtAftSS
+                );
+            double trimApparent = _surveyCalculationsService.CalculateTrim(
+                fwdMean, 
+                aftMean);
             
 
             double bm = draughtSurveyBlock.Inspection?.VesselInput?.BM ?? 0;
-            double lbp = draughtSurveyBlock.Inspection?.VesselInput?.LBP ?? 0;            
+            double lbp = draughtSurveyBlock.Inspection?.VesselInput?.LBP ?? 0;
 
-            double lbd = lbp + input.DistanceFwd - input.DistanceAft;            
+            //double lbd = lbp - input.DistanceFwd + input.DistanceAft;            
+            double lbd = _surveyCalculationsService.CalculatLBD(
+                lbp,
+                input.DistanceFwd,
+                input.isFwdDistancetoFwd,
+                input.DistanceAft,
+                input.isAftDistanceToFwd
+                );
 
-            double draughtCorrectionFwd = _surveyCalculationsService.CalculateTrimCorrection(input.DistanceFwd, trimApparent, lbd);
-            double draughtCorrectionMid = _surveyCalculationsService.CalculateTrimCorrection(input.DistanceMid, trimApparent, lbd);
-            double draughtCorrectionAft = _surveyCalculationsService.CalculateTrimCorrection(input.DistanceAft, trimApparent, lbd);
+            double draughtCorrectionFwd = _surveyCalculationsService.CalculateTrimCorrection(
+                input.DistanceFwd, 
+                trimApparent, 
+                input.isFwdDistancetoFwd, 
+                lbd
+                );
+            double draughtCorrectionMid = _surveyCalculationsService.CalculateTrimCorrection(
+                input.DistanceMid, 
+                trimApparent, 
+                input.isMidDistanceToFwd,
+                lbd
+                );
+            double draughtCorrectionAft = _surveyCalculationsService.CalculateTrimCorrection(
+                input.DistanceAft, 
+                trimApparent, 
+                input.isAftDistanceToFwd,
+                lbd
+                );
 
-            double draughtCorrectedFwd = _surveyCalculationsService.CalculateCorrectedDraught(fwdMean, draughtCorrectionFwd);
-            double draughtCorrectedMid = _surveyCalculationsService.CalculateCorrectedDraught(midMean, draughtCorrectionMid);
-            double draughtCorrectedAft = _surveyCalculationsService.CalculateCorrectedDraught(aftMean, draughtCorrectionAft);
+            double draughtCorrectedFwd = _surveyCalculationsService.CalculateCorrectedDraught(
+                fwdMean, 
+                draughtCorrectionFwd
+                );
+            double draughtCorrectedMid = _surveyCalculationsService.CalculateCorrectedDraught(
+                midMean, 
+                draughtCorrectionMid
+                );
+            double draughtCorrectedAft = _surveyCalculationsService.CalculateCorrectedDraught(
+                aftMean, 
+                draughtCorrectionAft
+                );
 
-            double trimCorrected = _surveyCalculationsService.CalculateTrim(draughtCorrectedFwd, draughtCorrectedAft);
-            double heel = _surveyCalculationsService.CalculateHeel(input.DraughtMidPS, input.DraughtMidSS, bm);
-            double hogSag = _surveyCalculationsService.CalculateHoggingSagging(draughtCorrectedFwd, draughtCorrectedMid, draughtCorrectedAft);
-            double meanAdjustedDraught = _surveyCalculationsService.CalculateMeanOfMean(draughtCorrectedFwd, draughtCorrectedMid, draughtCorrectedAft);
+            double trimCorrected = _surveyCalculationsService.CalculateTrim(
+                draughtCorrectedFwd, 
+                draughtCorrectedAft
+                );
+            double heel = _surveyCalculationsService.CalculateHeel(
+                input.DraughtMidPS, 
+                input.DraughtMidSS, 
+                bm
+                );
+            double hogSag = _surveyCalculationsService.CalculateHoggingSagging(
+                draughtCorrectedFwd, 
+                draughtCorrectedMid, 
+                draughtCorrectedAft);
+            double meanAdjustedDraught = _surveyCalculationsService.CalculateMeanOfMean(
+                draughtCorrectedFwd, 
+                draughtCorrectedMid, 
+                draughtCorrectedAft);
 
 
 
