@@ -4,12 +4,20 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-<h4>Vessel Info</h4>
-<hr />
+
 <div class="row">
     <div class="col-md-6">
         <form asp-action="Edit">
+            <div class="row">
+                <div class="col-6">
+                    <h4>Edit Vessel's Information</h4>
+                </div>
+                <div class="col-6 text-end">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            <hr />
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="InspectionId"/>
 
@@ -49,11 +57,11 @@
                 <span asp-validation-for="DeclaredConstant" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary">Save</button>
+            
         </form>
     </div>
 </div>
 
-<div>
+@* <div>
     <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId">Back</a>
-</div>
+</div> *@

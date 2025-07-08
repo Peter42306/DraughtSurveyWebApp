@@ -112,8 +112,9 @@ namespace DraughtSurveyWebApp.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Details", "Inspections", new { id = cargo.InspectionId });
-        }
+            //return RedirectToAction("Details", "Inspections", new { id = cargo.InspectionId });
+            return Redirect($"{Url.Action("Details", "Inspections", new { id = cargo.InspectionId })}#draught-cargo-input");
+        }       
                
     }
 }

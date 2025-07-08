@@ -1,4 +1,5 @@
 ﻿using DraughtSurveyWebApp.Data;
+using DraughtSurveyWebApp.Models;
 using DraughtSurveyWebApp.Services;
 using DraughtSurveyWebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -90,8 +91,8 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 return View(viewModel);
             }
-            
 
+            
             var draughtSurveyBlock = await _context.DraughtSurveyBlocks
                 .Include(b => b.DraughtsInput)
                 .Include(b =>b.DraughtsResults)
@@ -108,40 +109,63 @@ namespace DraughtSurveyWebApp.Controllers
                 return NotFound();
             }
 
+            //if (draughtSurveyBlock.Inspection == null || draughtSurveyBlock.Inspection.VesselInput == null)
+            //{
+
+            //}
+                        
+
             if (draughtSurveyBlock.DraughtsInput == null)
             {
                 draughtSurveyBlock.DraughtsInput = new Models.DraughtsInput
                 {
-                    DraughtSurveyBlockId = viewModel.DraughtSurveyBlockId
+                    DraughtSurveyBlockId = viewModel.DraughtSurveyBlockId,
+                    DraughtSurveyBlock = draughtSurveyBlock
                 };
 
                 _context.DraughtsInputs.Add(draughtSurveyBlock.DraughtsInput);
             }
 
-            
+            if (draughtSurveyBlock.DraughtsResults == null)
+            {
+                draughtSurveyBlock.DraughtsResults = new Models.DraughtsResults
+                {
+                    DraughtSurveyBlockId = draughtSurveyBlock.Id,
+                    DraughtSurveyBlock = draughtSurveyBlock
+                };
+
+                _context.DraughtsResults.Add(draughtSurveyBlock.DraughtsResults);
+            }
 
             var input = draughtSurveyBlock.DraughtsInput;
 
-            input.DraughtFwdPS = viewModel.DraughtFwdPS;
-            input.DraughtFwdSS = viewModel.DraughtFwdSS;
-            input.DraughtMidPS = viewModel.DraughtMidPS;
-            input.DraughtMidSS = viewModel.DraughtMidSS;
-            input.DraughtAftPS = viewModel.DraughtAftPS;
-            input.DraughtAftSS = viewModel.DraughtAftSS;
+            bool changed = IsDraughtsInputChanged(input, viewModel);
 
-            input.DistanceFwd = viewModel.DistanceFwd;
-            input.DistanceMid = viewModel.DistanceMid;
-            input.DistanceAft = viewModel.DistanceAft;
+            if (changed)
+            {
+                input.DraughtFwdPS = viewModel.DraughtFwdPS;
+                input.DraughtFwdSS = viewModel.DraughtFwdSS;
+                input.DraughtMidPS = viewModel.DraughtMidPS;
+                input.DraughtMidSS = viewModel.DraughtMidSS;
+                input.DraughtAftPS = viewModel.DraughtAftPS;
+                input.DraughtAftSS = viewModel.DraughtAftSS;
 
-            input.isFwdDistancetoFwd = viewModel.IsFwdDistancetoFwd;
-            input.isMidDistanceToFwd = viewModel.IsMidDistanceToFwd;
-            input.isAftDistanceToFwd = viewModel.IsAftDistanceToFwd;
+                input.DistanceFwd = viewModel.DistanceFwd;
+                input.DistanceMid = viewModel.DistanceMid;
+                input.DistanceAft = viewModel.DistanceAft;
 
-            input.SeaWaterDensity = viewModel.SeaWaterDensity;
-            input.KeelCorrection = viewModel.KeelCorrection;
+                input.isFwdDistancetoFwd = viewModel.IsFwdDistancetoFwd;
+                input.isMidDistanceToFwd = viewModel.IsMidDistanceToFwd;
+                input.isAftDistanceToFwd = viewModel.IsAftDistanceToFwd;
+
+                input.SeaWaterDensity = viewModel.SeaWaterDensity;
+                input.KeelCorrection = viewModel.KeelCorrection;
 
 
-            _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
+                _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
+            }
+
+            
 
 
             //double? fwdMean = null;
@@ -426,6 +450,28 @@ namespace DraughtSurveyWebApp.Controllers
             //return View(viewModel);
             //return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
             return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#initial-draught-draughts");
+        }
+
+        private bool IsDraughtsInputChanged(DraughtsInput dbValue, DraughtsInputViewModel viewModelValue)
+        {
+            return
+                dbValue.DraughtFwdPS != viewModelValue.DraughtFwdPS ||
+                dbValue.DraughtFwdSS != viewModelValue.DraughtFwdSS ||
+                dbValue.DraughtMidPS != viewModelValue.DraughtMidPS ||
+                dbValue.DraughtMidSS != viewModelValue.DraughtMidSS ||
+                dbValue.DraughtAftPS != viewModelValue.DraughtAftPS ||
+                dbValue.DraughtAftSS != viewModelValue.DraughtAftSS ||
+
+                dbValue.DistanceFwd != viewModelValue.DistanceFwd ||
+                dbValue.DistanceMid != viewModelValue.DistanceMid ||
+                dbValue.DistanceAft != viewModelValue.DistanceAft ||
+
+                dbValue.isFwdDistancetoFwd != viewModelValue.IsFwdDistancetoFwd ||
+                dbValue.isMidDistanceToFwd!= viewModelValue.IsMidDistanceToFwd ||
+                dbValue.isAftDistanceToFwd != viewModelValue.IsAftDistanceToFwd ||
+
+                dbValue.SeaWaterDensity != viewModelValue.SeaWaterDensity ||
+                dbValue.KeelCorrection != viewModelValue.KeelCorrection;
         }
 
 

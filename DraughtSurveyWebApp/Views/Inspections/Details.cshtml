@@ -5,18 +5,19 @@
 }
 
 <div class="row">
-    <div class="col-3">
-        <h1>Details</h1>
+    <div class="col-8">
+        <h4>@Model.VesselName</h4>
     </div>
-    <div class="col-9 text-end">
-        <a asp-action="Index">Back to Inspections List</a>
+    <div class="col-4 text-end">
+        <a asp-action="Index">All Inspections</a>
     </div>
 </div>
 
 
+
 <div>
     <hr />
-    <div class="row">
+    <div class="row" id="draught-inspection-input">
         <div class="col-6">
             <h4>Inspection</h4>
         </div>
@@ -47,7 +48,7 @@
 @if(Model.VesselInput != null)
 {
     <hr />
-    <div class="row">
+    <div class="row" id="draught-vessel-input">
         <div class="col-6">
             <h4>Vessel Information</h4>
         </div>
@@ -90,7 +91,7 @@ else
 @if (Model.CargoInput != null)
 {
     <hr />
-    <div class="row">
+    <div class="row" id="draught-cargo-input">
         <div class="col-6">
             <h4>Cargo Information</h4>
         </div>
@@ -126,12 +127,23 @@ else
 {
     var initialBlock = Model.DraughtSurveyBlocks.First(ds => ds.SurveyType == SurveyType.Initial);
     <hr />
-    <h4>Initial Draught Survey</h4>
-    
+    @* <h4>Initial Draught Survey</h4> *@
 
-    @if(initialBlock.SurveyTimeStart.HasValue || initialBlock.SurveyTimeEnd.HasValue || initialBlock.CargoOperationsDateTime.HasValue)
-    {
+    <details>
+
+
+        <summary class="h4 mb-2"">
+            Initial Draught Survey
+            @* <span class="ms-auto">&#9662;</span>             *@
+            
+        </summary>
         <hr />
+
+
+        <div>
+            @if(initialBlock.SurveyTimeStart.HasValue || initialBlock.SurveyTimeEnd.HasValue || initialBlock.CargoOperationsDateTime.HasValue)
+        {
+        
         <div class="row" id="initial-draught-times">
             <div class="col-6">
                 <h4>Time Sheet</h4>
@@ -154,9 +166,9 @@ else
             </dt>
             <dd class="col-6 col-sm-9">@initialBlock.CargoOperationsDateTime?.ToString("yyyy-MM-dd HH:mm")</dd>
         </dl>
-    }
-    else
-    { 
+        }
+        else
+        { 
         <hr />
         <div class="row">
             <div class="col-6">
@@ -166,10 +178,10 @@ else
                 <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Times</a>
             </div>
         </div>        
-    }
+        }
+        </div>
 
-
-    @if(initialBlock.DraughtsInput != null && initialBlock.DraughtsResults != null)
+        @if(initialBlock.DraughtsInput != null && initialBlock.DraughtsResults != null)
     {        
         @* <dt>Draughts</dt> *@
         <hr />
@@ -245,7 +257,6 @@ else
         </div>
     }
 
-
     @if (initialBlock.HydrostaticInput != null && initialBlock.HydrostaticResults != null)
     {
         <hr />
@@ -306,7 +317,6 @@ else
         </div>
     }
 
-    
 
     @if (initialBlock.DeductiblesInput !=null && initialBlock.DeductiblesResults != null)
     {
@@ -356,6 +366,10 @@ else
         </div>
     }
 
+    </details>    
+
+    
+
 
 }
 else
@@ -374,39 +388,56 @@ else
 {
     var finalBlock = Model.DraughtSurveyBlocks.First(ds => ds.SurveyType == SurveyType.Final);
     <hr />
-    <h4>Final Survey Steps</h4>
+    @* <h4>Final Survey Steps</h4> *@
 
-    <p>
+    <details>
+
+        <summary class="h4 mb-2">
+            Final Draught Survey
+            @* <span class="ms-auto">&#9662;</span>             *@
+            <hr />
+        </summary>
+        
+
+        <div>
+             <p>
         <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Times</a>
-    </p>
+        </p>
 
-    <p>
-        <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Draughts</a>
-    </p>
+        <p>
+            <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Draughts</a>
+        </p>
 
-    <p>
-        <a asp-action="Edit" asp-controller="DistancesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Distances</a>
-    </p>    
+        @* <p>
+            <a asp-action="Edit" asp-controller="DistancesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Distances</a>
+        </p>     *@
 
-    <p>
-        <a asp-action="Edit" asp-controller="HydrostaticsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Hydrostatic Data</a>
-    </p>
+        <p>
+            <a asp-action="Edit" asp-controller="HydrostaticsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Hydrostatic Data</a>
+        </p>
 
-    <p>
-        <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Dock Water Density</a>
-    </p>
+        @* <p>
+            <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Dock Water Density</a>
+        </p> *@
 
-    <p>
-        <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Deductibles</a>
-    </p>
+        <p>
+            <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Deductibles</a>
+        </p>
 
-    @* <a asp-action="Edit" asp-controller="DraughtSurveyBlock" asp-route-inspectionId></a> *@
+        @* <a asp-action="Edit" asp-controller="DraughtSurveyBlock" asp-route-inspectionId></a> *@
+        </div>
+
+    </details>
+
+    
+
+   
 }
 else
 {
     <hr />
     <h4>Final Survey</h4>
-
+    <hr />
     <p>
         <span class="text-muted">Final survey not started |</span>
         <a asp-action="Create" asp-controller="DraughtSurveyBlock" asp-route-inspectionId="@Model.Id" asp-route-surveyType="Final">Start Final Survey</a>

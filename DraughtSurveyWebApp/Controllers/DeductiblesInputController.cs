@@ -63,8 +63,14 @@ namespace DraughtSurveyWebApp.Controllers
             }
 
             var draughtSurveyBlock = await _context.DraughtSurveyBlocks
-                .Include(d => d.DeductiblesInput)
-                .Include(d => d.DeductiblesResults)
+                .Include(b => b.DraughtsInput)
+                .Include(b => b.DraughtsResults)
+                .Include(b => b.HydrostaticInput)
+                .Include(b => b.HydrostaticResults)
+                .Include(b => b.DeductiblesInput)
+                .Include(b => b.DeductiblesResults)                
+                .Include(b => b.Inspection)
+                    .ThenInclude(i => i.VesselInput)
                 .FirstOrDefaultAsync(b => b.Id == viewModel.DraughtSurveyBlockId);
 
             if (draughtSurveyBlock == null)
@@ -72,9 +78,9 @@ namespace DraughtSurveyWebApp.Controllers
                 return NotFound();
             }
 
-            if(draughtSurveyBlock.DeductiblesInput == null)
+            if (draughtSurveyBlock.DeductiblesInput == null)
             {
-                draughtSurveyBlock.DeductiblesInput = new Models.DeductiblesInput
+                draughtSurveyBlock.DeductiblesInput = new DeductiblesInput
                 {
                     DraughtSurveyBlockId = viewModel.DraughtSurveyBlockId,
                     DraughtSurveyBlock = draughtSurveyBlock
@@ -82,55 +88,80 @@ namespace DraughtSurveyWebApp.Controllers
 
                 _context.DeductiblesInputs.Add(draughtSurveyBlock.DeductiblesInput);
             }
-            
-            var inputs = draughtSurveyBlock.DeductiblesInput;
 
-            inputs.Ballast = viewModel.Ballast;
-            inputs.FreshWater = viewModel.FreshWater;
-            inputs.FuelOil = viewModel.FuelOil;
-            inputs.DieselOil = viewModel.DieselOil;
-            inputs.LubOil = viewModel.LubOil;
-            inputs.Others = viewModel.Others;
-
-            double? totalDeductible = null;
-
-            if (inputs.Ballast.HasValue ||
-                inputs.FreshWater.HasValue ||
-                inputs.FuelOil.HasValue ||
-                inputs.DieselOil.HasValue ||
-                inputs.LubOil.HasValue ||
-                inputs.Others.HasValue)
+            if (draughtSurveyBlock.DeductiblesResults == null)
             {
-                totalDeductible =
-                (inputs.Ballast ?? 0) +
-                (inputs.FreshWater ?? 0) +
-                (inputs.FuelOil ?? 0) +
-                (inputs.DieselOil ?? 0) +
-                (inputs.LubOil ?? 0) +
-                (inputs.Others ?? 0);
-            }
-            
-
-            var results = draughtSurveyBlock.DeductiblesResults;
-
-            if (results == null)
-            {
-                results = new Models.DeductiblesResults
+                draughtSurveyBlock.DeductiblesResults = new DeductiblesResults
                 {
                     DraughtSurveyBlockId = draughtSurveyBlock.Id,
                     DraughtSurveyBlock = draughtSurveyBlock
                 };
 
-                _context.DeductiblesResults.Add(results);
+                _context.DeductiblesResults.Add(draughtSurveyBlock.DeductiblesResults);
             }
 
-            results.TotalDeductibles = totalDeductible;            
+
+            var inputs = draughtSurveyBlock.DeductiblesInput;
+
+            bool changed = IsDeductiblesInputChanged(inputs, viewModel);
+
+            if (changed)
+            {
+                inputs.Ballast = viewModel.Ballast;
+                inputs.FreshWater = viewModel.FreshWater;
+                inputs.FuelOil = viewModel.FuelOil;
+                inputs.DieselOil = viewModel.DieselOil;
+                inputs.LubOil = viewModel.LubOil;
+                inputs.Others = viewModel.Others;
+
+
+                _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
+            }
+            
+
+
+            //double? totalDeductible = null;
+
+            //if (inputs.Ballast.HasValue ||
+            //    inputs.FreshWater.HasValue ||
+            //    inputs.FuelOil.HasValue ||
+            //    inputs.DieselOil.HasValue ||
+            //    inputs.LubOil.HasValue ||
+            //    inputs.Others.HasValue)
+            //{
+            //    totalDeductible =
+            //    (inputs.Ballast ?? 0) +
+            //    (inputs.FreshWater ?? 0) +
+            //    (inputs.FuelOil ?? 0) +
+            //    (inputs.DieselOil ?? 0) +
+            //    (inputs.LubOil ?? 0) +
+            //    (inputs.Others ?? 0);
+            //}
+
+
+
+
+            //var results = draughtSurveyBlock.DeductiblesResults;
+            
+
+            //results.TotalDeductibles = totalDeductible;            
 
 
             await _context.SaveChangesAsync();
 
             //return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
             return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#initial-draught-deductibles");
+        }
+
+        private bool IsDeductiblesInputChanged(DeductiblesInput dbValue, DeductiblesInputViewModel viewModelValue)
+        {
+            return
+                dbValue.Ballast != viewModelValue.Ballast ||
+                dbValue.FreshWater != viewModelValue.FreshWater ||
+                dbValue.FuelOil != viewModelValue.FuelOil ||
+                dbValue.DieselOil != viewModelValue.DieselOil ||
+                dbValue.LubOil != viewModelValue.LubOil ||
+                dbValue.Others != viewModelValue.Others;
         }
 
 

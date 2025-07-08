@@ -115,16 +115,20 @@ namespace DraughtSurveyWebApp.Controllers
                 return NotFound();
             }
 
-            vessel.IMO = viewModel.IMO;
-            vessel.LBP = viewModel.LBP;
-            vessel.BM = viewModel.BM;
-            vessel.LS = viewModel.LS;
-            vessel.SDWT = viewModel.SDWT;
-            vessel.DeclaredConstant = viewModel.DeclaredConstant;
+            
 
-            
-            
-            var draughtSurveyBlocks = await _context.DraughtSurveyBlocks
+            bool isVesselInputChanged = IsVesselInputChanged(vessel, viewModel);
+
+            if (isVesselInputChanged) 
+            {
+                vessel.IMO = viewModel.IMO;
+                vessel.LBP = viewModel.LBP;
+                vessel.BM = viewModel.BM;
+                vessel.LS = viewModel.LS;
+                vessel.SDWT = viewModel.SDWT;
+                vessel.DeclaredConstant = viewModel.DeclaredConstant;                
+
+                var draughtSurveyBlocks = await _context.DraughtSurveyBlocks
                 .Where(b => b.InspectionId == inspectionId)
                 .Include(b => b.DraughtsInput)
                 .Include(b => b.DraughtsResults)
@@ -136,22 +140,30 @@ namespace DraughtSurveyWebApp.Controllers
                     .ThenInclude(i => i.VesselInput)
                 .ToListAsync();
 
-            foreach (var draughtSurveyBlock in draughtSurveyBlocks)
-            {
-                if (draughtSurveyBlock != null)
-                {
-                    _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
-                }                    
+                foreach (var draughtSurveyBlock in draughtSurveyBlocks)
+                {                    
+                        _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);                 
+                }
             }
-            
+                        
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Details", "Inspections", new { id = vessel.InspectionId});
+            //return RedirectToAction("Details", "Inspections", new { id = vessel.InspectionId});
+            return Redirect($"{Url.Action("Details", "Inspections", new { id = vessel.InspectionId })}#draught-vessel-input");
         }
 
 
+        private bool IsVesselInputChanged(VesselInput dbValue, VesselInputViewModel viewModelValue)
+        {
+            return                
 
+                dbValue.LBP != viewModelValue.LBP ||
+                dbValue.BM != viewModelValue.BM ||
+                dbValue.LS != viewModelValue.LS ||
+                dbValue.SDWT != viewModelValue.SDWT ||
+                dbValue.DeclaredConstant != viewModelValue.DeclaredConstant;
+        }
         //public IActionResult Index()
         //{
         //    return View();

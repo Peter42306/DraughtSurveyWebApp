@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace DraughtSurveyWebApp.ViewModels
 {
     public class InspectionCreateViewModel
-    {
+    {        
         [Required]
         public string VesselName { get; set; } = string.Empty;
                 
@@ -13,5 +13,7 @@ namespace DraughtSurveyWebApp.ViewModels
         public string? CompanyReference { get; set; }
                 
         public OperationType? OperationType { get; set; }
+
+        public bool UseExistingVessel { get; set; } = false;
     }
 }

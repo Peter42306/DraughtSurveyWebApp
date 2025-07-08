@@ -121,6 +121,7 @@ namespace DraughtSurveyWebApp.Controllers
                 .Include(r => r.DraughtsResults)
                 .Include(h => h.HydrostaticInput)
                 .Include(r => r.HydrostaticResults)
+                .Include(b => b.DeductiblesInput)
                 .Include(r => r.DeductiblesResults)
                 .Include(i => i.Inspection)
                     .ThenInclude(i => i.VesselInput)
@@ -130,335 +131,340 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 return NotFound();
             }
+                        
 
-
-            var resultsDraughts = draughtSurveyBlock.DraughtsResults;
-
-            var input = draughtSurveyBlock.HydrostaticInput;
-            var results = draughtSurveyBlock.HydrostaticResults;
-
-            if (input == null)
+            if (draughtSurveyBlock.HydrostaticInput == null)
             {
-                input = new Models.HydrostaticInput
+                draughtSurveyBlock.HydrostaticInput = new Models.HydrostaticInput
                 {
                     DraughtSurveyBlockId = viewModel.DraughtSurveyBlockId,
                     DraughtSurveyBlock = draughtSurveyBlock
                 };
-
-                draughtSurveyBlock.HydrostaticInput = input;
+                
                 _context.HydrostaticInputs.Add(draughtSurveyBlock.HydrostaticInput);
             }            
 
-            if (results == null)
+            if (draughtSurveyBlock.HydrostaticResults == null)
             {
-                results = new Models.HydrostaticResults
+                draughtSurveyBlock.HydrostaticResults = new Models.HydrostaticResults
                 {
                     DraughtSurveyBlockId = draughtSurveyBlock.Id,
                     DraughtSurveyBlock = draughtSurveyBlock
                 };
-
-                draughtSurveyBlock.HydrostaticResults = results;
-                _context.HydrostaticResults.Add(results);
+                
+                _context.HydrostaticResults.Add(draughtSurveyBlock.HydrostaticResults);
             }
 
 
-            input.DraughtAbove = viewModel.DraughtAbove;
-            input.DraughtBelow = viewModel.DraughtBelow;
-            input.DisplacementAbove = viewModel.DisplacementAbove;
-            input.DisplacementBelow = viewModel.DisplacementBelow;
-            input.TPCAbove = viewModel.TPCAbove;
-            input.TPCBelow = viewModel.TPCBelow;
-            input.LCFAbove = viewModel.LCFAbove;
-            input.LCFBelow = viewModel.LCFBelow;
-            input.IsLCFForward = viewModel.IsLCFForward;
+            var input = draughtSurveyBlock.HydrostaticInput;
+            //var results = draughtSurveyBlock.HydrostaticResults;             
+            //var resultsDraughts = draughtSurveyBlock.DraughtsResults;            
 
-            input.MTCPlus50Above = viewModel.MTCPlus50Above;
-            input.MTCPlus50Below = viewModel.MTCPlus50Below;
-            input.MTCMinus50Above = viewModel.MTCMinus50Above;
-            input.MTCMinus50Below = viewModel.MTCMinus50Below;
+            bool changed = IsHydrostaticsInputChanged(input, viewModel);
 
-
-
-            double? displacementFromTable = null;
-            double? tPCFromTable = null;
-            double? lCFFromTable = null;
-
-            double? meanAdjustedDraughtAfterKeelCorrection = resultsDraughts?.MeanAdjustedDraughtAfterKeelCorrection;
-
-            double? draughtAbove = input.DraughtAbove;
-            double? draughtBelow = input.DraughtBelow;
-
-            double? displacementAbove = input.DisplacementAbove;            
-            double? displacementBelow = input.DisplacementBelow;
-            double? tpcAbove = input.TPCAbove;
-            double? tpcBelow = input.TPCBelow;
-            double? lcfAbove = input.LCFAbove;
-            double? lcfBelow = input.LCFBelow;
-
-
-            if (!meanAdjustedDraughtAfterKeelCorrection.HasValue)
+            if (changed)
             {
-                meanAdjustedDraughtAfterKeelCorrection = 0.0;
-            }
+                input.DraughtAbove = viewModel.DraughtAbove;
+                input.DraughtBelow = viewModel.DraughtBelow;
+                input.DisplacementAbove = viewModel.DisplacementAbove;
+                input.DisplacementBelow = viewModel.DisplacementBelow;
+                input.TPCAbove = viewModel.TPCAbove;
+                input.TPCBelow = viewModel.TPCBelow;
+                input.LCFAbove = viewModel.LCFAbove;
+                input.LCFBelow = viewModel.LCFBelow;
+                input.IsLCFForward = viewModel.IsLCFForward;
 
-            if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
-                draughtAbove.HasValue &&
-                displacementAbove.HasValue &&
-                draughtBelow.HasValue &&
-                displacementBelow.HasValue)
-            {
-                displacementFromTable = _surveyCalculationsService.CalculateLinearInterpolation(
-                    draughtAbove.Value,
-                    displacementAbove.Value,
-                    draughtBelow.Value,
-                    displacementBelow.Value,
-                    meanAdjustedDraughtAfterKeelCorrection.Value);
-            }
+                input.MTCPlus50Above = viewModel.MTCPlus50Above;
+                input.MTCPlus50Below = viewModel.MTCPlus50Below;
+                input.MTCMinus50Above = viewModel.MTCMinus50Above;
+                input.MTCMinus50Below = viewModel.MTCMinus50Below;
 
 
-            if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
-                draughtAbove.HasValue &&
-                tpcAbove.HasValue &&
-                draughtBelow.HasValue &&
-                tpcBelow.HasValue)
-            {
-                tPCFromTable = _surveyCalculationsService.CalculateLinearInterpolation(
-                    draughtAbove.Value,
-                    tpcAbove.Value,
-                    draughtBelow.Value,
-                    tpcBelow.Value,
-                    meanAdjustedDraughtAfterKeelCorrection.Value);
-            }
-
-
-            if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
-                draughtAbove.HasValue &&
-                lcfAbove.HasValue &&
-                draughtBelow.HasValue &&
-                lcfBelow.HasValue)
-            {
-                lCFFromTable = _surveyCalculationsService.CalculateLinearInterpolation(
-                    draughtAbove.Value,
-                    lcfAbove.Value,
-                    draughtBelow.Value,
-                    lcfBelow.Value,
-                    meanAdjustedDraughtAfterKeelCorrection.Value);
-            }
+                _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
+            }            
 
 
 
-            // Calculation of draughts +/- 50 cm, above and below 
-            double? mTCPlus50FromTable = null;
-            double? mTCMinus50FromTable = null;
-            double? mtcPlus50Above = input.MTCPlus50Above;
-            double? mtcPlus50Below = input.MTCPlus50Below;
-            double? mtcMinus50Above = input.MTCMinus50Above;
-            double? mtcMinus50Below = input.MTCMinus50Below;
+            //double? displacementFromTable = null;
+            //double? tPCFromTable = null;
+            //double? lCFFromTable = null;
 
-            if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
-                draughtAbove.HasValue &&
-                mtcPlus50Above.HasValue &&
-                draughtBelow.HasValue &&
-                mtcPlus50Below.HasValue
-                )
-            {
-                mTCPlus50FromTable = _surveyCalculationsService.CalculateLinearInterpolation(
-                    draughtAbove.Value + 0.5,
-                    mtcPlus50Above.Value,
-                    draughtBelow.Value + 0.5,
-                    mtcPlus50Below.Value,
-                    meanAdjustedDraughtAfterKeelCorrection.Value + 0.5
-                    );                
-            }
+            //double? meanAdjustedDraughtAfterKeelCorrection = resultsDraughts?.MeanAdjustedDraughtAfterKeelCorrection;
 
-            if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
-                draughtAbove.HasValue &&
-                mtcMinus50Above.HasValue &&
-                draughtBelow.HasValue &&
-                mtcMinus50Below.HasValue)
-            {
-                mTCMinus50FromTable = _surveyCalculationsService.CalculateLinearInterpolation(
-                    draughtAbove.Value - 0.5,
-                    mtcMinus50Above.Value,
-                    draughtBelow.Value - 0.5,
-                    mtcMinus50Below.Value,
-                    meanAdjustedDraughtAfterKeelCorrection.Value - 0.5
-                    );
-            }
+            //double? draughtAbove = input.DraughtAbove;
+            //double? draughtBelow = input.DraughtBelow;
+
+            //double? displacementAbove = input.DisplacementAbove;            
+            //double? displacementBelow = input.DisplacementBelow;
+            //double? tpcAbove = input.TPCAbove;
+            //double? tpcBelow = input.TPCBelow;
+            //double? lcfAbove = input.LCFAbove;
+            //double? lcfBelow = input.LCFBelow;
+
+
+            //if (!meanAdjustedDraughtAfterKeelCorrection.HasValue)
+            //{
+            //    meanAdjustedDraughtAfterKeelCorrection = 0.0;
+            //}
+
+            //if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+            //    draughtAbove.HasValue &&
+            //    displacementAbove.HasValue &&
+            //    draughtBelow.HasValue &&
+            //    displacementBelow.HasValue)
+            //{
+            //    displacementFromTable = _surveyCalculationsService.CalculateLinearInterpolation(
+            //        draughtAbove.Value,
+            //        displacementAbove.Value,
+            //        draughtBelow.Value,
+            //        displacementBelow.Value,
+            //        meanAdjustedDraughtAfterKeelCorrection.Value);
+            //}
+
+
+            //if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+            //    draughtAbove.HasValue &&
+            //    tpcAbove.HasValue &&
+            //    draughtBelow.HasValue &&
+            //    tpcBelow.HasValue)
+            //{
+            //    tPCFromTable = _surveyCalculationsService.CalculateLinearInterpolation(
+            //        draughtAbove.Value,
+            //        tpcAbove.Value,
+            //        draughtBelow.Value,
+            //        tpcBelow.Value,
+            //        meanAdjustedDraughtAfterKeelCorrection.Value);
+            //}
+
+
+            //if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+            //    draughtAbove.HasValue &&
+            //    lcfAbove.HasValue &&
+            //    draughtBelow.HasValue &&
+            //    lcfBelow.HasValue)
+            //{
+            //    lCFFromTable = _surveyCalculationsService.CalculateLinearInterpolation(
+            //        draughtAbove.Value,
+            //        lcfAbove.Value,
+            //        draughtBelow.Value,
+            //        lcfBelow.Value,
+            //        meanAdjustedDraughtAfterKeelCorrection.Value);
+            //}
+
+
+
+            //// Calculation of draughts +/- 50 cm, above and below 
+            //double? mTCPlus50FromTable = null;
+            //double? mTCMinus50FromTable = null;
+            //double? mtcPlus50Above = input.MTCPlus50Above;
+            //double? mtcPlus50Below = input.MTCPlus50Below;
+            //double? mtcMinus50Above = input.MTCMinus50Above;
+            //double? mtcMinus50Below = input.MTCMinus50Below;
+
+            //if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+            //    draughtAbove.HasValue &&
+            //    mtcPlus50Above.HasValue &&
+            //    draughtBelow.HasValue &&
+            //    mtcPlus50Below.HasValue
+            //    )
+            //{
+            //    mTCPlus50FromTable = _surveyCalculationsService.CalculateLinearInterpolation(
+            //        draughtAbove.Value + 0.5,
+            //        mtcPlus50Above.Value,
+            //        draughtBelow.Value + 0.5,
+            //        mtcPlus50Below.Value,
+            //        meanAdjustedDraughtAfterKeelCorrection.Value + 0.5
+            //        );                
+            //}
+
+            //if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+            //    draughtAbove.HasValue &&
+            //    mtcMinus50Above.HasValue &&
+            //    draughtBelow.HasValue &&
+            //    mtcMinus50Below.HasValue)
+            //{
+            //    mTCMinus50FromTable = _surveyCalculationsService.CalculateLinearInterpolation(
+            //        draughtAbove.Value - 0.5,
+            //        mtcMinus50Above.Value,
+            //        draughtBelow.Value - 0.5,
+            //        mtcMinus50Below.Value,
+            //        meanAdjustedDraughtAfterKeelCorrection.Value - 0.5
+            //        );
+            //}
 
             
 
-            // Calculation of the 1st trim corrrection            
-            double? firstTrimCorrection = null;
+            //// Calculation of the 1st trim corrrection            
+            //double? firstTrimCorrection = null;
 
-            double? trimCorrected = draughtSurveyBlock.DraughtsResults?.TrimCorrected;
-            double? lcf = draughtSurveyBlock.HydrostaticResults?.LCFFromTable;
-            bool? isLCFForward = draughtSurveyBlock.HydrostaticInput?.IsLCFForward;
-            double? tpc = draughtSurveyBlock.HydrostaticResults?.TPCFromTable;
-            double? lbp = draughtSurveyBlock.Inspection?.VesselInput?.LBP;
+            //double? trimCorrected = draughtSurveyBlock.DraughtsResults?.TrimCorrected;
+            //double? lcf = draughtSurveyBlock.HydrostaticResults?.LCFFromTable;
+            //bool? isLCFForward = draughtSurveyBlock.HydrostaticInput?.IsLCFForward;
+            //double? tpc = draughtSurveyBlock.HydrostaticResults?.TPCFromTable;
+            //double? lbp = draughtSurveyBlock.Inspection?.VesselInput?.LBP;
 
-            if (trimCorrected.HasValue &&
-                lcf.HasValue &&
-                isLCFForward.HasValue &&
-                tpc.HasValue &&
-                lbp.HasValue)
-            {
-                firstTrimCorrection = _surveyCalculationsService.CalculateFirstTrimCorrection(
-                    trimCorrected.Value,
-                    lcf.Value,
-                    isLCFForward.Value,
-                    tpc.Value,
-                    lbp.Value
-                    );
-            }
-
-
-
-            // Calculcation of the 2nd trim correction
-
-            double? secondTrimCorrection = null;
-
-            double? mtcMinus50 = draughtSurveyBlock.HydrostaticResults?.MTCMinus50FromTable;
-            double? mtcPlus50 = draughtSurveyBlock.HydrostaticResults?.MTCPlus50FromTable;
-
-            if (trimCorrected.HasValue &&
-                mtcMinus50.HasValue &&
-                mtcPlus50.HasValue &&
-                lbp.HasValue)
-            {
-                secondTrimCorrection = _surveyCalculationsService.CalculateSecondTrimCorrection(
-                    trimCorrected.Value,
-                    mtcMinus50.Value,
-                    mtcPlus50.Value,
-                    lbp.Value
-                    );
-            }
+            //if (trimCorrected.HasValue &&
+            //    lcf.HasValue &&
+            //    isLCFForward.HasValue &&
+            //    tpc.HasValue &&
+            //    lbp.HasValue)
+            //{
+            //    firstTrimCorrection = _surveyCalculationsService.CalculateFirstTrimCorrection(
+            //        trimCorrected.Value,
+            //        lcf.Value,
+            //        isLCFForward.Value,
+            //        tpc.Value,
+            //        lbp.Value
+            //        );
+            //}
 
 
 
-            // Calculation of Displacement corrected for trim corrections
+            //// Calculcation of the 2nd trim correction
 
-            double? displacementCorrectedForTrim = null;
+            //double? secondTrimCorrection = null;
 
-            if (displacementFromTable.HasValue &&
-                firstTrimCorrection.HasValue &&
-                secondTrimCorrection.HasValue)
-            {
-                displacementCorrectedForTrim = _surveyCalculationsService.CalculateDisplacementCorrectedForTrim(
-                    displacementFromTable.Value,
-                    firstTrimCorrection.Value,
-                    secondTrimCorrection.Value
-                    );
-            }
+            //double? mtcMinus50 = draughtSurveyBlock.HydrostaticResults?.MTCMinus50FromTable;
+            //double? mtcPlus50 = draughtSurveyBlock.HydrostaticResults?.MTCPlus50FromTable;
 
-
-            // Calculation of Displacement corrected for density
-
-            double? displacementCorrectedForDensity = null;
-            double? seaWaterDensity = draughtSurveyBlock.DraughtsInput?.SeaWaterDensity;
-
-            if (displacementCorrectedForTrim.HasValue &&
-                seaWaterDensity.HasValue)
-            {
-                displacementCorrectedForDensity = _surveyCalculationsService.CalculateDisplacementCorrectedForDensity(
-                    displacementCorrectedForTrim.Value,
-                    seaWaterDensity.Value
-                    );
-            }
+            //if (trimCorrected.HasValue &&
+            //    mtcMinus50.HasValue &&
+            //    mtcPlus50.HasValue &&
+            //    lbp.HasValue)
+            //{
+            //    secondTrimCorrection = _surveyCalculationsService.CalculateSecondTrimCorrection(
+            //        trimCorrected.Value,
+            //        mtcMinus50.Value,
+            //        mtcPlus50.Value,
+            //        lbp.Value
+            //        );
+            //}
 
 
 
-            // Calculation of NETTO displacement
+            //// Calculation of Displacement corrected for trim corrections
 
-            double? totalDeductibles = draughtSurveyBlock.DeductiblesResults?.TotalDeductibles;
-            double? nettoDisplacement = null;
+            //double? displacementCorrectedForTrim = null;
 
-            if (displacementCorrectedForDensity.HasValue &&
-                totalDeductibles.HasValue)
-            {
-                nettoDisplacement = _surveyCalculationsService.CalculateNettoDisplacement(
-                    displacementCorrectedForDensity.Value,
-                    totalDeductibles.Value
-                    );
-            }
-
-
-
-            // Calculation of Cargo + Constant
-
-            double? cargoPlusConstant = null;
-            double? lightShip = draughtSurveyBlock.Inspection?.VesselInput?.LS;
-
-            if (nettoDisplacement.HasValue &&
-                lightShip.HasValue
-                )
-            {
-                cargoPlusConstant = _surveyCalculationsService.CalculateCargoPlusConstant(
-                    nettoDisplacement.Value,
-                    lightShip.Value
-                    );
-            }
+            //if (displacementFromTable.HasValue &&
+            //    firstTrimCorrection.HasValue &&
+            //    secondTrimCorrection.HasValue)
+            //{
+            //    displacementCorrectedForTrim = _surveyCalculationsService.CalculateDisplacementCorrectedForTrim(
+            //        displacementFromTable.Value,
+            //        firstTrimCorrection.Value,
+            //        secondTrimCorrection.Value
+            //        );
+            //}
 
 
+            //// Calculation of Displacement corrected for density
 
-            
+            //double? displacementCorrectedForDensity = null;
+            //double? seaWaterDensity = draughtSurveyBlock.DraughtsInput?.SeaWaterDensity;
+
+            //if (displacementCorrectedForTrim.HasValue &&
+            //    seaWaterDensity.HasValue)
+            //{
+            //    displacementCorrectedForDensity = _surveyCalculationsService.CalculateDisplacementCorrectedForDensity(
+            //        displacementCorrectedForTrim.Value,
+            //        seaWaterDensity.Value
+            //        );
+            //}
+
+
+
+            //// Calculation of NETTO displacement
+
+            //double? totalDeductibles = draughtSurveyBlock.DeductiblesResults?.TotalDeductibles;
+            //double? nettoDisplacement = null;
+
+            //if (displacementCorrectedForDensity.HasValue &&
+            //    totalDeductibles.HasValue)
+            //{
+            //    nettoDisplacement = _surveyCalculationsService.CalculateNettoDisplacement(
+            //        displacementCorrectedForDensity.Value,
+            //        totalDeductibles.Value
+            //        );
+            //}
+
+
+
+            //// Calculation of Cargo + Constant
+
+            //double? cargoPlusConstant = null;
+            //double? lightShip = draughtSurveyBlock.Inspection?.VesselInput?.LS;
+
+            //if (nettoDisplacement.HasValue &&
+            //    lightShip.HasValue
+            //    )
+            //{
+            //    cargoPlusConstant = _surveyCalculationsService.CalculateCargoPlusConstant(
+            //        nettoDisplacement.Value,
+            //        lightShip.Value
+            //        );
+            //}
+
+
 
             
 
-            if (displacementFromTable.HasValue)
-            {
-                results.DisplacementFromTable = displacementFromTable.Value;
-            }
+            
 
-            if (tPCFromTable.HasValue)
-            {
-                results.TPCFromTable = tPCFromTable.Value;
-            }
+            //if (displacementFromTable.HasValue)
+            //{
+            //    results.DisplacementFromTable = displacementFromTable.Value;
+            //}
 
-            if (lCFFromTable.HasValue)
-            {
-                results.LCFFromTable = lCFFromTable.Value;
-            }
+            //if (tPCFromTable.HasValue)
+            //{
+            //    results.TPCFromTable = tPCFromTable.Value;
+            //}
 
-            if (mTCPlus50FromTable.HasValue)
-            {
-                results.MTCPlus50FromTable = mTCPlus50FromTable.Value;
-            }
+            //if (lCFFromTable.HasValue)
+            //{
+            //    results.LCFFromTable = lCFFromTable.Value;
+            //}
 
-            if (mTCMinus50FromTable.HasValue)
-            {
-                results.MTCMinus50FromTable = mTCMinus50FromTable.Value;
-            }
+            //if (mTCPlus50FromTable.HasValue)
+            //{
+            //    results.MTCPlus50FromTable = mTCPlus50FromTable.Value;
+            //}
 
-            if (firstTrimCorrection.HasValue)
-            {
-                results.FirstTrimCorrection = firstTrimCorrection.Value;
-            }
+            //if (mTCMinus50FromTable.HasValue)
+            //{
+            //    results.MTCMinus50FromTable = mTCMinus50FromTable.Value;
+            //}
 
-            if (secondTrimCorrection.HasValue)
-            {
-                results.SecondTrimCorrection = secondTrimCorrection.Value;
-            }
+            //if (firstTrimCorrection.HasValue)
+            //{
+            //    results.FirstTrimCorrection = firstTrimCorrection.Value;
+            //}
 
-            if (displacementCorrectedForTrim.HasValue)
-            {
-                results.DisplacementCorrectedForTrim = displacementCorrectedForTrim.Value;
-            }
+            //if (secondTrimCorrection.HasValue)
+            //{
+            //    results.SecondTrimCorrection = secondTrimCorrection.Value;
+            //}
 
-            if (displacementCorrectedForDensity.HasValue)
-            {
-                results.DisplacementCorrectedForDensity = displacementCorrectedForDensity.Value;
-            }
+            //if (displacementCorrectedForTrim.HasValue)
+            //{
+            //    results.DisplacementCorrectedForTrim = displacementCorrectedForTrim.Value;
+            //}
 
-            if (nettoDisplacement.HasValue)
-            {
-                results.NettoDisplacement = nettoDisplacement.Value;
-            }
+            //if (displacementCorrectedForDensity.HasValue)
+            //{
+            //    results.DisplacementCorrectedForDensity = displacementCorrectedForDensity.Value;
+            //}
 
-            if (cargoPlusConstant.HasValue)
-            {
-                results.CargoPlusConstant = cargoPlusConstant.Value;
-            }
+            //if (nettoDisplacement.HasValue)
+            //{
+            //    results.NettoDisplacement = nettoDisplacement.Value;
+            //}
+
+            //if (cargoPlusConstant.HasValue)
+            //{
+            //    results.CargoPlusConstant = cargoPlusConstant.Value;
+            //}
 
 
 
@@ -466,6 +472,27 @@ namespace DraughtSurveyWebApp.Controllers
 
             //return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
             return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#initial-draught-hydrostatics");
+        }
+
+
+        private bool IsHydrostaticsInputChanged(HydrostaticInput dbValue, HydrostaticInputViewModel viewModelValue)
+        {
+            return
+                dbValue.DraughtAbove != viewModelValue.DraughtAbove ||
+                dbValue.DraughtBelow != viewModelValue.DraughtBelow ||
+
+                dbValue.DisplacementAbove != viewModelValue.DisplacementAbove ||
+                dbValue.DisplacementBelow != viewModelValue.DisplacementBelow ||
+                dbValue.TPCAbove != viewModelValue.TPCAbove ||
+                dbValue.TPCBelow != viewModelValue.TPCBelow ||
+                dbValue.LCFAbove != viewModelValue.LCFAbove ||
+                dbValue.LCFBelow != viewModelValue.LCFBelow ||
+                dbValue.IsLCFForward != viewModelValue.IsLCFForward ||
+
+                dbValue.MTCPlus50Above != viewModelValue.MTCPlus50Above ||
+                dbValue.MTCPlus50Below != viewModelValue.MTCPlus50Below ||
+                dbValue.MTCMinus50Above != viewModelValue.MTCMinus50Above ||
+                dbValue.MTCMinus50Below != viewModelValue.MTCMinus50Below;
         }
     }
 }

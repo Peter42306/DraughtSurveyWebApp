@@ -80,7 +80,14 @@ namespace DraughtSurveyWebApp.Controllers
                 return View(viewModel);
             }
 
-            var now = DateTime.Now;
+
+            var existingVessel = await _context.VesselInputs
+                .Include(v => v.Inspection)
+                .FirstOrDefaultAsync(v => v.IMO == viewModel);
+
+
+
+            //var now = DateTime.Now;
 
             var inspection = new Inspection
             {
@@ -174,7 +181,8 @@ namespace DraughtSurveyWebApp.Controllers
 
             //return RedirectToAction(nameof(Index));
             //return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
-            return RedirectToAction("Details", "Inspections", new { id = viewModel.Id});
+            //return RedirectToAction("Details", "Inspections", new { id = viewModel.Id});
+            return Redirect($"{Url.Action("Details", "Inspections", new { id = viewModel.Id })}#draught-inspection-input");
         }
 
         // GET: Inspections/Delete/5
