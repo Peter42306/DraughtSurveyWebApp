@@ -9,14 +9,14 @@ namespace DraughtSurveyWebApp.ViewModels
 
         [Display(Name = "Survey commenced")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", ApplyFormatInEditMode = true)]
-        public DateTime SurveyTimeStart { get; set; }
+        public DateTime? SurveyTimeStart { get; set; }
 
         [Display(Name = "Survey completed")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", ApplyFormatInEditMode = true)]
-        public DateTime SurveyTimeEnd { get; set; }
+        public DateTime? SurveyTimeEnd { get; set; }
 
         [Display(Name = "Cargo Operations commenced")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", ApplyFormatInEditMode = true)]
-        public DateTime CargoOperationsDateTime { get; set; }
+        public DateTime? CargoOperationsDateTime { get; set; }
     }
 }

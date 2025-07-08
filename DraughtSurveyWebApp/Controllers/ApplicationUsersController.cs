@@ -47,7 +47,7 @@ namespace DraughtSurveyWebApp.Controllers
             var currentUser = await _userManager.GetUserAsync(User);
 
             // Защита: админ не может отключить сам себя
-            if (id == currentUser.Id && !isActive)
+            if (id == currentUser?.Id && !isActive)
             {
                 TempData["Error"] = "You cannot deactivate your own admin account";
                 return RedirectToAction(nameof(Index));

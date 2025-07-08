@@ -46,8 +46,12 @@ namespace DraughtSurveyWebApp.Controllers
             var inspection = await _context.Inspections
                 .Include(i => i.VesselInput)
                 .Include(i => i.CargoInput)
-                .Include(i => i.DraughtSurveyBlocks)
-                    .ThenInclude(b => b.DraughtsInput)
+                .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.DraughtsInput)                
+                .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.DraughtsResults)
+                .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.HydrostaticInput)
+                .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.HydrostaticResults)
+                .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.DeductiblesInput)
+                .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.DeductiblesResults)
                 .FirstOrDefaultAsync(m => m.Id == id);
                         
             if (inspection == null)
@@ -90,17 +94,17 @@ namespace DraughtSurveyWebApp.Controllers
                     new DraughtSurveyBlock
                     {
                         SurveyType = SurveyType.Initial,
-                        SurveyTimeStart = now,
-                        SurveyTimeEnd = now,
-                        CargoOperationsDateTime = now,
+                        SurveyTimeStart = null,
+                        SurveyTimeEnd = null,
+                        CargoOperationsDateTime = null,
                         Notes = ""
                     },
                     new DraughtSurveyBlock
                     {
                         SurveyType = SurveyType.Final,
-                        SurveyTimeStart = now,
-                        SurveyTimeEnd = now,
-                        CargoOperationsDateTime = now,
+                        SurveyTimeStart = null,
+                        SurveyTimeEnd = null,
+                        CargoOperationsDateTime = null,
                         Notes = ""
                     },
                 }
@@ -130,9 +134,9 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 Id = inspection.Id,
                 VesselName = inspection.VesselName,
-                Port = inspection.Port,
-                CompanyReference = inspection.CompanyReference,
-                OperationType = inspection.OperationType
+                Port = inspection?.Port,
+                CompanyReference = inspection?.CompanyReference,
+                OperationType = inspection?.OperationType
             };
 
             return View(viewModel);
@@ -168,7 +172,9 @@ namespace DraughtSurveyWebApp.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));            
+            //return RedirectToAction(nameof(Index));
+            //return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
+            return RedirectToAction("Details", "Inspections", new { id = viewModel.Id});
         }
 
         // GET: Inspections/Delete/5

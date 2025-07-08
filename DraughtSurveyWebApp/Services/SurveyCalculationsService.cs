@@ -1,7 +1,289 @@
-﻿namespace DraughtSurveyWebApp.Services
+﻿using DraughtSurveyWebApp.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace DraughtSurveyWebApp.Services
 {
     public class SurveyCalculationsService
     {
+        public void RecalculateAll(DraughtSurveyBlock draughtSurveyBlock)
+        {
+            if (draughtSurveyBlock == null) return;
+
+            // Recalculation of DraughtsInpus and DraughtsResults
+            if (draughtSurveyBlock.DraughtsInput != null)
+            {
+                draughtSurveyBlock.DraughtsResults ??= new DraughtsResults() 
+                { 
+                    DraughtSurveyBlockId = draughtSurveyBlock.Id,
+                    DraughtSurveyBlock = draughtSurveyBlock
+                };
+
+                var input = draughtSurveyBlock.DraughtsInput;
+                var result = draughtSurveyBlock.DraughtsResults;
+
+                double? fwdMean = null;
+                double? draughtFwdPS = input.DraughtFwdPS;
+                double? draughtFwdSS = input.DraughtFwdSS;
+
+                if (draughtFwdPS.HasValue &&
+                    draughtFwdSS.HasValue)
+                {
+                    fwdMean = CalculateApparentMean(
+                        draughtFwdPS.Value,
+                        draughtFwdSS.Value
+                        );
+                }
+
+                double? midMean = null;
+                double? draughtMidPS = input.DraughtMidPS;
+                double? draughtMidSS = input.DraughtMidSS;
+
+                if (draughtMidPS.HasValue &&
+                    draughtMidSS.HasValue)
+                {
+                    midMean = CalculateApparentMean(
+                        draughtMidPS.Value,
+                        draughtMidSS.Value
+                        );
+                }
+
+                double? aftMean = null;
+                double? draughtAftPS = input.DraughtAftPS;
+                double? draughtAftSS = input.DraughtAftSS;
+
+                if (draughtAftPS.HasValue &&
+                    draughtAftSS.HasValue)
+                {
+                    aftMean = CalculateApparentMean(
+                        draughtAftPS.Value,
+                        draughtAftSS.Value
+                        );
+                }
+
+                double? trimApparent = null;
+
+                if (fwdMean.HasValue &&
+                    aftMean.HasValue)
+                {
+                    trimApparent = CalculateTrim(
+                        fwdMean.Value,
+                        aftMean.Value
+                        );
+                }
+
+
+
+
+                double? bm = draughtSurveyBlock.Inspection?.VesselInput?.BM;
+                double? lbp = draughtSurveyBlock.Inspection?.VesselInput?.LBP;
+
+                double? lbd = null;
+                double? distanceFwd = input.DistanceFwd;
+                bool? isFwdDistancetoFwd = input.isFwdDistancetoFwd;
+                double? distanceAft = input.DistanceAft;
+                bool? isAftDistanceToFwd = input.isAftDistanceToFwd;
+
+                if (lbp.HasValue &&
+                    distanceFwd.HasValue &&
+                    isFwdDistancetoFwd.HasValue &&
+                    distanceAft.HasValue &&
+                    isAftDistanceToFwd.HasValue
+                    )
+                {
+                    lbd = CalculatLBD(
+                        lbp.Value,
+                        distanceFwd.Value,
+                        isFwdDistancetoFwd.Value,
+                        distanceAft.Value,
+                        isAftDistanceToFwd.Value
+                        );
+                }
+
+
+                double? draughtCorrectionFwd = null;
+
+                if (distanceFwd.HasValue &&
+                    trimApparent.HasValue &&
+                    isFwdDistancetoFwd.HasValue &&
+                    lbd.HasValue)
+                {
+                    draughtCorrectionFwd = CalculateTrimCorrection(
+                        distanceFwd.Value,
+                        trimApparent.Value,
+                        isFwdDistancetoFwd.Value,
+                        lbd.Value
+                        );
+                }
+
+                double? draughtCorrectionMid = null;
+
+                double? distanceMid = input.DistanceMid;
+                bool? isMidDistanceToFwd = input.isMidDistanceToFwd;
+
+                if (distanceMid.HasValue &&
+                    trimApparent.HasValue &&
+                    isMidDistanceToFwd.HasValue &&
+                    lbd.HasValue)
+                {
+                    draughtCorrectionMid = CalculateTrimCorrection(
+                        distanceMid.Value,
+                        trimApparent.Value,
+                        isMidDistanceToFwd.Value,
+                        lbd.Value
+                        );
+                }
+
+
+                double? draughtCorrectionAft = null;
+
+                if (distanceAft.HasValue &&
+                    trimApparent.HasValue &&
+                    isAftDistanceToFwd.HasValue &&
+                    lbd.HasValue)
+                {
+                    draughtCorrectionAft = CalculateTrimCorrection(
+                        distanceAft.Value,
+                        trimApparent.Value,
+                        isAftDistanceToFwd.Value,
+                        lbd.Value
+                        );
+                }
+
+
+                double? draughtCorrectedFwd = null;
+
+                if (fwdMean.HasValue &&
+                    draughtCorrectionFwd.HasValue)
+                {
+                    draughtCorrectedFwd = CalculateCorrectedDraught(
+                    fwdMean.Value,
+                    draughtCorrectionFwd.Value
+                    );
+                }
+
+
+
+                double? draughtCorrectedMid = null;
+
+                if (midMean.HasValue &&
+                    draughtCorrectionMid.HasValue)
+                {
+                    draughtCorrectedMid = CalculateCorrectedDraught(
+                        midMean.Value,
+                        draughtCorrectionMid.Value
+                        );
+                }
+
+
+                double? draughtCorrectedAft = null;
+
+                if (aftMean.HasValue &&
+                    draughtCorrectionAft.HasValue)
+                {
+                    draughtCorrectedAft = CalculateCorrectedDraught(
+                        aftMean.Value,
+                        draughtCorrectionAft.Value
+                        );
+                }
+
+
+                double? trimCorrected = null;
+
+                if (draughtCorrectedFwd.HasValue &&
+                    draughtCorrectedAft.HasValue)
+                {
+                    trimCorrected = CalculateTrim(
+                        draughtCorrectedFwd.Value,
+                        draughtCorrectedAft.Value
+                        );
+                }
+
+
+                double? heel = null;
+
+                if (draughtMidPS.HasValue &&
+                    draughtMidSS.HasValue &&
+                    bm.HasValue)
+                {
+                    heel = CalculateHeel(
+                        draughtMidPS.Value,
+                        draughtMidSS.Value,
+                        bm.Value
+                        );
+                }
+
+
+                double? hogSag = null;
+
+                if (draughtCorrectedFwd.HasValue &&
+                    draughtCorrectedMid.HasValue &&
+                    draughtCorrectedAft.HasValue)
+                {
+                    hogSag = CalculateHoggingSagging(
+                        draughtCorrectedFwd.Value,
+                        draughtCorrectedMid.Value,
+                        draughtCorrectedAft.Value);
+                }
+
+
+                double? meanAdjustedDraught = null;
+
+                if (draughtCorrectedFwd.HasValue &&
+                    draughtCorrectedMid.HasValue &&
+                    draughtCorrectedAft.HasValue)
+                {
+                    meanAdjustedDraught = CalculateMeanOfMean(
+                        draughtCorrectedFwd.Value,
+                        draughtCorrectedMid.Value,
+                        draughtCorrectedAft.Value);
+                }
+
+
+                double? meanAdjustedDraughtAfterKeelCorrection = null;
+                double? keelCorrection = input.KeelCorrection;
+
+                if (!keelCorrection.HasValue)
+                {
+                    keelCorrection = 0;
+                }
+
+                if (meanAdjustedDraught.HasValue &&
+                    keelCorrection.HasValue)
+                {
+                    meanAdjustedDraughtAfterKeelCorrection = CalculateMeanAdjustedDraughtAfterKeelCorrection(
+                        meanAdjustedDraught.Value,
+                        keelCorrection.Value
+                        );
+                }
+
+
+                
+
+                result.DraughtMeanFwd = fwdMean;
+                result.DraughtMeanMid = midMean;
+                result.DraughtMeanAft = aftMean;
+                    
+                result.TrimApparent = trimApparent;
+
+                result.DraughtCorrectionFwd = draughtCorrectionFwd;
+                result.DraughtCorrectionMid = draughtCorrectionMid;
+                result.DraughtCorrectionAft = draughtCorrectionAft;
+
+                result.DraughtCorrectedFwd = draughtCorrectedFwd;
+                result.DraughtCorrectedMid = draughtCorrectedMid;
+                result.DraughtCorrectedAft = draughtCorrectedAft;
+
+                result.TrimCorrected = trimCorrected;
+                result.Heel = heel;
+                result.HoggingSagging = hogSag;
+                result.MeanAdjustedDraught = meanAdjustedDraught;
+                result.MeanAdjustedDraughtAfterKeelCorrection = meanAdjustedDraughtAfterKeelCorrection;
+            }
+        }
+
+
+
+
         public double CalculateApparentMean(double port, double starboard)
         {
             double result = Math.Round((port+starboard)/2, 3);
@@ -84,6 +366,12 @@
         {
             double result = Math.Round((draughtMeanFwd + draughtMeanAft + (draughtMeanMid*6))/8, 3);
             return result;
+        }
+
+        public double CalculateMeanAdjustedDraughtAfterKeelCorrection(double meanAdjustedDraught, double keelCorrection)
+        {           
+            double result = meanAdjustedDraught + keelCorrection;
+            return Math.Round(result, 3);
         }
 
         public double CalculateDraughtForMTCPlus50(double tableDraught)

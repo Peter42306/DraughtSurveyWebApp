@@ -4,12 +4,19 @@
     ViewData["Title"] = "Edit Deductibles";
 }
 
-<h4>Edit Deductibles</h4>
-<hr />
-
-<div class="row">
-
     <form asp-action="Edit">
+
+    <div class="row">
+        <div class="col-6">
+            <h4>Edit Deductibles</h4>
+        </div>
+        <div class="col-6 text-end">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+    <hr />
+
+
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="InspectionId" />
         <input type="hidden" asp-for="DraughtSurveyBlockId" />
@@ -29,15 +36,16 @@
                     <span asp-validation-for="FreshWater" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-2">
-                    <label asp-for="FreshWater" class="control-label small-label"></label>
-                    <input asp-for="FreshWater" class="form-control" type="number" step="0.001" />
-                    <span asp-validation-for="FreshWater" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-2">
                     <label asp-for="FuelOil" class="control-label small-label"></label>
                     <input asp-for="FuelOil" class="form-control" type="number" step="0.001" />
                     <span asp-validation-for="FuelOil" class="text-danger"></span>
                 </div>
+                <div class="form-group mb-2">
+                    <label asp-for="DieselOil" class="control-label small-label"></label>
+                    <input asp-for="DieselOil" class="form-control" type="number" step="0.001" />
+                    <span asp-validation-for="DieselOil" class="text-danger"></span>
+                </div>
+                
                 <div class="form-group mb-2">
                     <label asp-for="LubOil" class="control-label small-label"></label>
                     <input asp-for="LubOil" class="form-control" type="number" step="0.001" />
@@ -54,11 +62,10 @@
                 </div>
             </div>
         </div>
-
-        <button type="submit" class="btn btn-primary">Save</button>
+        
     </form>
-</div>
 
-<div>
+
+@* <div>
     <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId">Back</a>
-</div>
+</div> *@

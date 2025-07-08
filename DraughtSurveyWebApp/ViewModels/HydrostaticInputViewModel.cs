@@ -19,6 +19,9 @@ namespace DraughtSurveyWebApp.ViewModels
         [Display(Name = "Mean Draught")]
         public double? MeanAdjustedDraught { get; set; }
 
+        [Display(Name = "Mean Draught")]
+        public double? MeanAdjustedDraughtAfterKeelCorrection { get; set; }
+
 
         [Display(Name = "+50 cm")]
         public double? DraughtAboveMTCPlus50 { get; set; }

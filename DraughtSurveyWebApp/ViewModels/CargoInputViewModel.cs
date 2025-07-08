@@ -6,10 +6,10 @@ namespace DraughtSurveyWebApp.ViewModels
     {
         public int Id { get; set; }
 
-        public string CargoName { get; set; } = string.Empty;
-        public double DeclaredWeight { get; set; }
-        public string LoadingTerminal { get; set; } = string.Empty;
-        public string BerthNumber { get; set; } = string.Empty;
+        public string? CargoName { get; set; }
+        public double? DeclaredWeight { get; set; }
+        public string? LoadingTerminal { get; set; }
+        public string? BerthNumber { get; set; }
 
         public int InspectionId { get; set; }        
     }

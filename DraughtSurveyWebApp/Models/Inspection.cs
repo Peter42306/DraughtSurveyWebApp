@@ -13,9 +13,9 @@ namespace DraughtSurveyWebApp.Models
         public int Id { get; set; }
 
         public string VesselName { get; set; } = string.Empty;
-        public string Port { get; set; } = string.Empty;
-        public string CompanyReference { get; set; } = string.Empty;
-        public OperationType OperationType { get; set; } // Loading or discharging
+        public string? Port { get; set; }
+        public string? CompanyReference { get; set; }
+        public OperationType? OperationType { get; set; } // Loading or discharging
 
         public VesselInput? VesselInput { get; set; }        
         public CargoInput? CargoInput { get; set; }               

@@ -62,9 +62,9 @@ namespace DraughtSurveyWebApp.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     VesselName = table.Column<string>(type: "TEXT", nullable: false),
-                    Port = table.Column<string>(type: "TEXT", nullable: false),
-                    CompanyReference = table.Column<string>(type: "TEXT", nullable: false),
-                    OperationType = table.Column<int>(type: "INTEGER", nullable: false)
+                    Port = table.Column<string>(type: "TEXT", nullable: true),
+                    CompanyReference = table.Column<string>(type: "TEXT", nullable: true),
+                    OperationType = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -183,10 +183,10 @@ namespace DraughtSurveyWebApp.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    CargoName = table.Column<string>(type: "TEXT", nullable: false),
-                    DeclaredWeight = table.Column<double>(type: "REAL", nullable: false),
-                    LoadingTerminal = table.Column<string>(type: "TEXT", nullable: false),
-                    BerthNumber = table.Column<string>(type: "TEXT", nullable: false),
+                    CargoName = table.Column<string>(type: "TEXT", nullable: true),
+                    DeclaredWeight = table.Column<double>(type: "REAL", nullable: true),
+                    LoadingTerminal = table.Column<string>(type: "TEXT", nullable: true),
+                    BerthNumber = table.Column<string>(type: "TEXT", nullable: true),
                     InspectionId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -206,10 +206,10 @@ namespace DraughtSurveyWebApp.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    CargoByDraughtSurvey = table.Column<double>(type: "REAL", nullable: false),
-                    DifferenceWithBL_Mt = table.Column<double>(type: "REAL", nullable: false),
-                    DifferenceWithBL_Percents = table.Column<double>(type: "REAL", nullable: false),
-                    DifferenceWithSDWT_Percents = table.Column<double>(type: "REAL", nullable: false),
+                    CargoByDraughtSurvey = table.Column<double>(type: "REAL", nullable: true),
+                    DifferenceWithBL_Mt = table.Column<double>(type: "REAL", nullable: true),
+                    DifferenceWithBL_Percents = table.Column<double>(type: "REAL", nullable: true),
+                    DifferenceWithSDWT_Percents = table.Column<double>(type: "REAL", nullable: true),
                     InspectionId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -230,9 +230,9 @@ namespace DraughtSurveyWebApp.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     SurveyType = table.Column<int>(type: "INTEGER", nullable: false),
-                    SurveyTimeStart = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    SurveyTimeEnd = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    CargoOperationsDateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    SurveyTimeStart = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    SurveyTimeEnd = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    CargoOperationsDateTime = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Notes = table.Column<string>(type: "TEXT", nullable: true),
                     InspectionId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
@@ -254,9 +254,9 @@ namespace DraughtSurveyWebApp.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     IMO = table.Column<string>(type: "TEXT", nullable: false),
-                    LBP = table.Column<double>(type: "REAL", nullable: false),
+                    LBP = table.Column<double>(type: "REAL", nullable: true),
                     BM = table.Column<double>(type: "REAL", nullable: true),
-                    LS = table.Column<double>(type: "REAL", nullable: false),
+                    LS = table.Column<double>(type: "REAL", nullable: true),
                     SDWT = table.Column<double>(type: "REAL", nullable: true),
                     DeclaredConstant = table.Column<double>(type: "REAL", nullable: true),
                     InspectionId = table.Column<int>(type: "INTEGER", nullable: false)
@@ -278,12 +278,12 @@ namespace DraughtSurveyWebApp.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Ballast = table.Column<double>(type: "REAL", nullable: false),
-                    FreshWater = table.Column<double>(type: "REAL", nullable: false),
-                    FuelOil = table.Column<double>(type: "REAL", nullable: false),
-                    DieselOil = table.Column<double>(type: "REAL", nullable: false),
-                    LubOil = table.Column<double>(type: "REAL", nullable: false),
-                    Others = table.Column<double>(type: "REAL", nullable: false),
+                    Ballast = table.Column<double>(type: "REAL", nullable: true),
+                    FreshWater = table.Column<double>(type: "REAL", nullable: true),
+                    FuelOil = table.Column<double>(type: "REAL", nullable: true),
+                    DieselOil = table.Column<double>(type: "REAL", nullable: true),
+                    LubOil = table.Column<double>(type: "REAL", nullable: true),
+                    Others = table.Column<double>(type: "REAL", nullable: true),
                     DraughtSurveyBlockId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -303,7 +303,7 @@ namespace DraughtSurveyWebApp.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    TotalDeductibles = table.Column<double>(type: "REAL", nullable: false),
+                    TotalDeductibles = table.Column<double>(type: "REAL", nullable: true),
                     DraughtSurveyBlockId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -323,16 +323,19 @@ namespace DraughtSurveyWebApp.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    DraughtFwdPS = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtFwdSS = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtMidPS = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtMidSS = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtAftPS = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtAftSS = table.Column<double>(type: "REAL", nullable: false),
-                    DistanceFwd = table.Column<double>(type: "REAL", nullable: false),
-                    DistanceMid = table.Column<double>(type: "REAL", nullable: false),
-                    DistanceAft = table.Column<double>(type: "REAL", nullable: false),
-                    SeaWaterDensity = table.Column<double>(type: "REAL", nullable: false),
+                    DraughtFwdPS = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtFwdSS = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtMidPS = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtMidSS = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtAftPS = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtAftSS = table.Column<double>(type: "REAL", nullable: true),
+                    DistanceFwd = table.Column<double>(type: "REAL", nullable: true),
+                    DistanceMid = table.Column<double>(type: "REAL", nullable: true),
+                    DistanceAft = table.Column<double>(type: "REAL", nullable: true),
+                    isFwdDistancetoFwd = table.Column<bool>(type: "INTEGER", nullable: true),
+                    isMidDistanceToFwd = table.Column<bool>(type: "INTEGER", nullable: true),
+                    isAftDistanceToFwd = table.Column<bool>(type: "INTEGER", nullable: true),
+                    SeaWaterDensity = table.Column<double>(type: "REAL", nullable: true),
                     KeelCorrection = table.Column<double>(type: "REAL", nullable: true),
                     DraughtSurveyBlockId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
@@ -353,20 +356,21 @@ namespace DraughtSurveyWebApp.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    DraughtMeanFwd = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtMeanMid = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtMeanAft = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtCorrectionFwd = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtCorrectionMid = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtCorrectionAft = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtCorrectedFwd = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtCorrectedMid = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtCorrectedAft = table.Column<double>(type: "REAL", nullable: false),
-                    TrimApparent = table.Column<double>(type: "REAL", nullable: false),
-                    HoggingSagging = table.Column<double>(type: "REAL", nullable: false),
-                    Heel = table.Column<double>(type: "REAL", nullable: false),
-                    TrimCorrected = table.Column<double>(type: "REAL", nullable: false),
-                    MeanAdjustedDraught = table.Column<double>(type: "REAL", nullable: false),
+                    DraughtMeanFwd = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtMeanMid = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtMeanAft = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtCorrectionFwd = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtCorrectionMid = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtCorrectionAft = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtCorrectedFwd = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtCorrectedMid = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtCorrectedAft = table.Column<double>(type: "REAL", nullable: true),
+                    TrimApparent = table.Column<double>(type: "REAL", nullable: true),
+                    HoggingSagging = table.Column<double>(type: "REAL", nullable: true),
+                    Heel = table.Column<double>(type: "REAL", nullable: true),
+                    TrimCorrected = table.Column<double>(type: "REAL", nullable: true),
+                    MeanAdjustedDraught = table.Column<double>(type: "REAL", nullable: true),
+                    MeanAdjustedDraughtAfterKeelCorrection = table.Column<double>(type: "REAL", nullable: true),
                     DraughtSurveyBlockId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -386,20 +390,21 @@ namespace DraughtSurveyWebApp.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    DraughtAbove = table.Column<double>(type: "REAL", nullable: false),
-                    DraughtBelow = table.Column<double>(type: "REAL", nullable: false),
-                    DisplacementAbove = table.Column<double>(type: "REAL", nullable: false),
-                    TPCAbove = table.Column<double>(type: "REAL", nullable: false),
-                    LCFAbove = table.Column<double>(type: "REAL", nullable: false),
-                    MTCPlus50Above = table.Column<double>(type: "REAL", nullable: false),
-                    MTCMinus50Above = table.Column<double>(type: "REAL", nullable: false),
+                    DraughtAbove = table.Column<double>(type: "REAL", nullable: true),
+                    DraughtBelow = table.Column<double>(type: "REAL", nullable: true),
+                    DisplacementAbove = table.Column<double>(type: "REAL", nullable: true),
+                    TPCAbove = table.Column<double>(type: "REAL", nullable: true),
+                    LCFAbove = table.Column<double>(type: "REAL", nullable: true),
+                    MTCPlus50Above = table.Column<double>(type: "REAL", nullable: true),
+                    MTCMinus50Above = table.Column<double>(type: "REAL", nullable: true),
                     LCFfromAftAbove = table.Column<double>(type: "REAL", nullable: true),
-                    DisplacementBelow = table.Column<double>(type: "REAL", nullable: false),
-                    TPCBelow = table.Column<double>(type: "REAL", nullable: false),
-                    LCFBelow = table.Column<double>(type: "REAL", nullable: false),
-                    MTCPlus50Below = table.Column<double>(type: "REAL", nullable: false),
-                    MTCMinus50Below = table.Column<double>(type: "REAL", nullable: false),
+                    DisplacementBelow = table.Column<double>(type: "REAL", nullable: true),
+                    TPCBelow = table.Column<double>(type: "REAL", nullable: true),
+                    LCFBelow = table.Column<double>(type: "REAL", nullable: true),
+                    MTCPlus50Below = table.Column<double>(type: "REAL", nullable: true),
+                    MTCMinus50Below = table.Column<double>(type: "REAL", nullable: true),
                     LCFfromAftBelow = table.Column<double>(type: "REAL", nullable: true),
+                    IsLCFForward = table.Column<bool>(type: "INTEGER", nullable: true),
                     DraughtSurveyBlockId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -419,17 +424,17 @@ namespace DraughtSurveyWebApp.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    DisplacementFromTable = table.Column<double>(type: "REAL", nullable: false),
-                    TPCFromTable = table.Column<double>(type: "REAL", nullable: false),
-                    LCFFromTable = table.Column<double>(type: "REAL", nullable: false),
-                    MTCPlus50FromTable = table.Column<double>(type: "REAL", nullable: false),
-                    MTCMinus50FromTable = table.Column<double>(type: "REAL", nullable: false),
-                    FirstTrimCorrection = table.Column<double>(type: "REAL", nullable: false),
-                    SecondTrimCorrection = table.Column<double>(type: "REAL", nullable: false),
-                    DisplacementCorrectedForTrim = table.Column<double>(type: "REAL", nullable: false),
-                    DisplacementCorrectedForDensity = table.Column<double>(type: "REAL", nullable: false),
-                    NettoDisplacement = table.Column<double>(type: "REAL", nullable: false),
-                    CargoPlusConstant = table.Column<double>(type: "REAL", nullable: false),
+                    DisplacementFromTable = table.Column<double>(type: "REAL", nullable: true),
+                    TPCFromTable = table.Column<double>(type: "REAL", nullable: true),
+                    LCFFromTable = table.Column<double>(type: "REAL", nullable: true),
+                    MTCPlus50FromTable = table.Column<double>(type: "REAL", nullable: true),
+                    MTCMinus50FromTable = table.Column<double>(type: "REAL", nullable: true),
+                    FirstTrimCorrection = table.Column<double>(type: "REAL", nullable: true),
+                    SecondTrimCorrection = table.Column<double>(type: "REAL", nullable: true),
+                    DisplacementCorrectedForTrim = table.Column<double>(type: "REAL", nullable: true),
+                    DisplacementCorrectedForDensity = table.Column<double>(type: "REAL", nullable: true),
+                    NettoDisplacement = table.Column<double>(type: "REAL", nullable: true),
+                    CargoPlusConstant = table.Column<double>(type: "REAL", nullable: true),
                     DraughtSurveyBlockId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -501,7 +506,8 @@ namespace DraughtSurveyWebApp.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_DeductiblesResults_DraughtSurveyBlockId",
                 table: "DeductiblesResults",
-                column: "DraughtSurveyBlockId");
+                column: "DraughtSurveyBlockId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DraughtsInputs_DraughtSurveyBlockId",

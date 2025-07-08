@@ -85,21 +85,31 @@ namespace DraughtSurveyWebApp.Controllers
             
             var inputs = draughtSurveyBlock.DeductiblesInput;
 
-            inputs.Ballast = viewModel.Ballast ?? 0;
-            inputs.FreshWater = viewModel.FreshWater ?? 0;
-            inputs.FuelOil = viewModel.FuelOil ?? 0;
-            inputs.DieselOil = viewModel.DieselOil ?? 0;
-            inputs.LubOil = viewModel.LubOil ?? 0;
-            inputs.Others = viewModel.Others ?? 0;
+            inputs.Ballast = viewModel.Ballast;
+            inputs.FreshWater = viewModel.FreshWater;
+            inputs.FuelOil = viewModel.FuelOil;
+            inputs.DieselOil = viewModel.DieselOil;
+            inputs.LubOil = viewModel.LubOil;
+            inputs.Others = viewModel.Others;
 
+            double? totalDeductible = null;
 
-            double totalDeductible = 
-                inputs.Ballast + 
-                inputs.FreshWater + 
-                inputs.FuelOil + 
-                inputs.DieselOil + 
-                inputs.LubOil + 
-                inputs.Others;
+            if (inputs.Ballast.HasValue ||
+                inputs.FreshWater.HasValue ||
+                inputs.FuelOil.HasValue ||
+                inputs.DieselOil.HasValue ||
+                inputs.LubOil.HasValue ||
+                inputs.Others.HasValue)
+            {
+                totalDeductible =
+                (inputs.Ballast ?? 0) +
+                (inputs.FreshWater ?? 0) +
+                (inputs.FuelOil ?? 0) +
+                (inputs.DieselOil ?? 0) +
+                (inputs.LubOil ?? 0) +
+                (inputs.Others ?? 0);
+            }
+            
 
             var results = draughtSurveyBlock.DeductiblesResults;
 
@@ -119,7 +129,8 @@ namespace DraughtSurveyWebApp.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
+            //return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
+            return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#initial-draught-deductibles");
         }
 
 

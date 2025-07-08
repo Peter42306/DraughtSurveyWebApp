@@ -39,7 +39,7 @@ namespace DraughtSurveyWebApp.ViewModels
         public double? DistanceAft { get; set; }
 
 
-        [Display(Name = "Dock Water Density")]
+        [Display(Name = "Sea Water Density")]
         [Range(0.99, 1.039, ErrorMessage = "Density must be between 0.990 and 1.039 t/m³")]
         public double? SeaWaterDensity { get; set; }
         
@@ -79,6 +79,8 @@ namespace DraughtSurveyWebApp.ViewModels
 
         [Display(Name = "Mean Adjusted Draught")]
         public double? MeanAdjustedDraught { get; set; }
+
+        public double? MeanAdjustedDraughtAfterKeelCorrection { get; set; }
 
 
         

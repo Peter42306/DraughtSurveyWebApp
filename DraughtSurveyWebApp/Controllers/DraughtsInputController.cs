@@ -53,9 +53,9 @@ namespace DraughtSurveyWebApp.Controllers
                 KeelCorrection = inputs?.KeelCorrection,
                 SeaWaterDensity = inputs?.SeaWaterDensity,
 
-                IsFwdDistancetoFwd = inputs?.isFwdDistancetoFwd,
-                IsMidDistanceToFwd = inputs?.isMidDistanceToFwd,
-                IsAftDistanceToFwd = inputs?.isAftDistanceToFwd,
+                IsFwdDistancetoFwd = inputs?.isFwdDistancetoFwd ?? false,
+                IsMidDistanceToFwd = inputs?.isMidDistanceToFwd ?? false,
+                IsAftDistanceToFwd = inputs?.isAftDistanceToFwd ?? true,
 
 
                 DraughtMeanFwd = results?.DraughtMeanFwd,
@@ -74,8 +74,8 @@ namespace DraughtSurveyWebApp.Controllers
                 TrimCorrected = results?.TrimCorrected,
                 Heel = results?.Heel,
                 HoggingSagging = results?.HoggingSagging,
-                MeanAdjustedDraught = results?.MeanAdjustedDraught
-                
+                MeanAdjustedDraught = results?.MeanAdjustedDraught,
+                MeanAdjustedDraughtAfterKeelCorrection = results?.MeanAdjustedDraughtAfterKeelCorrection  
             };
 
             return View(viewModel);
@@ -90,9 +90,15 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 return View(viewModel);
             }
+            
 
             var draughtSurveyBlock = await _context.DraughtSurveyBlocks
                 .Include(b => b.DraughtsInput)
+                .Include(b =>b.DraughtsResults)
+                .Include(b => b.HydrostaticInput)
+                .Include(b => b.HydrostaticResults)
+                .Include(b => b.DeductiblesInput)
+                .Include(b => b.DeductiblesResults)
                 .Include(b => b.Inspection)
                     .ThenInclude(i => i.VesselInput)
                 .FirstOrDefaultAsync(b => b.Id == viewModel.DraughtSurveyBlockId);
@@ -112,106 +118,266 @@ namespace DraughtSurveyWebApp.Controllers
                 _context.DraughtsInputs.Add(draughtSurveyBlock.DraughtsInput);
             }
 
+            
+
             var input = draughtSurveyBlock.DraughtsInput;
 
-            input.DraughtFwdPS = viewModel.DraughtFwdPS ?? 0;
-            input.DraughtFwdSS = viewModel.DraughtFwdSS ?? 0;
-            input.DraughtMidPS = viewModel.DraughtMidPS ?? 0;
-            input.DraughtMidSS = viewModel.DraughtMidSS ?? 0;
-            input.DraughtAftPS = viewModel.DraughtAftPS ?? 0;
-            input.DraughtAftSS = viewModel.DraughtAftSS ?? 0;
+            input.DraughtFwdPS = viewModel.DraughtFwdPS;
+            input.DraughtFwdSS = viewModel.DraughtFwdSS;
+            input.DraughtMidPS = viewModel.DraughtMidPS;
+            input.DraughtMidSS = viewModel.DraughtMidSS;
+            input.DraughtAftPS = viewModel.DraughtAftPS;
+            input.DraughtAftSS = viewModel.DraughtAftSS;
 
-            input.DistanceFwd = viewModel.DistanceFwd ?? 0;
-            input.DistanceMid = viewModel.DistanceMid ?? 0;
-            input.DistanceAft = viewModel.DistanceAft ?? 0;
+            input.DistanceFwd = viewModel.DistanceFwd;
+            input.DistanceMid = viewModel.DistanceMid;
+            input.DistanceAft = viewModel.DistanceAft;
 
-            input.isFwdDistancetoFwd = viewModel.IsFwdDistancetoFwd ?? false;
-            input.isMidDistanceToFwd = viewModel.IsMidDistanceToFwd ?? false;
-            input.isAftDistanceToFwd = viewModel.IsAftDistanceToFwd ?? false;
+            input.isFwdDistancetoFwd = viewModel.IsFwdDistancetoFwd;
+            input.isMidDistanceToFwd = viewModel.IsMidDistanceToFwd;
+            input.isAftDistanceToFwd = viewModel.IsAftDistanceToFwd;
 
-            input.SeaWaterDensity = viewModel.SeaWaterDensity ?? 0;
-            input.KeelCorrection = viewModel.KeelCorrection ?? 0;
+            input.SeaWaterDensity = viewModel.SeaWaterDensity;
+            input.KeelCorrection = viewModel.KeelCorrection;
 
 
-            
-            double fwdMean = _surveyCalculationsService.CalculateApparentMean(
-                input.DraughtFwdPS, 
-                input.DraughtFwdSS
-                );
-            double midMean = _surveyCalculationsService.CalculateApparentMean(
-                input.DraughtMidPS, 
-                input.DraughtMidSS
-                );
-            double aftMean = _surveyCalculationsService.CalculateApparentMean(
-                input.DraughtAftPS, 
-                input.DraughtAftSS
-                );
-            double trimApparent = _surveyCalculationsService.CalculateTrim(
-                fwdMean, 
-                aftMean);
-            
+            _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
 
-            double bm = draughtSurveyBlock.Inspection?.VesselInput?.BM ?? 0;
-            double lbp = draughtSurveyBlock.Inspection?.VesselInput?.LBP ?? 0;
 
-            //double lbd = lbp - input.DistanceFwd + input.DistanceAft;            
-            double lbd = _surveyCalculationsService.CalculatLBD(
-                lbp,
-                input.DistanceFwd,
-                input.isFwdDistancetoFwd,
-                input.DistanceAft,
-                input.isAftDistanceToFwd
-                );
+            //double? fwdMean = null;
+            //double? draughtFwdPS = input.DraughtFwdPS;
+            //double? draughtFwdSS = input.DraughtFwdSS;
 
-            double draughtCorrectionFwd = _surveyCalculationsService.CalculateTrimCorrection(
-                input.DistanceFwd, 
-                trimApparent, 
-                input.isFwdDistancetoFwd, 
-                lbd
-                );
-            double draughtCorrectionMid = _surveyCalculationsService.CalculateTrimCorrection(
-                input.DistanceMid, 
-                trimApparent, 
-                input.isMidDistanceToFwd,
-                lbd
-                );
-            double draughtCorrectionAft = _surveyCalculationsService.CalculateTrimCorrection(
-                input.DistanceAft, 
-                trimApparent, 
-                input.isAftDistanceToFwd,
-                lbd
-                );
+            //if (draughtFwdPS.HasValue &&
+            //    draughtFwdSS.HasValue)
+            //{
+            //    fwdMean = _surveyCalculationsService.CalculateApparentMean(
+            //        draughtFwdPS.Value,
+            //        draughtFwdSS.Value
+            //        );
+            //}
 
-            double draughtCorrectedFwd = _surveyCalculationsService.CalculateCorrectedDraught(
-                fwdMean, 
-                draughtCorrectionFwd
-                );
-            double draughtCorrectedMid = _surveyCalculationsService.CalculateCorrectedDraught(
-                midMean, 
-                draughtCorrectionMid
-                );
-            double draughtCorrectedAft = _surveyCalculationsService.CalculateCorrectedDraught(
-                aftMean, 
-                draughtCorrectionAft
-                );
+            //double? midMean = null;
+            //double? draughtMidPS = input.DraughtMidPS;
+            //double? draughtMidSS = input.DraughtMidSS;
 
-            double trimCorrected = _surveyCalculationsService.CalculateTrim(
-                draughtCorrectedFwd, 
-                draughtCorrectedAft
-                );
-            double heel = _surveyCalculationsService.CalculateHeel(
-                input.DraughtMidPS, 
-                input.DraughtMidSS, 
-                bm
-                );
-            double hogSag = _surveyCalculationsService.CalculateHoggingSagging(
-                draughtCorrectedFwd, 
-                draughtCorrectedMid, 
-                draughtCorrectedAft);
-            double meanAdjustedDraught = _surveyCalculationsService.CalculateMeanOfMean(
-                draughtCorrectedFwd, 
-                draughtCorrectedMid, 
-                draughtCorrectedAft);
+            //if (draughtMidPS.HasValue &&
+            //    draughtMidSS.HasValue)
+            //{
+            //    midMean = _surveyCalculationsService.CalculateApparentMean(
+            //        draughtMidPS.Value,
+            //        draughtMidSS.Value
+            //        );
+            //}
+
+            //double? aftMean = null;
+            //double? draughtAftPS = input.DraughtAftPS;
+            //double? draughtAftSS = input.DraughtAftSS;
+
+            //if (draughtAftPS.HasValue &&
+            //    draughtAftSS.HasValue)
+            //{
+            //    aftMean = _surveyCalculationsService.CalculateApparentMean(
+            //        draughtAftPS.Value,
+            //        draughtAftSS.Value
+            //        );
+            //}
+
+            //double? trimApparent = null;
+
+            //if (fwdMean.HasValue &&
+            //    aftMean.HasValue)
+            //{
+            //    trimApparent = _surveyCalculationsService.CalculateTrim(
+            //        fwdMean.Value,
+            //        aftMean.Value
+            //        );
+            //}
+
+
+
+
+            //double? bm = draughtSurveyBlock.Inspection?.VesselInput?.BM;
+            //double? lbp = draughtSurveyBlock.Inspection?.VesselInput?.LBP;
+
+            //double? lbd = null;
+            //double? distanceFwd = input.DistanceFwd;
+            //bool? isFwdDistancetoFwd = input.isFwdDistancetoFwd;
+            //double? distanceAft = input.DistanceAft;
+            //bool? isAftDistanceToFwd = input.isAftDistanceToFwd;
+
+            //if (lbp.HasValue &&
+            //    distanceFwd.HasValue &&
+            //    isFwdDistancetoFwd.HasValue &&
+            //    distanceAft.HasValue &&
+            //    isAftDistanceToFwd.HasValue
+            //    )
+            //{
+            //    lbd = _surveyCalculationsService.CalculatLBD(
+            //        lbp.Value,
+            //        distanceFwd.Value,
+            //        isFwdDistancetoFwd.Value,
+            //        distanceAft.Value,
+            //        isAftDistanceToFwd.Value
+            //        );
+            //}
+
+
+            //double? draughtCorrectionFwd = null;
+
+            //if (distanceFwd.HasValue && 
+            //    trimApparent.HasValue && 
+            //    isFwdDistancetoFwd.HasValue && 
+            //    lbd.HasValue)
+            //{
+            //    draughtCorrectionFwd = _surveyCalculationsService.CalculateTrimCorrection(
+            //        distanceFwd.Value,
+            //        trimApparent.Value,
+            //        isFwdDistancetoFwd.Value,
+            //        lbd.Value
+            //        );
+            //}
+
+            //double? draughtCorrectionMid = null;
+
+            //double? distanceMid = input.DistanceMid;
+            //bool? isMidDistanceToFwd = input.isMidDistanceToFwd;                
+
+            //if (distanceMid.HasValue && 
+            //    trimApparent.HasValue && 
+            //    isMidDistanceToFwd.HasValue &&
+            //    lbd.HasValue)
+            //{
+            //    draughtCorrectionMid = _surveyCalculationsService.CalculateTrimCorrection(
+            //        distanceMid.Value,                    
+            //        trimApparent.Value,
+            //        isMidDistanceToFwd.Value,
+            //        lbd.Value
+            //        );
+            //}
+
+
+            //double? draughtCorrectionAft = null;
+
+            //if (distanceAft.HasValue &&
+            //    trimApparent.HasValue &&
+            //    isAftDistanceToFwd.HasValue &&
+            //    lbd.HasValue)
+            //{
+            //    draughtCorrectionAft = _surveyCalculationsService.CalculateTrimCorrection(
+            //        distanceAft.Value,
+            //        trimApparent.Value,
+            //        isAftDistanceToFwd.Value,
+            //        lbd.Value
+            //        );
+            //}
+
+
+            //double? draughtCorrectedFwd = null;
+
+            //if (fwdMean.HasValue &&
+            //    draughtCorrectionFwd.HasValue)
+            //{
+            //    draughtCorrectedFwd = _surveyCalculationsService.CalculateCorrectedDraught(
+            //    fwdMean.Value,
+            //    draughtCorrectionFwd.Value
+            //    );
+            //}
+
+
+
+            //double? draughtCorrectedMid = null;
+
+            //if (midMean.HasValue &&
+            //    draughtCorrectionMid.HasValue)
+            //{
+            //    draughtCorrectedMid = _surveyCalculationsService.CalculateCorrectedDraught(
+            //        midMean.Value,
+            //        draughtCorrectionMid.Value
+            //        );
+            //}
+
+
+            //double? draughtCorrectedAft = null;
+
+            //if (aftMean.HasValue &&
+            //    draughtCorrectionAft.HasValue)
+            //{
+            //    draughtCorrectedAft = _surveyCalculationsService.CalculateCorrectedDraught(
+            //        aftMean.Value,
+            //        draughtCorrectionAft.Value
+            //        );
+            //}
+
+
+            //double? trimCorrected = null;
+
+            //if (draughtCorrectedFwd.HasValue && 
+            //    draughtCorrectedAft.HasValue)
+            //{
+            //    trimCorrected = _surveyCalculationsService.CalculateTrim(
+            //        draughtCorrectedFwd.Value,
+            //        draughtCorrectedAft.Value
+            //        );
+            //}
+
+
+            //double? heel = null;
+
+            //if (draughtMidPS.HasValue &&
+            //    draughtMidSS.HasValue &&
+            //    bm.HasValue)
+            //{
+            //    heel = _surveyCalculationsService.CalculateHeel(
+            //        draughtMidPS.Value,
+            //        draughtMidSS.Value,
+            //        bm.Value
+            //        );
+            //}
+
+
+            //double? hogSag = null;
+
+            //if (draughtCorrectedFwd.HasValue && 
+            //    draughtCorrectedMid.HasValue && 
+            //    draughtCorrectedAft.HasValue)
+            //{
+            //    hogSag = _surveyCalculationsService.CalculateHoggingSagging(
+            //        draughtCorrectedFwd.Value,
+            //        draughtCorrectedMid.Value,
+            //        draughtCorrectedAft.Value);
+            //}
+
+
+            //double? meanAdjustedDraught = null;
+
+            //if (draughtCorrectedFwd.HasValue &&
+            //    draughtCorrectedMid.HasValue &&
+            //    draughtCorrectedAft.HasValue)
+            //{
+            //    meanAdjustedDraught = _surveyCalculationsService.CalculateMeanOfMean(
+            //        draughtCorrectedFwd.Value,
+            //        draughtCorrectedMid.Value,
+            //        draughtCorrectedAft.Value);
+            //}
+
+
+            //double? meanAdjustedDraughtAfterKeelCorrection = null;
+            //double? keelCorrection = input.KeelCorrection;
+
+            //if (!keelCorrection.HasValue)
+            //{
+            //    keelCorrection = 0;
+            //}
+
+            //if (meanAdjustedDraught.HasValue &&
+            //    keelCorrection.HasValue)
+            //{
+            //    meanAdjustedDraughtAfterKeelCorrection = _surveyCalculationsService.CalculateMeanAdjustedDraughtAfterKeelCorrection(
+            //        meanAdjustedDraught.Value,
+            //        keelCorrection.Value
+            //        );
+            //}          
 
 
 
@@ -221,43 +387,45 @@ namespace DraughtSurveyWebApp.Controllers
             //double fwdCorrection = _surveyCalculationsService.CalculateTrimCorrection
 
 
-            var results = await _context.DraughtsResults
-                .FirstOrDefaultAsync(r => r.DraughtSurveyBlockId == draughtSurveyBlock.Id);
+            //var results = await _context.DraughtsResults
+            //    .FirstOrDefaultAsync(r => r.DraughtSurveyBlockId == draughtSurveyBlock.Id);
 
-            if (results == null)
-            {
-                results = new Models.DraughtsResults
-                {
-                    DraughtSurveyBlockId = draughtSurveyBlock.Id,
-                    DraughtSurveyBlock = draughtSurveyBlock
-                };
+            //if (results == null)
+            //{
+            //    results = new Models.DraughtsResults
+            //    {
+            //        DraughtSurveyBlockId = draughtSurveyBlock.Id,
+            //        DraughtSurveyBlock = draughtSurveyBlock
+            //    };
 
-                _context.DraughtsResults.Add(results);
-            }
+            //    _context.DraughtsResults.Add(results);
+            //}
 
-            results.DraughtMeanFwd = fwdMean;
-            results.DraughtMeanMid = midMean;
-            results.DraughtMeanAft = aftMean;
+            //results.DraughtMeanFwd = fwdMean;
+            //results.DraughtMeanMid = midMean;
+            //results.DraughtMeanAft = aftMean;
 
-            results.TrimApparent = trimApparent;
+            //results.TrimApparent = trimApparent;
 
-            results.DraughtCorrectionFwd = draughtCorrectionFwd;
-            results.DraughtCorrectionMid = draughtCorrectionMid;
-            results.DraughtCorrectionAft = draughtCorrectionAft;
+            //results.DraughtCorrectionFwd = draughtCorrectionFwd;
+            //results.DraughtCorrectionMid = draughtCorrectionMid;
+            //results.DraughtCorrectionAft = draughtCorrectionAft;
 
-            results.DraughtCorrectedFwd = draughtCorrectedFwd;
-            results.DraughtCorrectedMid = draughtCorrectedMid;
-            results.DraughtCorrectedAft = draughtCorrectedAft;
+            //results.DraughtCorrectedFwd = draughtCorrectedFwd;
+            //results.DraughtCorrectedMid = draughtCorrectedMid;
+            //results.DraughtCorrectedAft = draughtCorrectedAft;
 
-            results.TrimCorrected = trimCorrected;
-            results.Heel = heel;
-            results.HoggingSagging = hogSag;
-            results.MeanAdjustedDraught = meanAdjustedDraught;
+            //results.TrimCorrected = trimCorrected;
+            //results.Heel = heel;
+            //results.HoggingSagging = hogSag;
+            //results.MeanAdjustedDraught = meanAdjustedDraught;
+            //results.MeanAdjustedDraughtAfterKeelCorrection = meanAdjustedDraughtAfterKeelCorrection;
 
             await _context.SaveChangesAsync();
 
             //return View(viewModel);
-            return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
+            //return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
+            return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#initial-draught-draughts");
         }
 
 

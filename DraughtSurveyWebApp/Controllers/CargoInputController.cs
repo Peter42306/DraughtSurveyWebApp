@@ -38,13 +38,18 @@ namespace DraughtSurveyWebApp.Controllers
                 return View(viewModel);
             }
 
+            if(viewModel == null)
+            {
+                return BadRequest("Invalid input");
+            }
+
             var cargo = new CargoInput
             {
                 InspectionId = viewModel.InspectionId,
-                CargoName = viewModel.CargoName,
-                DeclaredWeight = viewModel.DeclaredWeight,
-                LoadingTerminal = viewModel.LoadingTerminal,
-                BerthNumber = viewModel.BerthNumber,
+                CargoName = viewModel?.CargoName,
+                DeclaredWeight = viewModel?.DeclaredWeight,
+                LoadingTerminal = viewModel?.LoadingTerminal,
+                BerthNumber = viewModel?.BerthNumber,
             };
 
             _context.CargoInputs.Add(cargo);
@@ -109,10 +114,6 @@ namespace DraughtSurveyWebApp.Controllers
 
             return RedirectToAction("Details", "Inspections", new { id = cargo.InspectionId });
         }
-
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
+               
     }
 }

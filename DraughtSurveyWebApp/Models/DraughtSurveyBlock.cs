@@ -12,9 +12,9 @@
 
         public SurveyType SurveyType { get; set; } // Initial or Final
                 
-        public DateTime SurveyTimeStart { get; set; }
-        public DateTime SurveyTimeEnd { get; set; }
-        public DateTime CargoOperationsDateTime { get; set; }
+        public DateTime? SurveyTimeStart { get; set; }
+        public DateTime? SurveyTimeEnd { get; set; }
+        public DateTime? CargoOperationsDateTime { get; set; }
 
         public DraughtsInput? DraughtsInput { get; set; }
         public HydrostaticInput? HydrostaticInput { get; set; }

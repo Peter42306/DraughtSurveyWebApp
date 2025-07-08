@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DraughtSurveyWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250703152825_InitialCreate")]
+    [Migration("20250705121326_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -106,21 +106,18 @@ namespace DraughtSurveyWebApp.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("BerthNumber")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CargoName")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<double>("DeclaredWeight")
+                    b.Property<double?>("DeclaredWeight")
                         .HasColumnType("REAL");
 
                     b.Property<int>("InspectionId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("LoadingTerminal")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -137,16 +134,16 @@ namespace DraughtSurveyWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("CargoByDraughtSurvey")
+                    b.Property<double?>("CargoByDraughtSurvey")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DifferenceWithBL_Mt")
+                    b.Property<double?>("DifferenceWithBL_Mt")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DifferenceWithBL_Percents")
+                    b.Property<double?>("DifferenceWithBL_Percents")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DifferenceWithSDWT_Percents")
+                    b.Property<double?>("DifferenceWithSDWT_Percents")
                         .HasColumnType("REAL");
 
                     b.Property<int>("InspectionId")
@@ -166,25 +163,25 @@ namespace DraughtSurveyWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("Ballast")
+                    b.Property<double?>("Ballast")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DieselOil")
+                    b.Property<double?>("DieselOil")
                         .HasColumnType("REAL");
 
                     b.Property<int>("DraughtSurveyBlockId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("FreshWater")
+                    b.Property<double?>("FreshWater")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("FuelOil")
+                    b.Property<double?>("FuelOil")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("LubOil")
+                    b.Property<double?>("LubOil")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("Others")
+                    b.Property<double?>("Others")
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");
@@ -204,12 +201,13 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<int>("DraughtSurveyBlockId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("TotalDeductibles")
+                    b.Property<double?>("TotalDeductibles")
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DraughtSurveyBlockId");
+                    b.HasIndex("DraughtSurveyBlockId")
+                        .IsUnique();
 
                     b.ToTable("DeductiblesResults");
                 });
@@ -220,7 +218,7 @@ namespace DraughtSurveyWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CargoOperationsDateTime")
+                    b.Property<DateTime?>("CargoOperationsDateTime")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("InspectionId")
@@ -229,10 +227,10 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("SurveyTimeEnd")
+                    b.Property<DateTime?>("SurveyTimeEnd")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("SurveyTimeStart")
+                    b.Property<DateTime?>("SurveyTimeStart")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("SurveyType")
@@ -251,31 +249,31 @@ namespace DraughtSurveyWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("DistanceAft")
+                    b.Property<double?>("DistanceAft")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DistanceFwd")
+                    b.Property<double?>("DistanceFwd")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DistanceMid")
+                    b.Property<double?>("DistanceMid")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtAftPS")
+                    b.Property<double?>("DraughtAftPS")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtAftSS")
+                    b.Property<double?>("DraughtAftSS")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtFwdPS")
+                    b.Property<double?>("DraughtFwdPS")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtFwdSS")
+                    b.Property<double?>("DraughtFwdSS")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtMidPS")
+                    b.Property<double?>("DraughtMidPS")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtMidSS")
+                    b.Property<double?>("DraughtMidSS")
                         .HasColumnType("REAL");
 
                     b.Property<int>("DraughtSurveyBlockId")
@@ -284,8 +282,17 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<double?>("KeelCorrection")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("SeaWaterDensity")
+                    b.Property<double?>("SeaWaterDensity")
                         .HasColumnType("REAL");
+
+                    b.Property<bool?>("isAftDistanceToFwd")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool?>("isFwdDistancetoFwd")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool?>("isMidDistanceToFwd")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -301,49 +308,52 @@ namespace DraughtSurveyWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("DraughtCorrectedAft")
+                    b.Property<double?>("DraughtCorrectedAft")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtCorrectedFwd")
+                    b.Property<double?>("DraughtCorrectedFwd")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtCorrectedMid")
+                    b.Property<double?>("DraughtCorrectedMid")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtCorrectionAft")
+                    b.Property<double?>("DraughtCorrectionAft")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtCorrectionFwd")
+                    b.Property<double?>("DraughtCorrectionFwd")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtCorrectionMid")
+                    b.Property<double?>("DraughtCorrectionMid")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtMeanAft")
+                    b.Property<double?>("DraughtMeanAft")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtMeanFwd")
+                    b.Property<double?>("DraughtMeanFwd")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtMeanMid")
+                    b.Property<double?>("DraughtMeanMid")
                         .HasColumnType("REAL");
 
                     b.Property<int>("DraughtSurveyBlockId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("Heel")
+                    b.Property<double?>("Heel")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("HoggingSagging")
+                    b.Property<double?>("HoggingSagging")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("MeanAdjustedDraught")
+                    b.Property<double?>("MeanAdjustedDraught")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("TrimApparent")
+                    b.Property<double?>("MeanAdjustedDraughtAfterKeelCorrection")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("TrimCorrected")
+                    b.Property<double?>("TrimApparent")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("TrimCorrected")
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");
@@ -360,25 +370,28 @@ namespace DraughtSurveyWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("DisplacementAbove")
+                    b.Property<double?>("DisplacementAbove")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DisplacementBelow")
+                    b.Property<double?>("DisplacementBelow")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtAbove")
+                    b.Property<double?>("DraughtAbove")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DraughtBelow")
+                    b.Property<double?>("DraughtBelow")
                         .HasColumnType("REAL");
 
                     b.Property<int>("DraughtSurveyBlockId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("LCFAbove")
+                    b.Property<bool?>("IsLCFForward")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double?>("LCFAbove")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("LCFBelow")
+                    b.Property<double?>("LCFBelow")
                         .HasColumnType("REAL");
 
                     b.Property<double?>("LCFfromAftAbove")
@@ -387,22 +400,22 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<double?>("LCFfromAftBelow")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("MTCMinus50Above")
+                    b.Property<double?>("MTCMinus50Above")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("MTCMinus50Below")
+                    b.Property<double?>("MTCMinus50Below")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("MTCPlus50Above")
+                    b.Property<double?>("MTCPlus50Above")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("MTCPlus50Below")
+                    b.Property<double?>("MTCPlus50Below")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("TPCAbove")
+                    b.Property<double?>("TPCAbove")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("TPCBelow")
+                    b.Property<double?>("TPCBelow")
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");
@@ -419,40 +432,40 @@ namespace DraughtSurveyWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("CargoPlusConstant")
+                    b.Property<double?>("CargoPlusConstant")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DisplacementCorrectedForDensity")
+                    b.Property<double?>("DisplacementCorrectedForDensity")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DisplacementCorrectedForTrim")
+                    b.Property<double?>("DisplacementCorrectedForTrim")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("DisplacementFromTable")
+                    b.Property<double?>("DisplacementFromTable")
                         .HasColumnType("REAL");
 
                     b.Property<int>("DraughtSurveyBlockId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("FirstTrimCorrection")
+                    b.Property<double?>("FirstTrimCorrection")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("LCFFromTable")
+                    b.Property<double?>("LCFFromTable")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("MTCMinus50FromTable")
+                    b.Property<double?>("MTCMinus50FromTable")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("MTCPlus50FromTable")
+                    b.Property<double?>("MTCPlus50FromTable")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("NettoDisplacement")
+                    b.Property<double?>("NettoDisplacement")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("SecondTrimCorrection")
+                    b.Property<double?>("SecondTrimCorrection")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("TPCFromTable")
+                    b.Property<double?>("TPCFromTable")
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");
@@ -470,14 +483,12 @@ namespace DraughtSurveyWebApp.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("CompanyReference")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("OperationType")
+                    b.Property<int?>("OperationType")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Port")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("VesselName")
@@ -508,10 +519,10 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<int>("InspectionId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("LBP")
+                    b.Property<double?>("LBP")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("LS")
+                    b.Property<double?>("LS")
                         .HasColumnType("REAL");
 
                     b.Property<double?>("SDWT")
@@ -693,8 +704,8 @@ namespace DraughtSurveyWebApp.Migrations
             modelBuilder.Entity("DraughtSurveyWebApp.Models.DeductiblesResults", b =>
                 {
                     b.HasOne("DraughtSurveyWebApp.Models.DraughtSurveyBlock", "DraughtSurveyBlock")
-                        .WithMany()
-                        .HasForeignKey("DraughtSurveyBlockId")
+                        .WithOne("DeductiblesResults")
+                        .HasForeignKey("DraughtSurveyWebApp.Models.DeductiblesResults", "DraughtSurveyBlockId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -821,6 +832,8 @@ namespace DraughtSurveyWebApp.Migrations
             modelBuilder.Entity("DraughtSurveyWebApp.Models.DraughtSurveyBlock", b =>
                 {
                     b.Navigation("DeductiblesInput");
+
+                    b.Navigation("DeductiblesResults");
 
                     b.Navigation("DraughtsInput");
 

@@ -1,24 +1,35 @@
 ﻿using DraughtSurveyWebApp.Data;
 using DraughtSurveyWebApp.Models;
+using DraughtSurveyWebApp.Services;
 using DraughtSurveyWebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace DraughtSurveyWebApp.Controllers
 {
     public class VesselInputController : Controller
     {
         private readonly ApplicationDbContext _context;
-        
+        private readonly SurveyCalculationsService _surveyCalculationsService;
 
-        public VesselInputController(ApplicationDbContext context)
+        public VesselInputController(ApplicationDbContext context, SurveyCalculationsService surveyCalculationsService)
         {
             _context = context;            
+            _surveyCalculationsService = surveyCalculationsService;
         }
 
         // GET: VesselInput/Create?inspectionId=5
-        public IActionResult Create(int inspectionId)
-        {   
+        public async Task<IActionResult> Create(int inspectionId)
+        {
+            var existing = await _context.VesselInputs
+                .FirstOrDefaultAsync(v => v.InspectionId == inspectionId);
+
+            if (existing != null)
+            {
+                return RedirectToAction("Edit", new { inspectionId });
+            }
+
             var viewModel = new VesselInputViewModel
             {
                 InspectionId = inspectionId 
@@ -110,6 +121,29 @@ namespace DraughtSurveyWebApp.Controllers
             vessel.LS = viewModel.LS;
             vessel.SDWT = viewModel.SDWT;
             vessel.DeclaredConstant = viewModel.DeclaredConstant;
+
+            
+            
+            var draughtSurveyBlocks = await _context.DraughtSurveyBlocks
+                .Where(b => b.InspectionId == inspectionId)
+                .Include(b => b.DraughtsInput)
+                .Include(b => b.DraughtsResults)
+                .Include(b => b.HydrostaticInput)
+                .Include(b => b.HydrostaticResults)
+                .Include(b => b.DeductiblesInput)
+                .Include(b => b.DeductiblesResults)
+                .Include(b => b.Inspection)
+                    .ThenInclude(i => i.VesselInput)
+                .ToListAsync();
+
+            foreach (var draughtSurveyBlock in draughtSurveyBlocks)
+            {
+                if (draughtSurveyBlock != null)
+                {
+                    _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
+                }                    
+            }
+            
 
             await _context.SaveChangesAsync();
 

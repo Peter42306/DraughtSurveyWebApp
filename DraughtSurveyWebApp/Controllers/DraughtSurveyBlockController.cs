@@ -51,6 +51,7 @@ namespace DraughtSurveyWebApp.Controllers
             }
 
             var draughtSurveyBlock = await _context.DraughtSurveyBlocks
+                .Include(b => b.Inspection)
                 .FirstOrDefaultAsync(b => b.Id == viewModel.DraughtSurveyBlockId);
 
             if (draughtSurveyBlock == null)
@@ -64,7 +65,8 @@ namespace DraughtSurveyWebApp.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
+            //return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
+            return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#initial-draught-times");
         }
 
 
