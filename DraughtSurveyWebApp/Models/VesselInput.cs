@@ -14,6 +14,6 @@ namespace DraughtSurveyWebApp.Models
         public double? DeclaredConstant { get; set; } // Constant declcared by the vessel                                
 
         public int InspectionId { get; set; }
-        public Inspection? Inspection { get; set; }
+        public required Inspection Inspection { get; set; }
     }
 }

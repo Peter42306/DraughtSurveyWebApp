@@ -10,6 +10,6 @@
         public double? DifferenceWithSDWT_Percents { get; set; }
 
         public int InspectionId { get; set; }
-        public Inspection? Inspection { get; set; }
+        public required Inspection Inspection { get; set; }
     }
 }

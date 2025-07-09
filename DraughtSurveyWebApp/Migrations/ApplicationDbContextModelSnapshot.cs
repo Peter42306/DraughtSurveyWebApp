@@ -479,6 +479,10 @@ namespace DraughtSurveyWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("CompanyReference")
                         .HasColumnType("TEXT");
 
@@ -493,6 +497,8 @@ namespace DraughtSurveyWebApp.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Inspections");
                 });
@@ -764,6 +770,17 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Navigation("DraughtSurveyBlock");
                 });
 
+            modelBuilder.Entity("DraughtSurveyWebApp.Models.Inspection", b =>
+                {
+                    b.HasOne("DraughtSurveyWebApp.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Inspections")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
             modelBuilder.Entity("DraughtSurveyWebApp.Models.VesselInput", b =>
                 {
                     b.HasOne("DraughtSurveyWebApp.Models.Inspection", "Inspection")
@@ -824,6 +841,11 @@ namespace DraughtSurveyWebApp.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DraughtSurveyWebApp.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Inspections");
                 });
 
             modelBuilder.Entity("DraughtSurveyWebApp.Models.DraughtSurveyBlock", b =>

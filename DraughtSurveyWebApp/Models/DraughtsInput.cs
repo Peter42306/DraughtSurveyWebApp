@@ -27,6 +27,6 @@
         public double? KeelCorrection { get; set; }
 
         public int DraughtSurveyBlockId { get; set; }
-        public DraughtSurveyBlock? DraughtSurveyBlock { get; set; }
+        public required DraughtSurveyBlock DraughtSurveyBlock { get; set; }
     }
 }

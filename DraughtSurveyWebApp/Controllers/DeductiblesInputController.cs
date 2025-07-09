@@ -2,25 +2,39 @@
 using DraughtSurveyWebApp.Models;
 using DraughtSurveyWebApp.Services;
 using DraughtSurveyWebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DraughtSurveyWebApp.Controllers
 {
+    [Authorize(Roles = "Admin,User")]
     public class DeductiblesInputController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly SurveyCalculationsService _surveyCalculationsService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public DeductiblesInputController(ApplicationDbContext context, SurveyCalculationsService surveyCalculationsService)
+        public DeductiblesInputController(
+            ApplicationDbContext context, 
+            SurveyCalculationsService surveyCalculationsService,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _surveyCalculationsService = surveyCalculationsService;
+            _userManager = userManager;
         }
 
         // GET: DeductiblesInput/Edit?draughtSurveyBlockId=1
         public async Task<IActionResult> Edit(int draughtSurveyBlockId)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             var draughtSurveyBlock = await _context.DraughtSurveyBlocks
                 .Include(d => d.DeductiblesInput)
                 .Include(d => d.DeductiblesResults)
@@ -29,6 +43,11 @@ namespace DraughtSurveyWebApp.Controllers
             if (draughtSurveyBlock == null)
             {
                 return NotFound();
+            }
+
+            if (draughtSurveyBlock.Inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
             }
 
             var inputs = draughtSurveyBlock.DeductiblesInput;
@@ -57,6 +76,12 @@ namespace DraughtSurveyWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(DeductiblesInputViewModel viewModel)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(viewModel);
@@ -76,6 +101,11 @@ namespace DraughtSurveyWebApp.Controllers
             if (draughtSurveyBlock == null)
             {
                 return NotFound();
+            }
+
+            if (draughtSurveyBlock.Inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
             }
 
             if (draughtSurveyBlock.DeductiblesInput == null)
@@ -117,35 +147,7 @@ namespace DraughtSurveyWebApp.Controllers
 
                 _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
             }
-            
-
-
-            //double? totalDeductible = null;
-
-            //if (inputs.Ballast.HasValue ||
-            //    inputs.FreshWater.HasValue ||
-            //    inputs.FuelOil.HasValue ||
-            //    inputs.DieselOil.HasValue ||
-            //    inputs.LubOil.HasValue ||
-            //    inputs.Others.HasValue)
-            //{
-            //    totalDeductible =
-            //    (inputs.Ballast ?? 0) +
-            //    (inputs.FreshWater ?? 0) +
-            //    (inputs.FuelOil ?? 0) +
-            //    (inputs.DieselOil ?? 0) +
-            //    (inputs.LubOil ?? 0) +
-            //    (inputs.Others ?? 0);
-            //}
-
-
-
-
-            //var results = draughtSurveyBlock.DeductiblesResults;
-            
-
-            //results.TotalDeductibles = totalDeductible;            
-
+                           
 
             await _context.SaveChangesAsync();
 
@@ -164,10 +166,5 @@ namespace DraughtSurveyWebApp.Controllers
                 dbValue.Others != viewModelValue.Others;
         }
 
-
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
     }
 }

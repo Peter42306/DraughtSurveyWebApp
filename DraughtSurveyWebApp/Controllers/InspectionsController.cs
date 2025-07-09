@@ -8,29 +8,43 @@ using Microsoft.EntityFrameworkCore;
 using DraughtSurveyWebApp.Data;
 using DraughtSurveyWebApp.Models;
 using DraughtSurveyWebApp.ViewModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DraughtSurveyWebApp.Controllers
 {
+    [Authorize(Roles = "Admin,User")]
     public class InspectionsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public InspectionsController(ApplicationDbContext context)
+        public InspectionsController(
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Inspections
         public async Task<IActionResult> Index()
         {
-            //Console.WriteLine("Entered Inspection Index");
-            //return Content("REACHED GET Create");
+            var user = await _userManager.GetUserAsync(User);
 
-            //var inspections = await _context.Inspections.ToListAsync();
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            var inspections = await _context.Inspections
-                .OrderByDescending(i => i.Id)
-                .ToListAsync();
+            var inspections = User.IsInRole("Admin")
+                ? await _context.Inspections
+                    .OrderByDescending(i => i.Id)
+                    .ToListAsync()
+                : await _context.Inspections
+                    .Where(i => i.ApplicationUserId == user.Id)
+                    .OrderByDescending(i => i.Id)
+                    .ToListAsync();                
 
             return View(inspections);
         }
@@ -41,6 +55,12 @@ namespace DraughtSurveyWebApp.Controllers
             if (id == null)
             {
                 return NotFound();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
             }
 
             var inspection = await _context.Inspections
@@ -58,6 +78,12 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 return NotFound();
             }
+
+            if (!User.IsInRole("Admin") && inspection.ApplicationUserId != user.Id) 
+            {
+                return NotFound();
+            }
+            
             
             return View(inspection);
         }
@@ -80,42 +106,40 @@ namespace DraughtSurveyWebApp.Controllers
                 return View(viewModel);
             }
 
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }            
 
-            //var existingVessel = await _context.VesselInputs
-            //    .Include(v => v.Inspection)
-            //    .FirstOrDefaultAsync(v => v.IMO == viewModel);
-
-
-
-            //var now = DateTime.Now;
 
             var inspection = new Inspection
             {
+                ApplicationUserId = user.Id,
+
                 VesselName = viewModel.VesselName,
                 Port = viewModel.Port,
                 CompanyReference = viewModel.CompanyReference,
                 OperationType = viewModel.OperationType,
 
-                DraughtSurveyBlocks = new List<DraughtSurveyBlock>
-                {
-                    new DraughtSurveyBlock
-                    {
-                        SurveyType = SurveyType.Initial,
-                        SurveyTimeStart = null,
-                        SurveyTimeEnd = null,
-                        CargoOperationsDateTime = null,
-                        Notes = ""
-                    },
-                    new DraughtSurveyBlock
-                    {
-                        SurveyType = SurveyType.Final,
-                        SurveyTimeStart = null,
-                        SurveyTimeEnd = null,
-                        CargoOperationsDateTime = null,
-                        Notes = ""
-                    },
-                }
             };
+
+            inspection.DraughtSurveyBlocks = new List<DraughtSurveyBlock>
+            {
+                new DraughtSurveyBlock
+                {
+                    Inspection = inspection,
+                    SurveyType = SurveyType.Initial,
+                    Notes = string.Empty
+                },
+                new DraughtSurveyBlock
+                {
+                    Inspection = inspection,
+                    SurveyType = SurveyType.Final,
+                    Notes = string.Empty
+                },
+            };
+
 
             _context.Inspections.Add(inspection);
             await _context.SaveChangesAsync();
@@ -137,13 +161,25 @@ namespace DraughtSurveyWebApp.Controllers
                 return NotFound();
             }
 
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
             var viewModel = new InspectionEditViewModel
             {
                 Id = inspection.Id,
                 VesselName = inspection.VesselName,
-                Port = inspection?.Port,
-                CompanyReference = inspection?.CompanyReference,
-                OperationType = inspection?.OperationType
+                Port = inspection.Port,
+                CompanyReference = inspection.CompanyReference,
+                OperationType = inspection.OperationType
             };
 
             return View(viewModel);
@@ -160,17 +196,30 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 return NotFound();
             }
-
+            
             if (!ModelState.IsValid)
             {
                 return View(viewModel);
             }
 
-            var inspection = await _context.Inspections.FindAsync(id);
+            var inspection = await _context.Inspections                
+                .FindAsync(id);
             if (inspection == null)
             {
                 return NotFound();
             }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) 
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
 
             inspection.VesselName = viewModel.VesselName;
             inspection.Port = viewModel.Port;
@@ -178,10 +227,7 @@ namespace DraughtSurveyWebApp.Controllers
             inspection.OperationType = viewModel.OperationType;
 
             await _context.SaveChangesAsync();
-
-            //return RedirectToAction(nameof(Index));
-            //return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
-            //return RedirectToAction("Details", "Inspections", new { id = viewModel.Id});
+            
             return Redirect($"{Url.Action("Details", "Inspections", new { id = viewModel.Id })}#draught-inspection-input");
         }
 
@@ -193,11 +239,21 @@ namespace DraughtSurveyWebApp.Controllers
                 return NotFound();
             }
 
-            var inspection = await _context.Inspections
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var inspection = await _context.Inspections.FirstOrDefaultAsync(m => m.Id == id);            
             if (inspection == null)
             {
                 return NotFound();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
             }
 
             return View(inspection);
@@ -209,18 +265,32 @@ namespace DraughtSurveyWebApp.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var inspection = await _context.Inspections.FindAsync(id);
-            if (inspection != null)
+            if (inspection == null)
             {
-                _context.Inspections.Remove(inspection);
+                return NotFound();
             }
 
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+
+            _context.Inspections.Remove(inspection);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
-        private bool InspectionExists(int id)
-        {
-            return _context.Inspections.Any(e => e.Id == id);
-        }
+        //private bool InspectionExists(int id)
+        //{
+        //    return _context.Inspections.Any(e => e.Id == id);
+        //}
     }
 }

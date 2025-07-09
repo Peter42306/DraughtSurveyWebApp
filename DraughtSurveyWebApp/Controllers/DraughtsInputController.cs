@@ -2,33 +2,59 @@
 using DraughtSurveyWebApp.Models;
 using DraughtSurveyWebApp.Services;
 using DraughtSurveyWebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DraughtSurveyWebApp.Controllers
 {
+    [Authorize(Roles = "Admin,User")]
     public class DraughtsInputController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly SurveyCalculationsService _surveyCalculationsService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public DraughtsInputController(ApplicationDbContext context, SurveyCalculationsService surveyCalculationsService)
+        public DraughtsInputController(
+            ApplicationDbContext context, 
+            SurveyCalculationsService surveyCalculationsService,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _surveyCalculationsService = surveyCalculationsService;
+            _userManager = userManager;
         }
 
         // GET: DraughtsInput/Edit?draughtSurveyBlockId=5
         public async Task<IActionResult> Edit(int draughtSurveyBlockId)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+
             var draughtSurveyBlock = await _context.DraughtSurveyBlocks
                 .Include(b => b.DraughtsInput)
                 .Include(r => r.DraughtsResults)
+                .Include(b => b.Inspection)
                 .FirstOrDefaultAsync(b => b.Id == draughtSurveyBlockId);
 
             if (draughtSurveyBlock == null)
             {
                 return NotFound();
+            }
+
+            if (draughtSurveyBlock.Inspection == null)
+            {
+                return NotFound();
+            }
+
+            if (draughtSurveyBlock.Inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
             }
             
             var inputs = draughtSurveyBlock.DraughtsInput;
@@ -87,6 +113,12 @@ namespace DraughtSurveyWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(DraughtsInputViewModel viewModel)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(viewModel);
@@ -103,16 +135,16 @@ namespace DraughtSurveyWebApp.Controllers
                 .Include(b => b.Inspection)
                     .ThenInclude(i => i.VesselInput)
                 .FirstOrDefaultAsync(b => b.Id == viewModel.DraughtSurveyBlockId);
-
+            
             if (draughtSurveyBlock == null)
             {
                 return NotFound();
-            }
+            }            
 
-            //if (draughtSurveyBlock.Inspection == null || draughtSurveyBlock.Inspection.VesselInput == null)
-            //{
-
-            //}
+            if (draughtSurveyBlock.Inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }           
                         
 
             if (draughtSurveyBlock.DraughtsInput == null)
@@ -165,286 +197,6 @@ namespace DraughtSurveyWebApp.Controllers
                 _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
             }
 
-            
-
-
-            //double? fwdMean = null;
-            //double? draughtFwdPS = input.DraughtFwdPS;
-            //double? draughtFwdSS = input.DraughtFwdSS;
-
-            //if (draughtFwdPS.HasValue &&
-            //    draughtFwdSS.HasValue)
-            //{
-            //    fwdMean = _surveyCalculationsService.CalculateApparentMean(
-            //        draughtFwdPS.Value,
-            //        draughtFwdSS.Value
-            //        );
-            //}
-
-            //double? midMean = null;
-            //double? draughtMidPS = input.DraughtMidPS;
-            //double? draughtMidSS = input.DraughtMidSS;
-
-            //if (draughtMidPS.HasValue &&
-            //    draughtMidSS.HasValue)
-            //{
-            //    midMean = _surveyCalculationsService.CalculateApparentMean(
-            //        draughtMidPS.Value,
-            //        draughtMidSS.Value
-            //        );
-            //}
-
-            //double? aftMean = null;
-            //double? draughtAftPS = input.DraughtAftPS;
-            //double? draughtAftSS = input.DraughtAftSS;
-
-            //if (draughtAftPS.HasValue &&
-            //    draughtAftSS.HasValue)
-            //{
-            //    aftMean = _surveyCalculationsService.CalculateApparentMean(
-            //        draughtAftPS.Value,
-            //        draughtAftSS.Value
-            //        );
-            //}
-
-            //double? trimApparent = null;
-
-            //if (fwdMean.HasValue &&
-            //    aftMean.HasValue)
-            //{
-            //    trimApparent = _surveyCalculationsService.CalculateTrim(
-            //        fwdMean.Value,
-            //        aftMean.Value
-            //        );
-            //}
-
-
-
-
-            //double? bm = draughtSurveyBlock.Inspection?.VesselInput?.BM;
-            //double? lbp = draughtSurveyBlock.Inspection?.VesselInput?.LBP;
-
-            //double? lbd = null;
-            //double? distanceFwd = input.DistanceFwd;
-            //bool? isFwdDistancetoFwd = input.isFwdDistancetoFwd;
-            //double? distanceAft = input.DistanceAft;
-            //bool? isAftDistanceToFwd = input.isAftDistanceToFwd;
-
-            //if (lbp.HasValue &&
-            //    distanceFwd.HasValue &&
-            //    isFwdDistancetoFwd.HasValue &&
-            //    distanceAft.HasValue &&
-            //    isAftDistanceToFwd.HasValue
-            //    )
-            //{
-            //    lbd = _surveyCalculationsService.CalculatLBD(
-            //        lbp.Value,
-            //        distanceFwd.Value,
-            //        isFwdDistancetoFwd.Value,
-            //        distanceAft.Value,
-            //        isAftDistanceToFwd.Value
-            //        );
-            //}
-
-
-            //double? draughtCorrectionFwd = null;
-
-            //if (distanceFwd.HasValue && 
-            //    trimApparent.HasValue && 
-            //    isFwdDistancetoFwd.HasValue && 
-            //    lbd.HasValue)
-            //{
-            //    draughtCorrectionFwd = _surveyCalculationsService.CalculateTrimCorrection(
-            //        distanceFwd.Value,
-            //        trimApparent.Value,
-            //        isFwdDistancetoFwd.Value,
-            //        lbd.Value
-            //        );
-            //}
-
-            //double? draughtCorrectionMid = null;
-
-            //double? distanceMid = input.DistanceMid;
-            //bool? isMidDistanceToFwd = input.isMidDistanceToFwd;                
-
-            //if (distanceMid.HasValue && 
-            //    trimApparent.HasValue && 
-            //    isMidDistanceToFwd.HasValue &&
-            //    lbd.HasValue)
-            //{
-            //    draughtCorrectionMid = _surveyCalculationsService.CalculateTrimCorrection(
-            //        distanceMid.Value,                    
-            //        trimApparent.Value,
-            //        isMidDistanceToFwd.Value,
-            //        lbd.Value
-            //        );
-            //}
-
-
-            //double? draughtCorrectionAft = null;
-
-            //if (distanceAft.HasValue &&
-            //    trimApparent.HasValue &&
-            //    isAftDistanceToFwd.HasValue &&
-            //    lbd.HasValue)
-            //{
-            //    draughtCorrectionAft = _surveyCalculationsService.CalculateTrimCorrection(
-            //        distanceAft.Value,
-            //        trimApparent.Value,
-            //        isAftDistanceToFwd.Value,
-            //        lbd.Value
-            //        );
-            //}
-
-
-            //double? draughtCorrectedFwd = null;
-
-            //if (fwdMean.HasValue &&
-            //    draughtCorrectionFwd.HasValue)
-            //{
-            //    draughtCorrectedFwd = _surveyCalculationsService.CalculateCorrectedDraught(
-            //    fwdMean.Value,
-            //    draughtCorrectionFwd.Value
-            //    );
-            //}
-
-
-
-            //double? draughtCorrectedMid = null;
-
-            //if (midMean.HasValue &&
-            //    draughtCorrectionMid.HasValue)
-            //{
-            //    draughtCorrectedMid = _surveyCalculationsService.CalculateCorrectedDraught(
-            //        midMean.Value,
-            //        draughtCorrectionMid.Value
-            //        );
-            //}
-
-
-            //double? draughtCorrectedAft = null;
-
-            //if (aftMean.HasValue &&
-            //    draughtCorrectionAft.HasValue)
-            //{
-            //    draughtCorrectedAft = _surveyCalculationsService.CalculateCorrectedDraught(
-            //        aftMean.Value,
-            //        draughtCorrectionAft.Value
-            //        );
-            //}
-
-
-            //double? trimCorrected = null;
-
-            //if (draughtCorrectedFwd.HasValue && 
-            //    draughtCorrectedAft.HasValue)
-            //{
-            //    trimCorrected = _surveyCalculationsService.CalculateTrim(
-            //        draughtCorrectedFwd.Value,
-            //        draughtCorrectedAft.Value
-            //        );
-            //}
-
-
-            //double? heel = null;
-
-            //if (draughtMidPS.HasValue &&
-            //    draughtMidSS.HasValue &&
-            //    bm.HasValue)
-            //{
-            //    heel = _surveyCalculationsService.CalculateHeel(
-            //        draughtMidPS.Value,
-            //        draughtMidSS.Value,
-            //        bm.Value
-            //        );
-            //}
-
-
-            //double? hogSag = null;
-
-            //if (draughtCorrectedFwd.HasValue && 
-            //    draughtCorrectedMid.HasValue && 
-            //    draughtCorrectedAft.HasValue)
-            //{
-            //    hogSag = _surveyCalculationsService.CalculateHoggingSagging(
-            //        draughtCorrectedFwd.Value,
-            //        draughtCorrectedMid.Value,
-            //        draughtCorrectedAft.Value);
-            //}
-
-
-            //double? meanAdjustedDraught = null;
-
-            //if (draughtCorrectedFwd.HasValue &&
-            //    draughtCorrectedMid.HasValue &&
-            //    draughtCorrectedAft.HasValue)
-            //{
-            //    meanAdjustedDraught = _surveyCalculationsService.CalculateMeanOfMean(
-            //        draughtCorrectedFwd.Value,
-            //        draughtCorrectedMid.Value,
-            //        draughtCorrectedAft.Value);
-            //}
-
-
-            //double? meanAdjustedDraughtAfterKeelCorrection = null;
-            //double? keelCorrection = input.KeelCorrection;
-
-            //if (!keelCorrection.HasValue)
-            //{
-            //    keelCorrection = 0;
-            //}
-
-            //if (meanAdjustedDraught.HasValue &&
-            //    keelCorrection.HasValue)
-            //{
-            //    meanAdjustedDraughtAfterKeelCorrection = _surveyCalculationsService.CalculateMeanAdjustedDraughtAfterKeelCorrection(
-            //        meanAdjustedDraught.Value,
-            //        keelCorrection.Value
-            //        );
-            //}          
-
-
-
-
-            //double hoggingSagging = _surveyCalculationsService.CalculateHoggingSagging()
-
-            //double fwdCorrection = _surveyCalculationsService.CalculateTrimCorrection
-
-
-            //var results = await _context.DraughtsResults
-            //    .FirstOrDefaultAsync(r => r.DraughtSurveyBlockId == draughtSurveyBlock.Id);
-
-            //if (results == null)
-            //{
-            //    results = new Models.DraughtsResults
-            //    {
-            //        DraughtSurveyBlockId = draughtSurveyBlock.Id,
-            //        DraughtSurveyBlock = draughtSurveyBlock
-            //    };
-
-            //    _context.DraughtsResults.Add(results);
-            //}
-
-            //results.DraughtMeanFwd = fwdMean;
-            //results.DraughtMeanMid = midMean;
-            //results.DraughtMeanAft = aftMean;
-
-            //results.TrimApparent = trimApparent;
-
-            //results.DraughtCorrectionFwd = draughtCorrectionFwd;
-            //results.DraughtCorrectionMid = draughtCorrectionMid;
-            //results.DraughtCorrectionAft = draughtCorrectionAft;
-
-            //results.DraughtCorrectedFwd = draughtCorrectedFwd;
-            //results.DraughtCorrectedMid = draughtCorrectedMid;
-            //results.DraughtCorrectedAft = draughtCorrectedAft;
-
-            //results.TrimCorrected = trimCorrected;
-            //results.Heel = heel;
-            //results.HoggingSagging = hogSag;
-            //results.MeanAdjustedDraught = meanAdjustedDraught;
-            //results.MeanAdjustedDraughtAfterKeelCorrection = meanAdjustedDraughtAfterKeelCorrection;
-
             await _context.SaveChangesAsync();
 
             //return View(viewModel);
@@ -472,12 +224,6 @@ namespace DraughtSurveyWebApp.Controllers
 
                 dbValue.SeaWaterDensity != viewModelValue.SeaWaterDensity ||
                 dbValue.KeelCorrection != viewModelValue.KeelCorrection;
-        }
-
-
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
+        }        
     }
 }

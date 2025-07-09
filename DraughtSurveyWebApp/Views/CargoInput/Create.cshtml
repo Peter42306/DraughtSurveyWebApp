@@ -4,13 +4,23 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-<h4>Cargo Info</h4>
-<hr />
+
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Create">
+
+            <div class="row">
+                <div class="col-6">
+                    <h4>Create Cargo Information</h4>
+                </div>
+                <div class="col-6 text-end">
+                    <button type="submit" class="btn btn-primary me-2">Save</button>
+                    <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId" class="btn btn-primary">Back</a>
+                </div>
+            </div>
+            <hr />
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="InspectionId" />
 
@@ -38,11 +48,9 @@
                 <span asp-validation-for="BerthNumber" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary">Save</button>
+            
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId">Back</a>
-</div>
+

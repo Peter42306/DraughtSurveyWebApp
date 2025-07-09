@@ -56,22 +56,6 @@ namespace DraughtSurveyWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Inspections",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    VesselName = table.Column<string>(type: "TEXT", nullable: false),
-                    Port = table.Column<string>(type: "TEXT", nullable: true),
-                    CompanyReference = table.Column<string>(type: "TEXT", nullable: true),
-                    OperationType = table.Column<int>(type: "INTEGER", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Inspections", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -175,6 +159,29 @@ namespace DraughtSurveyWebApp.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Inspections",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ApplicationUserId = table.Column<string>(type: "TEXT", nullable: false),
+                    VesselName = table.Column<string>(type: "TEXT", nullable: false),
+                    Port = table.Column<string>(type: "TEXT", nullable: true),
+                    CompanyReference = table.Column<string>(type: "TEXT", nullable: true),
+                    OperationType = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Inspections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Inspections_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -539,6 +546,11 @@ namespace DraughtSurveyWebApp.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Inspections_ApplicationUserId",
+                table: "Inspections",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_VesselInputs_InspectionId",
                 table: "VesselInputs",
                 column: "InspectionId",
@@ -594,13 +606,13 @@ namespace DraughtSurveyWebApp.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "DraughtSurveyBlocks");
 
             migrationBuilder.DropTable(
                 name: "Inspections");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

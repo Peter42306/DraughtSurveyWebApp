@@ -27,7 +27,7 @@
         public string? Notes { get; set; } // for Letter of Reserve details, or any notes
 
         public int InspectionId { get; set; }
-        public Inspection? Inspection { get; set; }
+        public required Inspection Inspection { get; set; }
     }
 }
 

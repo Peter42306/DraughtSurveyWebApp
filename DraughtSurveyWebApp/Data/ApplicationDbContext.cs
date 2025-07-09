@@ -22,6 +22,17 @@ namespace DraughtSurveyWebApp.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-        }                
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Inspection>()
+                .HasOne(i => i.ApplicationUser)
+                .WithMany(u => u.Inspections)
+                .HasForeignKey(i => i.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 }

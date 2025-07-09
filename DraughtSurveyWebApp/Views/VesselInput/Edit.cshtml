@@ -9,11 +9,12 @@
     <div class="col-md-6">
         <form asp-action="Edit">
             <div class="row">
-                <div class="col-6">
+                <div class="col-7">
                     <h4>Edit Vessel's Information</h4>
                 </div>
-                <div class="col-6 text-end">
+                <div class="col-5 text-end">
                     <button type="submit" class="btn btn-primary">Save</button>
+                    <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId" class="btn btn-primary">Back</a>
                 </div>
             </div>
             <hr />

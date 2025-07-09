@@ -9,5 +9,7 @@ namespace DraughtSurveyWebApp.Models
         public DateTime? LastLoginAt { get; set; }
         public int LoginCount { get; set; } = 0;
         public string? AdminNote { get; set; }
+
+        public List<Inspection> Inspections { get; set; } = new List<Inspection>();
     }
 }

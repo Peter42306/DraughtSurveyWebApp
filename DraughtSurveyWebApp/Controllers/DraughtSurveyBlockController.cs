@@ -1,22 +1,33 @@
 ﻿using DraughtSurveyWebApp.Data;
+using DraughtSurveyWebApp.Models;
 using DraughtSurveyWebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DraughtSurveyWebApp.Controllers
 {
+    [Authorize(Roles = "Admin,User")]
     public class DraughtSurveyBlockController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public DraughtSurveyBlockController(ApplicationDbContext context)
+
+        public DraughtSurveyBlockController(
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: DraughtSurveyBlock/EditTimes/5
         public async Task<IActionResult> EditTimes(int draughtSurveyBlockId)
         {
+            
+
             var draughtSurveyBlock = await _context.DraughtSurveyBlocks                
                 .Include(b => b.Inspection)
                 .FirstOrDefaultAsync(b => b.Id == draughtSurveyBlockId);
@@ -26,12 +37,30 @@ namespace DraughtSurveyWebApp.Controllers
                 return NotFound();
             }
 
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (draughtSurveyBlock.Inspection == null)
+            {
+                return NotFound();
+            }
+
+            if (draughtSurveyBlock.Inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
             var viewModel = new EditSurveyTimesViewModel
             {
                 DraughtSurveyBlockId = draughtSurveyBlock.Id,
+                InspectionId = draughtSurveyBlock.InspectionId,
                 SurveyTimeStart = draughtSurveyBlock.SurveyTimeStart,
                 SurveyTimeEnd = draughtSurveyBlock.SurveyTimeEnd,
                 CargoOperationsDateTime = draughtSurveyBlock.CargoOperationsDateTime
+                
             };
 
             ViewBag.InspectionId = draughtSurveyBlock.InspectionId;
@@ -57,6 +86,17 @@ namespace DraughtSurveyWebApp.Controllers
             if (draughtSurveyBlock == null)
             {
                 return NotFound();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }                        
+
+            if (draughtSurveyBlock.Inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
             }
 
             draughtSurveyBlock.SurveyTimeStart = viewModel.SurveyTimeStart;

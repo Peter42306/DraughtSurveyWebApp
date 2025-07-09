@@ -57,6 +57,18 @@ namespace DraughtSurveyWebApp.Data
 
             }
 
+            // List of regular users
+            var allUsers = userManager.Users.ToList();
+
+            foreach (var user in allUsers)
+            {
+                if (!await userManager.IsInRoleAsync(user, "User") && !await userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    await userManager.AddToRoleAsync(user, "User");
+                    Console.WriteLine($"Assigned 'User' role to: {user.Email}");
+                }
+            }
+
 
         }
     }

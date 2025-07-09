@@ -11,7 +11,8 @@
             <h4>Edit Draughts</h4>
         </div>
         <div class="col-6 text-end">
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="submit" class="btn btn-primary me-2">Save</button>
+            <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId" class="btn btn-primary">Back</a>
         </div>
     </div>
     <hr />
@@ -38,7 +39,7 @@
                 </div>
                 <div class="col-4">
                     <label asp-for="DraughtMeanFwd" class="small-label"></label>
-                    <input id="fwdMean" class="form-control" value="@Model.DraughtMeanFwd?.ToString("0.000")" readonly />
+                    <input id="fwdMean" class="form-control bg-light" value="@Model.DraughtMeanFwd?.ToString("0.000")" readonly />
                 </div>
             </div>
 
@@ -55,7 +56,7 @@
                 </div>
                 <div class="col-4">
                     <label asp-for="DraughtMeanMid" class="small-label"></label>
-                    <input id="midMean" class="form-control" value="@Model.DraughtMeanMid?.ToString("0.000")" readonly />
+                    <input id="midMean" class="form-control bg-light" value="@Model.DraughtMeanMid?.ToString("0.000")" readonly />
                 </div>
             </div>
 
@@ -72,7 +73,7 @@
                 </div>
                 <div class="col-4">
                     <label asp-for="DraughtMeanAft" class="small-label"></label>
-                    <input id="aftMean" class="form-control" value="@Model.DraughtMeanAft?.ToString("0.000")" readonly />
+                    <input id="aftMean" class="form-control bg-light" value="@Model.DraughtMeanAft?.ToString("0.000")" readonly />
                 </div>
             </div>
 
@@ -82,11 +83,11 @@
                     <label asp-for="Heel" class="small-label">
                         @(Model.HoggingSagging == null ? "Heel" : (Model.DraughtMidPS - Model.DraughtMidSS) < 0 ? "Heel to SS" : "Heel to PS")
                     </label>
-                    <input class="form-control" value="@Model.Heel?.ToString("0.000")" readonly />
+                    <input class="form-control bg-light" value="@Model.Heel?.ToString("0.000")" readonly />
                 </div>
                 <div class="col-4">
                     <label asp-for="TrimApparent" class="small-label"></label>
-                    <input class="form-control" value="@Model.TrimApparent?.ToString("0.000")" readonly />
+                    <input class="form-control bg-light" value="@Model.TrimApparent?.ToString("0.000")" readonly />
                 </div>
             </div>
         </div>
@@ -113,11 +114,11 @@
                 </div>
                 <div class="col-3">
                     <label asp-for="DraughtCorrectionFwd" class="small-label"></label>
-                    <input class="form-control" value="@Model.DraughtCorrectionFwd?.ToString("0.000")" readonly />
+                    <input class="form-control bg-light" value="@Model.DraughtCorrectionFwd?.ToString("0.000")" readonly />
                 </div>
                 <div class="col-3">
                     <label asp-for="DraughtCorrectedFwd" class="small-label"></label>
-                    <input class="form-control" value="@Model.DraughtCorrectedFwd?.ToString("0.000")" readonly />
+                    <input class="form-control bg-light" value="@Model.DraughtCorrectedFwd?.ToString("0.000")" readonly />
                 </div>
             </div>
 
@@ -140,11 +141,11 @@
                 </div>
                 <div class="col-3">
                     <label asp-for="DraughtCorrectionMid" class="small-label"></label>
-                    <input class="form-control" value="@Model.DraughtCorrectionMid?.ToString("0.000")" readonly />
+                    <input class="form-control bg-light" value="@Model.DraughtCorrectionMid?.ToString("0.000")" readonly />
                 </div>
                 <div class="col-3">
                     <label asp-for="DraughtCorrectedMid" class="small-label"></label>
-                    <input class="form-control" value="@Model.DraughtCorrectedMid?.ToString("0.000")" readonly />
+                    <input class="form-control bg-light" value="@Model.DraughtCorrectedMid?.ToString("0.000")" readonly />
                 </div>
             </div>
 
@@ -166,11 +167,11 @@
                 </div>
                 <div class="col-3">
                     <label asp-for="DraughtCorrectionAft" class="small-label"></label>
-                    <input class="form-control" value="@Model.DraughtCorrectionAft?.ToString("0.000")" readonly />
+                    <input class="form-control bg-light" value="@Model.DraughtCorrectionAft?.ToString("0.000")" readonly />
                 </div>
                 <div class="col-3">
                     <label asp-for="DraughtCorrectedAft" class="small-label"></label>
-                    <input class="form-control" value="@Model.DraughtCorrectedAft?.ToString("0.000")" readonly />
+                    <input class="form-control bg-light" value="@Model.DraughtCorrectedAft?.ToString("0.000")" readonly />
                 </div>
             </div>
 
@@ -182,11 +183,11 @@
                     <label asp-for="HoggingSagging" class="small-label">
                         @(Model.HoggingSagging == null ? "Hog/Sag" : Model.HoggingSagging < 0 ? "Hogging" : "Sagging")
                     </label>
-                    <input class="form-control" value="@Model.HoggingSagging?.ToString("0.000")" readonly />
+                    <input class="form-control bg-light" value="@Model.HoggingSagging?.ToString("0.000")" readonly />
                 </div>
                 <div class="col-4">
                     <label asp-for="TrimCorrected" class="small-label"></label>
-                    <input class="form-control" value="@Model.TrimCorrected?.ToString("0.000")" readonly />
+                    <input class="form-control bg-light" value="@Model.TrimCorrected?.ToString("0.000")" readonly />
                 </div>
             </div>
 
@@ -195,7 +196,7 @@
                 </div>
                 <div class="col-6">
                     <label asp-for="MeanAdjustedDraught" class="small-label"></label>
-                    <input class="form-control" value="@Model.MeanAdjustedDraught?.ToString("0.000")" readonly />
+                    <input class="form-control bg-light" value="@Model.MeanAdjustedDraught?.ToString("0.000")" readonly />
                 </div>
             </div>
 
@@ -231,7 +232,7 @@
     <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId">Back</a>
 </div> *@
 
-@section Scripts {
+@* @section Scripts {
     <script>
 
         function calculateApparentMeam(){
@@ -272,4 +273,4 @@
 
     </script>
 }
-
+ *@

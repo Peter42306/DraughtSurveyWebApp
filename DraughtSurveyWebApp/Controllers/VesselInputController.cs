@@ -2,6 +2,7 @@
 using DraughtSurveyWebApp.Models;
 using DraughtSurveyWebApp.Services;
 using DraughtSurveyWebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace DraughtSurveyWebApp.Controllers
 {
+    [Authorize(Roles = "Admin,User")]
     public class VesselInputController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -28,9 +30,19 @@ namespace DraughtSurveyWebApp.Controllers
         // GET: VesselInput/Create?inspectionId=5
         public async Task<IActionResult> Create(int inspectionId)
         {
-            var existing = await _context.VesselInputs
-                .FirstOrDefaultAsync(v => v.InspectionId == inspectionId);
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) 
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
+            var inspection = await _context.Inspections.FirstOrDefaultAsync(i => i.Id == inspectionId);
+            if (inspection == null || (inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin")))
+            {
+                return Forbid();
+            }
+
+            var existing = await _context.VesselInputs.FirstOrDefaultAsync(v => v.InspectionId == inspectionId);
             if (existing != null)
             {
                 return RedirectToAction("Edit", new { inspectionId });
@@ -54,17 +66,30 @@ namespace DraughtSurveyWebApp.Controllers
                 return View(viewModel);
             }
 
-            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            var existing = await _context.VesselInputs
-                .Include(v => v.Inspection)
-                //.Include(v => v.IMO == viewModel.IMO && v.Inspection.application)
-                .FirstOrDefaultAsync();
+            var inspection = await _context.Inspections.FirstOrDefaultAsync(i => i.Id == viewModel.InspectionId);
+            if (inspection == null || (inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin")))
+            {
+                return Forbid();
+            }            
 
+            var existing = await _context.VesselInputs                                
+                .FirstOrDefaultAsync(v => v.InspectionId == viewModel.InspectionId);
+
+            if (existing != null) 
+            {
+                return RedirectToAction("Edit", new { InspectionId = viewModel.InspectionId});
+            }
 
             var vessel = new VesselInput
             {
                 InspectionId = viewModel.InspectionId,
+                Inspection = inspection,
                 IMO = viewModel.IMO,
                 LBP = viewModel.LBP,
                 BM = viewModel.BM,
@@ -83,12 +108,19 @@ namespace DraughtSurveyWebApp.Controllers
         // GET: VesselInput/Edit/5
         public async Task<IActionResult> Edit(int inspectionId)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             var vessel = await _context.VesselInputs
+                .Include(v => v.Inspection)
                 .FirstOrDefaultAsync(v => v.InspectionId == inspectionId);                
 
-            if(vessel == null)
+            if(vessel == null || (vessel.Inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin")))
             {
-                return NotFound();
+                return Forbid();
             }
 
             var viewModel = new VesselInputViewModel
@@ -121,12 +153,19 @@ namespace DraughtSurveyWebApp.Controllers
                 return View(viewModel);
             }
 
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             var vessel = await _context.VesselInputs
+                .Include(v => v.Inspection)
                 .FirstOrDefaultAsync(v => v.InspectionId == inspectionId);                
 
-            if (vessel == null)
+            if (vessel == null || (vessel.Inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin")))
             {
-                return NotFound();
+                return Forbid();
             }
 
             
@@ -155,8 +194,8 @@ namespace DraughtSurveyWebApp.Controllers
                 .ToListAsync();
 
                 foreach (var draughtSurveyBlock in draughtSurveyBlocks)
-                {                    
-                        _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);                 
+                {
+                    _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
                 }
             }
                         
