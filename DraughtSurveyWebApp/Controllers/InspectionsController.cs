@@ -81,9 +81,9 @@ namespace DraughtSurveyWebApp.Controllers
             }
 
 
-            var existingVessel = await _context.VesselInputs
-                .Include(v => v.Inspection)
-                .FirstOrDefaultAsync(v => v.IMO == viewModel);
+            //var existingVessel = await _context.VesselInputs
+            //    .Include(v => v.Inspection)
+            //    .FirstOrDefaultAsync(v => v.IMO == viewModel);
 
 
 

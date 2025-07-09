@@ -2,6 +2,7 @@
 using DraughtSurveyWebApp.Models;
 using DraughtSurveyWebApp.Services;
 using DraughtSurveyWebApp.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -12,11 +13,16 @@ namespace DraughtSurveyWebApp.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly SurveyCalculationsService _surveyCalculationsService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public VesselInputController(ApplicationDbContext context, SurveyCalculationsService surveyCalculationsService)
+        public VesselInputController(
+            ApplicationDbContext context, 
+            SurveyCalculationsService surveyCalculationsService,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;            
             _surveyCalculationsService = surveyCalculationsService;
+            _userManager = userManager;
         }
 
         // GET: VesselInput/Create?inspectionId=5
@@ -47,6 +53,14 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 return View(viewModel);
             }
+
+            var userId = _userManager.GetUserId(User);
+
+            var existing = await _context.VesselInputs
+                .Include(v => v.Inspection)
+                //.Include(v => v.IMO == viewModel.IMO && v.Inspection.application)
+                .FirstOrDefaultAsync();
+
 
             var vessel = new VesselInput
             {

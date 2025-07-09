@@ -17,6 +17,9 @@ namespace DraughtSurveyWebApp.Models
         public string? CompanyReference { get; set; }
         public OperationType? OperationType { get; set; } // Loading or discharging
 
+        public string ApplicationUsedId { get; set; } = null!;
+        public ApplicationUser ApplicationUser { get; set; } = null!;
+
         public VesselInput? VesselInput { get; set; }        
         public CargoInput? CargoInput { get; set; }               
 

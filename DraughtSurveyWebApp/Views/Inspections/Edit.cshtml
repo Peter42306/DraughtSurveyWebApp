@@ -25,22 +25,22 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="VesselName" class="control-label"></label>
+                <label asp-for="VesselName" class="control-label">Vessel</label>
                 <input asp-for="VesselName" class="form-control" />
                 <span asp-validation-for="VesselName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Port" class="control-label"></label>
+                <label asp-for="Port" class="control-label">Port</label>
                 <input asp-for="Port" class="form-control" />
                 <span asp-validation-for="Port" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CompanyReference" class="control-label"></label>
+                <label asp-for="CompanyReference" class="control-label">File Reference</label>
                 <input asp-for="CompanyReference" class="form-control" />
                 <span asp-validation-for="CompanyReference" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="OperationType" class="control-label"></label>
+                <label asp-for="OperationType" class="control-label">Operation Type</label>
                 <select asp-for="OperationType" class="form-control" asp-items="Html.GetEnumSelectList<OperationType>()"></select>
                 <span asp-validation-for="OperationType" class="text-danger"></span>
             </div>
