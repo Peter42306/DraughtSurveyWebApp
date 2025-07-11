@@ -12,6 +12,7 @@ namespace DraughtSurveyWebApp.Services
             RecalculateDraughts(block);
             RecalculateDeductibles(block);
             RecalculateHydrostatics(block);
+            
         }
 
         // Recalculation of DeductiblesInput and DeductiblesResult

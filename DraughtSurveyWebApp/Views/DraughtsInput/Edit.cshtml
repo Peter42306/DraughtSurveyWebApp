@@ -21,10 +21,15 @@
     <input type="hidden" asp-for="InspectionId" />
     <input type="hidden" asp-for="DraughtSurveyBlockId" />
 
+    
+    
+
     <div class="row">
         <div class="col-lg-6">
             <h6>Initial Apparent Draughts</h6>
             <hr />
+
+            
 
             <div class="row mb-2">
                 <div class="col-4">
@@ -95,6 +100,14 @@
         <div class="col-lg-6">
             <h6>Initial Corrections</h6>
             <hr />
+
+            @if (ViewData["DistancesSuggestionNote"] != null)
+            {
+                <div class="alert alert-info">
+                    <strong>Note:</strong>
+                    @Html.Raw(ViewData["DistancesSuggestionNote"])
+                </div>
+            }
 
             <div class="row mb-2">
                 <div class="col-3">

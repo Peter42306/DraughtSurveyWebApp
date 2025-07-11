@@ -10,6 +10,7 @@ using DraughtSurveyWebApp.Models;
 using DraughtSurveyWebApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using DraughtSurveyWebApp.Services;
 
 namespace DraughtSurveyWebApp.Controllers
 {
@@ -17,13 +18,16 @@ namespace DraughtSurveyWebApp.Controllers
     public class InspectionsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly SurveyCalculationsService _surveyCalculationsService;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public InspectionsController(
             ApplicationDbContext context,
+            SurveyCalculationsService surveyCalculationsService,
             UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _surveyCalculationsService = surveyCalculationsService;
             _userManager = userManager;
         }
 
@@ -82,6 +86,11 @@ namespace DraughtSurveyWebApp.Controllers
             if (!User.IsInRole("Admin") && inspection.ApplicationUserId != user.Id) 
             {
                 return NotFound();
+            }
+
+            foreach (var block in inspection.DraughtSurveyBlocks)
+            {
+                _surveyCalculationsService.RecalculateAll(block);
             }
             
             
@@ -221,10 +230,20 @@ namespace DraughtSurveyWebApp.Controllers
             }
 
 
-            inspection.VesselName = viewModel.VesselName;
-            inspection.Port = viewModel.Port;
-            inspection.CompanyReference = viewModel.CompanyReference;
-            inspection.OperationType = viewModel.OperationType;
+
+            bool changed = IsInspectionInputChanged(inspection, viewModel);
+
+            if (changed)
+            {
+                inspection.VesselName = viewModel.VesselName;
+                inspection.Port = viewModel.Port;
+                inspection.CompanyReference = viewModel.CompanyReference;
+                inspection.OperationType = viewModel.OperationType;
+            }
+            
+                
+
+            
 
             await _context.SaveChangesAsync();
             
@@ -286,6 +305,15 @@ namespace DraughtSurveyWebApp.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private bool IsInspectionInputChanged(Inspection dbValue, InspectionEditViewModel viewModelValue)
+        {
+            return
+                dbValue.VesselName != viewModelValue.VesselName ||
+                dbValue.Port != viewModelValue.Port ||
+                dbValue.CompanyReference != viewModelValue.CompanyReference ||
+                dbValue.OperationType != viewModelValue.OperationType;
         }
 
         //private bool InspectionExists(int id)

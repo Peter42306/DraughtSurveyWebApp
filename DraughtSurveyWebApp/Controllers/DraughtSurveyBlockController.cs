@@ -99,14 +99,29 @@ namespace DraughtSurveyWebApp.Controllers
                 return Forbid();
             }
 
-            draughtSurveyBlock.SurveyTimeStart = viewModel.SurveyTimeStart;
-            draughtSurveyBlock.SurveyTimeEnd = viewModel.SurveyTimeEnd;
-            draughtSurveyBlock.CargoOperationsDateTime = viewModel.CargoOperationsDateTime;
+            var input = draughtSurveyBlock;
 
+            bool changed = IsTimesInputChanged(input, viewModel);
+
+            if (changed)
+            {
+                input.SurveyTimeStart = viewModel.SurveyTimeStart;
+                input.SurveyTimeEnd = viewModel.SurveyTimeEnd;
+                input.CargoOperationsDateTime = viewModel.CargoOperationsDateTime;
+            }
+            
             await _context.SaveChangesAsync();
 
             //return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
             return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#initial-draught-times");
+        }
+
+        private bool IsTimesInputChanged(DraughtSurveyBlock dbValue, EditSurveyTimesViewModel viewModelValue)
+        {
+            return
+                dbValue.SurveyTimeStart != viewModelValue.SurveyTimeStart ||
+                dbValue.SurveyTimeEnd != viewModelValue.SurveyTimeEnd ||
+                dbValue.CargoOperationsDateTime != viewModelValue.CargoOperationsDateTime;
         }
 
 

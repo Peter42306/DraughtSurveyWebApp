@@ -61,31 +61,71 @@ namespace DraughtSurveyWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(VesselInputViewModel viewModel)
         {
+            // Validate the view model
             if (!ModelState.IsValid)
             {
                 return View(viewModel);
             }
 
+            // Get the current user
             var user = await _userManager.GetUserAsync(User);
+
+            // If the user is not logged in, redirect to login
             if (user == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
+            // Check if the inspection exists and belongs to the user or if the user is an admin
             var inspection = await _context.Inspections.FirstOrDefaultAsync(i => i.Id == viewModel.InspectionId);
             if (inspection == null || (inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin")))
             {
                 return Forbid();
-            }            
+            }
 
+            // Check if a VesselInput already exists for this inspection
             var existing = await _context.VesselInputs                                
                 .FirstOrDefaultAsync(v => v.InspectionId == viewModel.InspectionId);
 
+            // If it exists, redirect to the Edit action
             if (existing != null) 
             {
                 return RedirectToAction("Edit", new { InspectionId = viewModel.InspectionId});
             }
 
+            // Check if the IMO is provided and if a previous VesselInput exists with the same IMO
+            if (!string.IsNullOrEmpty(viewModel.IMO))
+            {                
+                var matchByIMO = await _context.VesselInputs                    
+                    .Include(v => v.Inspection)                    
+                    .Where(v => v.IMO == viewModel.IMO && v.Inspection.ApplicationUserId == user.Id)                    
+                    .OrderByDescending(v => v.Id)                    
+                    .FirstOrDefaultAsync();
+
+                if (matchByIMO != null)
+                {
+                    _context.VesselInputs.Add(new VesselInput 
+                    { 
+                        Inspection = inspection,
+                        InspectionId = viewModel.InspectionId,
+                        IMO = matchByIMO.IMO, // Use the existing IMO
+                        LBP = matchByIMO.LBP,
+                        BM = matchByIMO.BM,
+                        LS = matchByIMO.LS,
+                        SDWT = matchByIMO.SDWT,
+                        DeclaredConstant = matchByIMO.DeclaredConstant
+                    }); 
+                    
+                    
+                    await _context.SaveChangesAsync();
+
+                    TempData["VesselAutoFilled"] = "Vessel information was automatically filled from your previous inspection of this vessel.";
+                    return RedirectToAction("Details", "Inspections", new { id = viewModel.InspectionId });
+                }
+            }
+
+
+            // Create a new VesselInput object, if no existing one is found
             var vessel = new VesselInput
             {
                 InspectionId = viewModel.InspectionId,
@@ -170,35 +210,35 @@ namespace DraughtSurveyWebApp.Controllers
 
             
 
-            bool isVesselInputChanged = IsVesselInputChanged(vessel, viewModel);
+            bool changed = IsVesselInputChanged(vessel, viewModel);
 
-            if (isVesselInputChanged) 
+            if (changed) 
             {
                 vessel.IMO = viewModel.IMO;
                 vessel.LBP = viewModel.LBP;
                 vessel.BM = viewModel.BM;
                 vessel.LS = viewModel.LS;
                 vessel.SDWT = viewModel.SDWT;
-                vessel.DeclaredConstant = viewModel.DeclaredConstant;                
+                vessel.DeclaredConstant = viewModel.DeclaredConstant;
+            }            
 
-                var draughtSurveyBlocks = await _context.DraughtSurveyBlocks
-                .Where(b => b.InspectionId == inspectionId)
-                .Include(b => b.DraughtsInput)
-                .Include(b => b.DraughtsResults)
-                .Include(b => b.HydrostaticInput)
-                .Include(b => b.HydrostaticResults)
-                .Include(b => b.DeductiblesInput)
-                .Include(b => b.DeductiblesResults)
-                .Include(b => b.Inspection)
-                    .ThenInclude(i => i.VesselInput)
-                .ToListAsync();
+            var draughtSurveyBlocks = await _context.DraughtSurveyBlocks
+            .Where(b => b.InspectionId == inspectionId)
+            .Include(b => b.DraughtsInput)
+            .Include(b => b.DraughtsResults)
+            .Include(b => b.HydrostaticInput)
+            .Include(b => b.HydrostaticResults)
+            .Include(b => b.DeductiblesInput)
+            .Include(b => b.DeductiblesResults)
+            .Include(b => b.Inspection)
+                .ThenInclude(i => i.VesselInput)
+            .ToListAsync();
 
-                foreach (var draughtSurveyBlock in draughtSurveyBlocks)
-                {
-                    _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
-                }
+            foreach (var draughtSurveyBlock in draughtSurveyBlocks)
+            {
+                _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
             }
-                        
+
 
             await _context.SaveChangesAsync();
 

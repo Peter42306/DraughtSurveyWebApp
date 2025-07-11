@@ -455,6 +455,39 @@ namespace DraughtSurveyWebApp.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserHydrostaticTableRows",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Draught = table.Column<double>(type: "REAL", nullable: false),
+                    Displacement = table.Column<double>(type: "REAL", nullable: true),
+                    TPC = table.Column<double>(type: "REAL", nullable: true),
+                    LCF = table.Column<double>(type: "REAL", nullable: true),
+                    IsLcfForward = table.Column<bool>(type: "INTEGER", nullable: true),
+                    MTCPlus50 = table.Column<double>(type: "REAL", nullable: true),
+                    MTCMinus50 = table.Column<double>(type: "REAL", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "TEXT", nullable: false),
+                    VesselInputId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserHydrostaticTableRows", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserHydrostaticTableRows_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UserHydrostaticTableRows_VesselInputs_VesselInputId",
+                        column: x => x.VesselInputId,
+                        principalTable: "VesselInputs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -551,6 +584,16 @@ namespace DraughtSurveyWebApp.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserHydrostaticTableRows_ApplicationUserId",
+                table: "UserHydrostaticTableRows",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserHydrostaticTableRows_VesselInputId",
+                table: "UserHydrostaticTableRows",
+                column: "VesselInputId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_VesselInputs_InspectionId",
                 table: "VesselInputs",
                 column: "InspectionId",
@@ -600,13 +643,16 @@ namespace DraughtSurveyWebApp.Migrations
                 name: "HydrostaticResults");
 
             migrationBuilder.DropTable(
-                name: "VesselInputs");
+                name: "UserHydrostaticTableRows");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "DraughtSurveyBlocks");
+
+            migrationBuilder.DropTable(
+                name: "VesselInputs");
 
             migrationBuilder.DropTable(
                 name: "Inspections");

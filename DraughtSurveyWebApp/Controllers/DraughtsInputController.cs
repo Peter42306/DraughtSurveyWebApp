@@ -15,15 +15,18 @@ namespace DraughtSurveyWebApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly SurveyCalculationsService _surveyCalculationsService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<DraughtsInputController> _logger;
 
         public DraughtsInputController(
             ApplicationDbContext context, 
             SurveyCalculationsService surveyCalculationsService,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ILogger<DraughtsInputController> logger)
         {
             _context = context;
             _surveyCalculationsService = surveyCalculationsService;
             _userManager = userManager;
+            _logger=logger;
         }
 
         // GET: DraughtsInput/Edit?draughtSurveyBlockId=5
@@ -40,6 +43,7 @@ namespace DraughtSurveyWebApp.Controllers
                 .Include(b => b.DraughtsInput)
                 .Include(r => r.DraughtsResults)
                 .Include(b => b.Inspection)
+                    .ThenInclude(i => i.VesselInput)
                 .FirstOrDefaultAsync(b => b.Id == draughtSurveyBlockId);
 
             if (draughtSurveyBlock == null)
@@ -105,6 +109,89 @@ namespace DraughtSurveyWebApp.Controllers
                 MeanAdjustedDraughtAfterKeelCorrection = results?.MeanAdjustedDraughtAfterKeelCorrection  
             };
 
+            // Check if distances are not filled in the inputs
+            bool distancesNotFilled =
+                inputs == null ||
+                inputs.DistanceFwd == null ||
+                inputs.DistanceMid == null ||
+                inputs.DistanceAft == null;
+            
+
+            if (distancesNotFilled && draughtSurveyBlock.Inspection?.VesselInput?.IMO != null)
+            {                
+
+                string imo = draughtSurveyBlock.Inspection.VesselInput.IMO;
+
+                var candidatesForDistances = await _context.DraughtsInputs
+                    .Include(d => d.DraughtSurveyBlock)
+                        .ThenInclude(r => r.DraughtsResults)
+                    .Include(d => d.DraughtSurveyBlock.Inspection)
+                            .ThenInclude(i => i.VesselInput)
+                    .Where(d =>
+                        d.DraughtSurveyBlock != null &&
+                        d.DraughtSurveyBlock.Inspection != null &&
+                        d.DraughtSurveyBlock.Inspection.VesselInput != null &&
+                        d.DraughtSurveyBlock.DraughtsResults != null &&
+                        d.DraughtSurveyBlock.Inspection.ApplicationUserId == user.Id &&
+                        d.DraughtSurveyBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection != null &&
+                        d.DistanceFwd !=null && d.DistanceMid != null && d.DistanceAft != null &&
+                        d.isFwdDistancetoFwd != null && d.isMidDistanceToFwd !=null && d.isAftDistanceToFwd != null &&
+                        d.DraughtSurveyBlock.Inspection.VesselInput.IMO == imo)
+                    .ToListAsync();
+
+                
+
+                var filteredCandidatesForDistances = candidatesForDistances
+                    .GroupBy(d => new
+                    {
+                        d.DistanceFwd,
+                        d.DistanceMid,
+                        d.DistanceAft,
+                        d.isFwdDistancetoFwd,
+                        d.isMidDistanceToFwd,
+                        d.isAftDistanceToFwd
+                    })
+                    .Select(g => g.First())
+                    .ToList();
+
+
+                
+
+                if (filteredCandidatesForDistances.Any())                {
+                    
+
+                    string distanceShiftedTo(double? distance, bool? isShiftedToFwd)
+                    {
+                        if (distance == 0 || distance == null || isShiftedToFwd == null)
+                        {
+                            return "";
+                        }
+
+                        return isShiftedToFwd == true ? $"(to Fwd)" : "(to Aft)";
+                    }
+
+                    var messages = new List<string>();
+
+                    foreach (var item in filteredCandidatesForDistances)
+                    {
+                        string draught = item.DraughtSurveyBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection?.ToString("N3") ?? "";
+
+                        var message = $"For draught: {draught} m, <br/>" +
+                            $"Distance Fwd: {item.DistanceFwd?.ToString("N3")} m {distanceShiftedTo(item.DistanceFwd, item.isFwdDistancetoFwd)}, <br/>" +
+                            $"Distance Mid: {item.DistanceMid?.ToString("N3")} m {distanceShiftedTo(item.DistanceMid, item.isMidDistanceToFwd)}, <br/>" +
+                            $"Distance Aft: {item.DistanceAft?.ToString("N3")} m {distanceShiftedTo(item.DistanceAft, item.isAftDistanceToFwd)}.";
+
+                        messages.Add(message);
+                    }
+
+
+
+                    ViewData["DistancesSuggestionNote"] = $"Distances based on your previous inspections: <hr/>" +
+                        string.Join("<hr/>", messages);                    
+                }
+
+            }            
+            
             return View(viewModel);
         }
 
@@ -192,10 +279,9 @@ namespace DraughtSurveyWebApp.Controllers
 
                 input.SeaWaterDensity = viewModel.SeaWaterDensity;
                 input.KeelCorrection = viewModel.KeelCorrection;
-
-
-                _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
             }
+
+            _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
 
             await _context.SaveChangesAsync();
 

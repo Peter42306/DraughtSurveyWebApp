@@ -4,6 +4,7 @@
     ViewData["Title"] = "Details";
 }
 
+
 <div class="row">
     <div class="col-8">
         <h4>@Model.VesselName</h4>
@@ -58,24 +59,32 @@
     </div>    
     @* <hr /> *@
 
+    @if (TempData["VesselAutoFilled"] != null)
+    {
+    <div class="alert alert-info">
+        <strong>Note: </strong>
+        @TempData["VesselAutoFilled"]
+    </div>
+    }
+
     <dl class="row">
         <dt class="col-6 col-sm-3">IMO</dt>
         <dd class="col-6 col-sm-9">@Model.VesselInput.IMO</dd>
 
         <dt class="col-6 col-sm-3">LBP</dt>
-        <dd class="col-6 col-sm-9">@Model.VesselInput.LBP</dd>
+        <dd class="col-6 col-sm-9">@Model.VesselInput.LBP?.ToString("N3")</dd>
 
         <dt class="col-6 col-sm-3">BM</dt>
-        <dd class="col-6 col-sm-9">@Model.VesselInput.BM</dd>
+        <dd class="col-6 col-sm-9">@Model.VesselInput.BM?.ToString("N3")</dd>
 
         <dt class="col-6 col-sm-3">LS</dt>
-        <dd class="col-6 col-sm-9">@Model.VesselInput.LS</dd>
+        <dd class="col-6 col-sm-9">@Model.VesselInput.LS?.ToString("N3")</dd>
 
         <dt class="col-6 col-sm-3">SDWT</dt>
-        <dd class="col-6 col-sm-9">@Model.VesselInput.SDWT</dd>
+        <dd class="col-6 col-sm-9">@Model.VesselInput.SDWT?.ToString("N3")</dd>
 
         <dt class="col-6 col-sm-3">Declared Constant</dt>
-        <dd class="col-6 col-sm-9">@Model.VesselInput.DeclaredConstant</dd>
+        <dd class="col-6 col-sm-9">@Model.VesselInput.DeclaredConstant?.ToString("N3")</dd>
     </dl>
 
     
@@ -105,7 +114,7 @@ else
         <dd class="col-6 col-sm-9">@Model.CargoInput.CargoName</dd>
 
         <dt class="col-6 col-sm-3">Declared Weight</dt>
-        <dd class="col-6 col-sm-9">@Model.CargoInput.DeclaredWeight</dd>
+        <dd class="col-6 col-sm-9">@Model.CargoInput.DeclaredWeight?.ToString("N3")</dd>
 
         <dt class="col-6 col-sm-3">Loading Terminal</dt>
         <dd class="col-6 col-sm-9">@Model.CargoInput.LoadingTerminal</dd>
@@ -232,7 +241,11 @@ else
             <dd class="col-6 col-sm-9">@initialBlock.DraughtsResults.MeanAdjustedDraught?.ToString("N3")</dd>
 
             <dt class="col-6 col-sm-3">@(initialBlock.DraughtsResults.HoggingSagging < 0 ? "Hogging" : "Sagging")</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.DraughtsResults.HoggingSagging?.ToString("N3")</dd>
+            <dd class="col-6 col-sm-9">
+                @(initialBlock.DraughtsResults.HoggingSagging.HasValue
+                    ? Math.Abs(initialBlock.DraughtsResults.HoggingSagging.Value).ToString("N3")
+                    : "")
+            </dd>
 
             <dt class="col-6 col-sm-3">@((initialBlock.DraughtsInput.DraughtMidPS - initialBlock.DraughtsInput.DraughtMidSS) < 0 ? "Heel to SS" : "Heel to PS")</dt>
             <dd class="col-6 col-sm-9">@initialBlock.DraughtsResults.Heel?.ToString("N3")</dd>
@@ -277,7 +290,12 @@ else
             <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.TPCFromTable?.ToString("N3")</dd>
 
             <dt class="col-6 col-sm-3">Table LCF</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.LCFFromTable?.ToString("N3") @(initialBlock.HydrostaticInput.IsLCFForward == true ? "FWD" : "AFT")</dd>
+            <dd class="col-6 col-sm-9">
+                @(initialBlock.HydrostaticResults.LCFFromTable?.ToString("N3"))
+                @(initialBlock.HydrostaticInput.IsLCFForward != null
+                    ? (initialBlock.HydrostaticInput.IsLCFForward == true ? "FWD" : "AFT")
+                    : "")                                                
+            </dd>
 
             <dt class="col-6 col-sm-3">Table MTC +50 cm</dt>
             <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.MTCPlus50FromTable?.ToString("N3")</dd>

@@ -38,6 +38,7 @@ namespace DraughtSurveyWebApp.Controllers
             var draughtSurveyBlock = await _context.DraughtSurveyBlocks
                 .Include(d => d.DeductiblesInput)
                 .Include(d => d.DeductiblesResults)
+                .Include(i => i.Inspection)
                 .FirstOrDefaultAsync(b => b.Id == draughtSurveyBlockId);
 
             if (draughtSurveyBlock == null)
@@ -143,11 +144,11 @@ namespace DraughtSurveyWebApp.Controllers
                 inputs.DieselOil = viewModel.DieselOil;
                 inputs.LubOil = viewModel.LubOil;
                 inputs.Others = viewModel.Others;
-
-
-                _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
             }
-                           
+
+            
+
+            _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
 
             await _context.SaveChangesAsync();
 

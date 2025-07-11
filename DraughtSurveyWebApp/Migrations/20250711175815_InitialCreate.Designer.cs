@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DraughtSurveyWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250709181121_InitialCreate")]
+    [Migration("20250711175815_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -506,6 +506,49 @@ namespace DraughtSurveyWebApp.Migrations
                     b.ToTable("Inspections");
                 });
 
+            modelBuilder.Entity("DraughtSurveyWebApp.Models.UserHydrostaticTableRow", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double?>("Displacement")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("Draught")
+                        .HasColumnType("REAL");
+
+                    b.Property<bool?>("IsLcfForward")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double?>("LCF")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("MTCMinus50")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("MTCPlus50")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("TPC")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("VesselInputId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("VesselInputId");
+
+                    b.ToTable("UserHydrostaticTableRows");
+                });
+
             modelBuilder.Entity("DraughtSurveyWebApp.Models.VesselInput", b =>
                 {
                     b.Property<int>("Id")
@@ -784,6 +827,25 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
+            modelBuilder.Entity("DraughtSurveyWebApp.Models.UserHydrostaticTableRow", b =>
+                {
+                    b.HasOne("DraughtSurveyWebApp.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DraughtSurveyWebApp.Models.VesselInput", "VesselInput")
+                        .WithMany("UserHydrostaticTableRows")
+                        .HasForeignKey("VesselInputId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("VesselInput");
+                });
+
             modelBuilder.Entity("DraughtSurveyWebApp.Models.VesselInput", b =>
                 {
                     b.HasOne("DraughtSurveyWebApp.Models.Inspection", "Inspection")
@@ -875,6 +937,11 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Navigation("DraughtSurveyBlocks");
 
                     b.Navigation("VesselInput");
+                });
+
+            modelBuilder.Entity("DraughtSurveyWebApp.Models.VesselInput", b =>
+                {
+                    b.Navigation("UserHydrostaticTableRows");
                 });
 #pragma warning restore 612, 618
         }

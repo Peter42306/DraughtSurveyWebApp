@@ -29,6 +29,7 @@
             <div class="col-lg-6">
                 <h6>Initial Displacement, TPC, LCF</h6>
                 <hr />
+                
 
                 <div class="row mb-2">
                     <div class="col-3">
@@ -69,19 +70,19 @@
                 <div class="row mb-2">
                     <div class="col-3">
                         <label asp-for="MeanAdjustedDraughtAfterKeelCorrection" class="small-label"></label>
-                        <input class="form-control" value="@Model.MeanAdjustedDraughtAfterKeelCorrection?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.MeanAdjustedDraughtAfterKeelCorrection?.ToString("0.000")" readonly />
                     </div>
                     <div class="col-3">
                         <label asp-for="DisplacementFromTable" class="small-label"></label>
-                        <input class="form-control" value="@Model.DisplacementFromTable?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.DisplacementFromTable?.ToString("0.000")" readonly />
                     </div>
                     <div class="col-3">
                         <label asp-for="TPCFromTable" class="small-label"></label>
-                        <input class="form-control" value="@Model.TPCFromTable?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.TPCFromTable?.ToString("0.000")" readonly />
                     </div>
                     <div class="col-3">
                         <label asp-for="LCFFromTable" class="small-label"></label>
-                        <input class="form-control" value="@Model.LCFFromTable?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.LCFFromTable?.ToString("0.000")" readonly />
                     </div>
                 </div>
                 <div class="row mb-2">
@@ -144,7 +145,7 @@
                 <div class="row mb-2">                    
                     <div class="col-3">
                         <label asp-for="DraughtAboveMTCPlus50" class="small-label"></label>
-                        <input class="form-control" value="@Model.DraughtAboveMTCPlus50?.ToString("0.000")" readonly />                        
+                        <input class="form-control bg-light" value="@Model.DraughtAboveMTCPlus50?.ToString("0.000")" readonly />                        
                     </div>
                     <div class="col-3">
                         <label asp-for="MTCPlus50Above" class="control-label small-label"></label>
@@ -153,7 +154,7 @@
                     </div>
                     <div class="col-3">
                         <label asp-for="DraughtAboveMTCMinus50" class="small-label"></label>
-                        <input class="form-control" value="@Model.DraughtAboveMTCMinus50?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.DraughtAboveMTCMinus50?.ToString("0.000")" readonly />
                     </div>
                     <div class="col-3">
                         <label asp-for="MTCMinus50Above" class="control-label small-label"></label>
@@ -167,20 +168,20 @@
                     </div>
                     <div class="col-3">
                         <label asp-for="MTCPlus50FromTable" class="small-label"></label>
-                        <input class="form-control" value="@Model.MTCPlus50FromTable?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.MTCPlus50FromTable?.ToString("0.000")" readonly />
                     </div>
                     <div class="col-3">
                         <label></label>                        
                     </div>
                     <div class="col-3">
                         <label asp-for="MTCMinus50FromTable" class="small-label"></label>
-                        <input class="form-control" value="@Model.MTCMinus50FromTable?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.MTCMinus50FromTable?.ToString("0.000")" readonly />
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-3">
                         <label asp-for="DraughtBelowMTCPlus50" class="small-label"></label>
-                        <input class="form-control" value="@Model.DraughtBelowMTCPlus50?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.DraughtBelowMTCPlus50?.ToString("0.000")" readonly />
                     </div>
                     <div class="col-3">
                         <label asp-for="MTCPlus50Below" class="control-label small-label"></label>
@@ -189,7 +190,7 @@
                     </div>
                     <div class="col-3">
                         <label asp-for="DraughtBelowMTCMinus50" class="small-label"></label>
-                        <input class="form-control" value="@Model.DraughtBelowMTCMinus50?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.DraughtBelowMTCMinus50?.ToString("0.000")" readonly />
                     </div>
                     <div class="col-3">
                         <label asp-for="MTCMinus50Below" class="control-label small-label"></label>
@@ -203,15 +204,15 @@
                 <div class="row mb-2">                    
                     <div class="col-3">
                         <label asp-for="FirstTrimCorrection" class="small-label"></label>
-                        <input class="form-control" value="@Model.FirstTrimCorrection?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.FirstTrimCorrection?.ToString("0.000")" readonly />
                     </div>                    
                     <div class="col-3">
                         <label asp-for="SecondTrimCorrection" class="small-label"></label>
-                        <input class="form-control" value="@Model.SecondTrimCorrection?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.SecondTrimCorrection?.ToString("0.000")" readonly />
                     </div>
                     <div class="col-6">
                         <label asp-for="DisplacementCorrectedForTrim" class="small-label"></label>
-                        <input class="form-control" value="@Model.DisplacementCorrectedForTrim?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.DisplacementCorrectedForTrim?.ToString("0.000")" readonly />
                     </div>
                 </div>
                 <div class="row mb-2">
@@ -219,7 +220,7 @@
                     </div>
                     <div class="col-6">
                         <label asp-for="DisplacementCorrectedForDensity" class="small-label"></label>
-                        <input class="form-control" value="@Model.DisplacementCorrectedForDensity?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.DisplacementCorrectedForDensity?.ToString("0.000")" readonly />
                     </div>
                 </div>
                 <div class="row mb-2">
@@ -227,7 +228,7 @@
                     </div>                    
                     <div class="col-6">
                         <label asp-for="NettoDisplacement" class="small-label"></label>
-                        <input class="form-control" value="@Model.NettoDisplacement?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.NettoDisplacement?.ToString("0.000")" readonly />
                     </div>
                 </div>
                 <div class="row mb-2">
@@ -235,7 +236,7 @@
                     </div>
                     <div class="col-6">
                         <label asp-for="CargoPlusConstant" class="small-label"></label>
-                        <input class="form-control" value="@Model.CargoPlusConstant?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.CargoPlusConstant?.ToString("0.000")" readonly />
                     </div>
                 </div>
                 <hr />

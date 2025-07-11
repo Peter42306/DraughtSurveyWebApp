@@ -9,6 +9,8 @@
 <div class="row">
     <div class="col-md-6">
         <form asp-action="Create">
+            
+            
 
             <div class="row">
                 <div class="col-6">
@@ -32,9 +34,9 @@
                 <span asp-validation-for="IMO" class="text-danger"></span>
 
                 <p>
-                    Please enter the IMO number and click "Save" to check if this vessel already exists in your database.
+                    Please enter the IMO number and click 'Save'. If a vessel with this IMO already exists in your database, the fields LBP, BM, Light Ship, SDWT, and Declared Constant will be filled in automatically. You can edit them if needed.
                 </p>
-            </div>
+            </div>           
 
             <div class="form-group">
                 <label asp-for="LBP"></label>

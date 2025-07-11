@@ -55,7 +55,7 @@ namespace DraughtSurveyWebApp.Controllers
             return View(viewModel);
         }
 
-        // POST: CargoInput/Create
+        // POST: CargoInput/Create        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CargoInputViewModel viewModel)
@@ -113,6 +113,7 @@ namespace DraughtSurveyWebApp.Controllers
 
 
             var cargo = await _context.CargoInputs
+                .Include(c => c.Inspection)
                 .FirstOrDefaultAsync(c => c.InspectionId == inspectionId);
 
             if (cargo == null || (cargo.Inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin")))

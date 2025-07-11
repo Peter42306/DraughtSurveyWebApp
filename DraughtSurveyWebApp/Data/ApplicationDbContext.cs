@@ -16,6 +16,7 @@ namespace DraughtSurveyWebApp.Data
         public DbSet<DraughtsResults> DraughtsResults { get; set; }
         public DbSet<HydrostaticInput> HydrostaticInputs { get; set; }
         public DbSet<HydrostaticResults> HydrostaticResults { get; set; }
+        public DbSet<UserHydrostaticTableRow> UserHydrostaticTableRows { get; set; }
         public DbSet<DeductiblesInput> DeductiblesInputs { get; set; }
         public DbSet<DeductiblesResults> DeductiblesResults { get; set; }
 
@@ -33,6 +34,18 @@ namespace DraughtSurveyWebApp.Data
                 .WithMany(u => u.Inspections)
                 .HasForeignKey(i => i.ApplicationUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserHydrostaticTableRow>()
+                .HasOne(u => u.ApplicationUser)
+                .WithMany()
+                .HasForeignKey(u => u.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserHydrostaticTableRow>()
+                .HasOne(u => u.VesselInput)
+                .WithMany(v => v.UserHydrostaticTableRows)
+                .HasForeignKey(u => u.VesselInputId)
+                .OnDelete(DeleteBehavior.Restrict);            
         }
     }
 }
