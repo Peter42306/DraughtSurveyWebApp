@@ -41,7 +41,11 @@ namespace DraughtSurveyWebApp.Controllers
 
             var draughtSurveyBlock = await _context.DraughtSurveyBlocks
                 .Include(b => b.DraughtsInput)
-                .Include(r => r.DraughtsResults)
+                .Include(b => b.DraughtsResults)
+                .Include(b => b.HydrostaticInput)
+                .Include(b => b.HydrostaticResults)
+                .Include(b => b.DeductiblesInput)
+                .Include(b => b.DeductiblesResults)
                 .Include(b => b.Inspection)
                     .ThenInclude(i => i.VesselInput)
                 .FirstOrDefaultAsync(b => b.Id == draughtSurveyBlockId);
@@ -54,7 +58,10 @@ namespace DraughtSurveyWebApp.Controllers
             if (draughtSurveyBlock.Inspection == null)
             {
                 return NotFound();
-            }
+            }           
+            
+
+            
 
             if (draughtSurveyBlock.Inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin"))
             {
@@ -192,6 +199,8 @@ namespace DraughtSurveyWebApp.Controllers
 
             }            
             
+            viewModel.Inspection = draughtSurveyBlock.Inspection;
+            viewModel.VesselInput = draughtSurveyBlock?.Inspection?.VesselInput;
             return View(viewModel);
         }
 

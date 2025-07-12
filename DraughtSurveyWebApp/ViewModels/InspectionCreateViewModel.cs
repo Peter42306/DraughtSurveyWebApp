@@ -6,14 +6,11 @@ namespace DraughtSurveyWebApp.ViewModels
     public class InspectionCreateViewModel
     {        
         [Required]
-        public string VesselName { get; set; } = string.Empty;
-                
-        public string? Port { get; set; }
-        
-        public string? CompanyReference { get; set; }
-                
+        public string VesselName { get; set; } = string.Empty;                
+        public string? Port { get; set; }        
+        public string? CompanyReference { get; set; }                
         public OperationType? OperationType { get; set; }
-
         public bool UseExistingVessel { get; set; } = false;
+        public bool notShowInputWarnings { get; set; } = false;
     }
 }

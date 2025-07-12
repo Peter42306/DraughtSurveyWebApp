@@ -282,6 +282,9 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<double?>("SeaWaterDensity")
                         .HasColumnType("REAL");
 
+                    b.Property<string>("Swell")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool?>("isAftDistanceToFwd")
                         .HasColumnType("INTEGER");
 
@@ -495,6 +498,9 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<string>("VesselName")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("notShowInputWarnings")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

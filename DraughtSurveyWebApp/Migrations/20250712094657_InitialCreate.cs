@@ -171,7 +171,8 @@ namespace DraughtSurveyWebApp.Migrations
                     VesselName = table.Column<string>(type: "TEXT", nullable: false),
                     Port = table.Column<string>(type: "TEXT", nullable: true),
                     CompanyReference = table.Column<string>(type: "TEXT", nullable: true),
-                    OperationType = table.Column<int>(type: "INTEGER", nullable: true)
+                    OperationType = table.Column<int>(type: "INTEGER", nullable: true),
+                    notShowInputWarnings = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -330,6 +331,7 @@ namespace DraughtSurveyWebApp.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    Swell = table.Column<string>(type: "TEXT", nullable: true),
                     DraughtFwdPS = table.Column<double>(type: "REAL", nullable: true),
                     DraughtFwdSS = table.Column<double>(type: "REAL", nullable: true),
                     DraughtMidPS = table.Column<double>(type: "REAL", nullable: true),

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DraughtSurveyWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250711175815_InitialCreate")]
+    [Migration("20250712094657_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -285,6 +285,9 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<double?>("SeaWaterDensity")
                         .HasColumnType("REAL");
 
+                    b.Property<string>("Swell")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool?>("isAftDistanceToFwd")
                         .HasColumnType("INTEGER");
 
@@ -498,6 +501,9 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<string>("VesselName")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("notShowInputWarnings")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

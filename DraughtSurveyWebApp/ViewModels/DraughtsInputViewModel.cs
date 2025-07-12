@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DraughtSurveyWebApp.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace DraughtSurveyWebApp.ViewModels
 {
@@ -7,9 +8,12 @@ namespace DraughtSurveyWebApp.ViewModels
         public int InspectionId { get; set; }
         public int DraughtSurveyBlockId { get; set; }
 
+        public VesselInput? VesselInput { get; set; }
+        public Inspection? Inspection { get; set; }
+
 
         //====================== Data input ======================
-        
+
         [Display(Name = "Forward PS")]
         public double? DraughtFwdPS { get; set; }
 

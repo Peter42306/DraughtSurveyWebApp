@@ -12,17 +12,26 @@
         </div>
         <div class="col-6 text-end">
             <button type="submit" class="btn btn-primary me-2">Save</button>
-            <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId" class="btn btn-primary">Back</a>
+            <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId" class="btn btn-secondary">Cancel</a>
         </div>
     </div>
     <hr />
 
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="InspectionId" />
+    <input type="hidden" asp-for="InspectionId" />    
     <input type="hidden" asp-for="DraughtSurveyBlockId" />
 
+    @if (Model.Inspection != null && !Model.Inspection.notShowInputWarnings && Model.VesselInput == null)
+    {
+        <div class="alert alert-warning">
+            Vessel information is not filled in. Autofilling and calculations may be limited.
+        </div>
+    }
+
     
+
     
+
 
     <div class="row">
         <div class="col-lg-6">
@@ -83,6 +92,19 @@
             </div>
 
             <hr />
+
+
+            @if (Model.VesselInput != null && 
+            Model.Inspection != null && !Model.Inspection.notShowInputWarnings &&
+            (Model.DraughtMidPS.HasValue && Model.DraughtMidSS.HasValue) && !Model.VesselInput.BM.HasValue)
+            {
+                <div class="alert alert-warning">
+                    Enter missing data (draughts or BM).
+                </div>
+            }
+
+
+
             <div class="row mb-2">
                 <div class="col-8">
                     <label asp-for="Heel" class="small-label">
@@ -101,7 +123,32 @@
             <h6>Initial Corrections</h6>
             <hr />
 
-            @if (ViewData["DistancesSuggestionNote"] != null)
+            @if (Model.Inspection != null && !Model.Inspection.notShowInputWarnings &&
+              Model.DraughtFwdPS.HasValue && Model.DraughtFwdSS.HasValue &&
+              Model.DraughtMidPS.HasValue && Model.DraughtMidSS.HasValue &&
+              Model.DraughtAftPS.HasValue && Model.DraughtAftSS.HasValue &&
+              !Model.DistanceFwd.HasValue && !Model.DistanceMid.HasValue && !Model.DistanceAft.HasValue)
+            {
+                <div class="alert alert-warning">
+                    Enter missing data (distances).
+                </div>
+            }
+
+            @if (Model.Inspection != null && !Model.Inspection.notShowInputWarnings &&
+                Model.VesselInput != null &&
+                 Model.DraughtFwdPS.HasValue && Model.DraughtFwdSS.HasValue &&
+                 Model.DraughtMidPS.HasValue && Model.DraughtMidSS.HasValue &&
+                 Model.DraughtAftPS.HasValue && Model.DraughtAftSS.HasValue &&
+                 Model.DistanceFwd.HasValue && Model.DistanceMid.HasValue && Model.DistanceAft.HasValue &&
+                 !Model.VesselInput.LBP.HasValue)
+            {
+                <div class="alert alert-warning">
+                    Enter missing data (LBP).
+                </div>
+            }
+
+            @if (Model.Inspection != null && !Model.Inspection.notShowInputWarnings &&
+                ViewData["DistancesSuggestionNote"] != null)
             {
                 <div class="alert alert-info">
                     <strong>Note:</strong>

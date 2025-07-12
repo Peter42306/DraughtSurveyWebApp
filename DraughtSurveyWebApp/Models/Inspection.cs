@@ -28,6 +28,8 @@ namespace DraughtSurveyWebApp.Models
         public CargoInput? CargoInput { get; set; }
         public CargoResult? CargoResult { get; set; }
 
+        public bool notShowInputWarnings { get; set; } = false;
+
         public List<DraughtSurveyBlock> DraughtSurveyBlocks { get; set; } = new();        
     }
 }

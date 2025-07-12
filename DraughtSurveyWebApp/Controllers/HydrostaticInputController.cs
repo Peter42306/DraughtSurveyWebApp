@@ -15,15 +15,18 @@ namespace DraughtSurveyWebApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly SurveyCalculationsService _surveyCalculationsService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<HydrostaticInputController> _logger;
 
         public HydrostaticInputController(
             ApplicationDbContext context, 
             SurveyCalculationsService surveyCalculationsService,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ILogger<HydrostaticInputController> logger)
         {
             _context = context;
             _surveyCalculationsService = surveyCalculationsService;
             _userManager = userManager;
+            _logger=logger;
         }
 
         // GET: HydrostaticInput/Edit?draughtSurveyBlockId=3
@@ -52,6 +55,10 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 return Forbid();
             }
+
+            _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
+
+
 
             var inputs = draughtSurveyBlock.HydrostaticInput;
             var resultsDraughts = draughtSurveyBlock.DraughtsResults;
@@ -120,10 +127,12 @@ namespace DraughtSurveyWebApp.Controllers
                 DisplacementCorrectedForDensity = resultsHydrostatic?.DisplacementCorrectedForDensity,
                 NettoDisplacement = resultsHydrostatic?.NettoDisplacement,
                 CargoPlusConstant = resultsHydrostatic?.CargoPlusConstant
-            };            
+            };
 
-            //????????????????????????????????????????????????????????????????????
+            
 
+            
+            viewModel.Inspection = draughtSurveyBlock.Inspection;
             return View(viewModel);
         }
 
@@ -196,8 +205,11 @@ namespace DraughtSurveyWebApp.Controllers
 
             bool changed = IsHydrostaticsInputChanged(input, viewModel);
 
+            _logger.LogWarning("Before changed 1");
             if (changed)
             {
+                _logger.LogWarning("Entered changed 2");
+
                 input.DraughtAbove = viewModel.DraughtAbove;
                 input.DraughtBelow = viewModel.DraughtBelow;
                 input.DisplacementAbove = viewModel.DisplacementAbove;
@@ -216,7 +228,7 @@ namespace DraughtSurveyWebApp.Controllers
 
                 if (viewModel.DraughtAbove.HasValue)
                 {
-
+                    _logger.LogWarning("Entered changed 3");
 
                     if (draughtSurveyBlock.Inspection.VesselInput != null)
                     {
@@ -347,22 +359,27 @@ namespace DraughtSurveyWebApp.Controllers
 
         private bool IsHydrostaticsInputChanged(HydrostaticInput dbValue, HydrostaticInputViewModel viewModelValue)
         {
+            _logger.LogWarning("Entered IsHydrostaticsInputChanged");
+            _logger.LogWarning("dbValue: {1}, viewModelValue: {2}", dbValue.DisplacementBelow, viewModelValue.DisplacementBelow);
+            _logger.LogWarning("dbValue: {1}, viewModelValue: {2}", dbValue.DisplacementAbove, viewModelValue.DisplacementAbove);
+            
+
             return
-                dbValue.DraughtAbove != viewModelValue.DraughtAbove ||
-                dbValue.DraughtBelow != viewModelValue.DraughtBelow ||
+                !Nullable.Equals(dbValue.DraughtAbove, viewModelValue.DraughtAbove) ||
+                !Nullable.Equals(dbValue.DraughtBelow, viewModelValue.DraughtBelow) ||
 
-                dbValue.DisplacementAbove != viewModelValue.DisplacementAbove ||
-                dbValue.DisplacementBelow != viewModelValue.DisplacementBelow ||
-                dbValue.TPCAbove != viewModelValue.TPCAbove ||
-                dbValue.TPCBelow != viewModelValue.TPCBelow ||
-                dbValue.LCFAbove != viewModelValue.LCFAbove ||
-                dbValue.LCFBelow != viewModelValue.LCFBelow ||
-                dbValue.IsLCFForward != viewModelValue.IsLCFForward ||
-
-                dbValue.MTCPlus50Above != viewModelValue.MTCPlus50Above ||
-                dbValue.MTCPlus50Below != viewModelValue.MTCPlus50Below ||
-                dbValue.MTCMinus50Above != viewModelValue.MTCMinus50Above ||
-                dbValue.MTCMinus50Below != viewModelValue.MTCMinus50Below;
+                !Nullable.Equals(dbValue.DisplacementAbove, viewModelValue.DisplacementAbove) ||
+                !Nullable.Equals(dbValue.DisplacementBelow, viewModelValue.DisplacementBelow) ||
+                !Nullable.Equals(dbValue.TPCAbove, viewModelValue.TPCAbove) ||
+                !Nullable.Equals(dbValue.TPCBelow, viewModelValue.TPCBelow) ||
+                !Nullable.Equals(dbValue.LCFAbove, viewModelValue.LCFAbove) ||
+                !Nullable.Equals(dbValue.LCFBelow, viewModelValue.LCFBelow) ||
+                !Nullable.Equals(dbValue.IsLCFForward, viewModelValue.IsLCFForward) ||
+    
+                !Nullable.Equals(dbValue.MTCPlus50Above, viewModelValue.MTCPlus50Above) ||
+                !Nullable.Equals(dbValue.MTCPlus50Below, viewModelValue.MTCPlus50Below) ||
+                !Nullable.Equals(dbValue.MTCMinus50Above, viewModelValue.MTCMinus50Above) ||
+                !Nullable.Equals(dbValue.MTCMinus50Below, viewModelValue.MTCMinus50Below);
         }
     }
 }

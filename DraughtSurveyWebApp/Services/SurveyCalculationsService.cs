@@ -90,6 +90,7 @@ namespace DraughtSurveyWebApp.Services
                 meanAdjustedDraughtAfterKeelCorrection = 0.0;
             }
 
+
             if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
                 draughtAbove.HasValue &&
                 displacementAbove.HasValue &&
@@ -103,13 +104,29 @@ namespace DraughtSurveyWebApp.Services
                     displacementBelow.Value,
                     meanAdjustedDraughtAfterKeelCorrection.Value);
             }
+            else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+                     draughtAbove.HasValue &&
+                     displacementAbove.HasValue)
+            {
+                displacementFromTable = displacementAbove;
+            }
+            else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+                     draughtBelow.HasValue &&
+                     displacementBelow.HasValue)
+            {
+                displacementFromTable = displacementBelow;
+            }
+            
+            
+
+
 
 
             if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
-                draughtAbove.HasValue &&
-                tpcAbove.HasValue &&
-                draughtBelow.HasValue &&
-                tpcBelow.HasValue)
+                draughtAbove.HasValue && draughtAbove.Value != 0 &&
+                tpcAbove.HasValue && tpcAbove.Value != 0 &&
+                draughtBelow.HasValue && draughtBelow.Value != 0 &&
+                tpcBelow.HasValue && tpcBelow.Value != 0)
             {
                 tPCFromTable = CalculateLinearInterpolation(
                     draughtAbove.Value,
@@ -118,13 +135,29 @@ namespace DraughtSurveyWebApp.Services
                     tpcBelow.Value,
                     meanAdjustedDraughtAfterKeelCorrection.Value);
             }
+            else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+                     draughtAbove.HasValue && draughtAbove.Value != 0 &&
+                     tpcAbove.HasValue && tpcAbove.Value != 0)
+            {
+                tPCFromTable = tpcAbove;
+            }
+            else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+                     draughtBelow.HasValue && draughtBelow.Value != 0 &&
+                     tpcBelow.HasValue && tpcBelow.Value != 0)
+            {
+                tPCFromTable = tpcBelow;
+            }
+            else
+            {
+                tPCFromTable = null;
+            }
 
 
             if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
-                draughtAbove.HasValue &&
-                lcfAbove.HasValue &&
-                draughtBelow.HasValue &&
-                lcfBelow.HasValue)
+                draughtAbove.HasValue && draughtAbove.Value != 0 &&
+                lcfAbove.HasValue && lcfAbove.Value != 0 &&
+                draughtBelow.HasValue && draughtBelow.Value != 0 &&
+                lcfBelow.HasValue && lcfBelow.Value != 0)
             {
                 lCFFromTable = CalculateLinearInterpolation(
                     draughtAbove.Value,
@@ -132,6 +165,22 @@ namespace DraughtSurveyWebApp.Services
                     draughtBelow.Value,
                     lcfBelow.Value,
                     meanAdjustedDraughtAfterKeelCorrection.Value);
+            }
+            else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+                     draughtAbove.HasValue && draughtAbove.Value != 0 &&
+                     lcfAbove.HasValue && lcfAbove.Value != 0)
+            {
+                lCFFromTable = lcfAbove;
+            }
+            else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+                     draughtBelow.HasValue && draughtBelow.Value != 0 &&
+                     lcfBelow.HasValue && lcfBelow.Value != 0)
+            {
+                lCFFromTable = lcfBelow;
+            }
+            else
+            {
+                lCFFromTable = null;
             }
 
 
@@ -144,11 +193,13 @@ namespace DraughtSurveyWebApp.Services
             double? mtcMinus50Above = input.MTCMinus50Above;
             double? mtcMinus50Below = input.MTCMinus50Below;
 
+
+
             if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
-                draughtAbove.HasValue &&
-                mtcPlus50Above.HasValue &&
-                draughtBelow.HasValue &&
-                mtcPlus50Below.HasValue
+                draughtAbove.HasValue && draughtAbove.Value != 0 &&
+                mtcPlus50Above.HasValue && mtcPlus50Above.Value != 0 &&
+                draughtBelow.HasValue && draughtBelow.Value != 0 &&
+                mtcPlus50Below.HasValue && mtcPlus50Below.Value != 0
                 )
             {
                 mTCPlus50FromTable = CalculateLinearInterpolation(
@@ -159,12 +210,30 @@ namespace DraughtSurveyWebApp.Services
                     meanAdjustedDraughtAfterKeelCorrection.Value + 0.5
                     );
             }
+            else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+                     draughtAbove.HasValue && draughtAbove.Value != 0 &&
+                     mtcPlus50Above.HasValue && mtcPlus50Above.Value != 0)
+            {
+                mTCPlus50FromTable = mtcPlus50Above;
+            }
+            else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+                     draughtBelow.HasValue && draughtBelow.Value != 0 &&
+                     mtcPlus50Below.HasValue && mtcPlus50Below.Value != 0)
+            {
+                mTCPlus50FromTable = mtcPlus50Below;
+            }
+            else
+            {
+                mTCPlus50FromTable = null;
+            }
+
+
 
             if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
-                draughtAbove.HasValue &&
-                mtcMinus50Above.HasValue &&
-                draughtBelow.HasValue &&
-                mtcMinus50Below.HasValue)
+                draughtAbove.HasValue && draughtAbove.Value != 0 &&
+                mtcMinus50Above.HasValue && mtcMinus50Above.Value != 0 &&
+                draughtBelow.HasValue && draughtBelow.Value != 0 &&
+                mtcMinus50Below.HasValue && mtcMinus50Below.Value != 0)
             {
                 mTCMinus50FromTable = CalculateLinearInterpolation(
                     draughtAbove.Value - 0.5,
@@ -173,6 +242,22 @@ namespace DraughtSurveyWebApp.Services
                     mtcMinus50Below.Value,
                     meanAdjustedDraughtAfterKeelCorrection.Value - 0.5
                     );
+            }
+            else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+                     draughtAbove.HasValue && draughtAbove.Value != 0 &&
+                     mtcMinus50Above.HasValue && mtcMinus50Above.Value != 0)
+            {
+                mTCMinus50FromTable = mtcMinus50Above;
+            }
+            else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
+                     draughtBelow.HasValue && draughtBelow.Value != 0 &&
+                     mtcMinus50Below.HasValue && mtcMinus50Below.Value != 0)
+            {
+                mTCMinus50FromTable = mtcMinus50Below;
+            }
+            else
+            {
+                mTCMinus50FromTable = null;
             }
 
 
@@ -627,19 +712,19 @@ namespace DraughtSurveyWebApp.Services
 
         public double CalculateApparentMean(double port, double starboard)
         {
-            double result = Math.Round((port+starboard)/2, 3);
+            double result = Math.Round((port+starboard)/2, 3, MidpointRounding.AwayFromZero);
             return result;
         }
 
         public double CalculateTrim(double forward, double aft)
         {
-            double result = Math.Round((aft-forward), 3);
+            double result = Math.Round((aft-forward), 3, MidpointRounding.AwayFromZero);
             return result;
         }
 
         public double CalculateHoggingSagging(double forward, double mid, double aft)
         {
-            double result = Math.Round(mid-((forward+aft)/2), 3);
+            double result = Math.Round(mid-((forward+aft)/2), 3, MidpointRounding.AwayFromZero);
             return result;
         }
 
@@ -648,7 +733,7 @@ namespace DraughtSurveyWebApp.Services
             double differenceBetweenPsAndSs = Math.Abs((draughtMidPS-draughtMidSS)/BM);
             double atan = Math.Atan(differenceBetweenPsAndSs);
             double degrees = CalculateRadToDeg(atan);
-            double result = Math.Round(degrees, 3);            
+            double result = Math.Round(degrees, 3, MidpointRounding.AwayFromZero);            
             return result;
         }
 
@@ -672,7 +757,7 @@ namespace DraughtSurveyWebApp.Services
 
             double result = lbp + distanceFwd + distanceAft;
 
-            return Math.Round(result, 3);
+            return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
         public double CalculateTrimCorrection(double distance, double apparentTrim, bool isDraughtShiftedToForward, double LBD)
@@ -694,25 +779,25 @@ namespace DraughtSurveyWebApp.Services
 
             result = sign * Math.Abs(distance*apparentTrim/LBD);
 
-            return Math.Round(result, 3);
+            return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
         public double CalculateCorrectedDraught(double draughtApparentMean, double correctionForDistasnce)
         {
-            double result = Math.Round(draughtApparentMean + correctionForDistasnce, 3);
+            double result = Math.Round(draughtApparentMean + correctionForDistasnce, 3, MidpointRounding.AwayFromZero);
             return result;
         }
 
         public double CalculateMeanOfMean(double draughtMeanFwd, double draughtMeanMid, double draughtMeanAft)
         {
-            double result = Math.Round((draughtMeanFwd + draughtMeanAft + (draughtMeanMid*6))/8, 3);
+            double result = Math.Round((draughtMeanFwd + draughtMeanAft + (draughtMeanMid*6))/8, 3, MidpointRounding.AwayFromZero);
             return result;
         }
 
         public double CalculateMeanAdjustedDraughtAfterKeelCorrection(double meanAdjustedDraught, double keelCorrection)
         {           
             double result = meanAdjustedDraught + keelCorrection;
-            return Math.Round(result, 3);
+            return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
         public double CalculateDraughtForMTCPlus50(double tableDraught)
@@ -735,7 +820,7 @@ namespace DraughtSurveyWebApp.Services
             }
 
             double y = y0 + ((y1 - y0) / (x1 - x0)) * (x - x0);
-            return Math.Round(y, 3);
+            return Math.Round(y, 3, MidpointRounding.AwayFromZero);
         }
 
         public double CalculateFirstTrimCorrection(double correctedTrim, double LCF, bool isLCFForward, double TPC, double LBP)
@@ -764,7 +849,7 @@ namespace DraughtSurveyWebApp.Services
             
             result = sign * Math.Abs((correctedTrim * LCF * TPC * 100) / LBP);
 
-            return Math.Round(result, 3);
+            return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
         public double CalculateSecondTrimCorrection(double correctedTrim, double MTC1, double MTC2, double LBP)
@@ -784,35 +869,35 @@ namespace DraughtSurveyWebApp.Services
 
             result = (correctedTrim * correctedTrim * Math.Abs(MTC1 - MTC2) * 50) / LBP;
 
-            return Math.Round(result, 3);
+            return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
         public double CalculateDisplacementCorrectedForTrim(double tableDisplacement, double firstTrimCorrection, double secondTrimCorrection)
         {           
             double result = tableDisplacement + firstTrimCorrection + secondTrimCorrection;
 
-            return Math.Round(result, 3);
+            return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
         public double CalculateDisplacementCorrectedForDensity(double displacementCorrectedForTrim, double seaWaterDensity)
         {            
             double result = displacementCorrectedForTrim * seaWaterDensity / 1.025;
 
-            return Math.Round(result, 3);
+            return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
         public double CalculateNettoDisplacement(double displacementCorrectedForDensity, double totalDeductibles)
         {
             double result = displacementCorrectedForDensity - totalDeductibles;
 
-            return Math.Round(result, 3);
+            return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
         public double CalculateCargoPlusConstant(double nettoDisplacement, double lightShip)
         {
             double result = nettoDisplacement - lightShip;
 
-            return Math.Round(result, 3);
+            return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
         public double CalculateTotalDeductibles(DeductiblesInput input)
@@ -825,7 +910,7 @@ namespace DraughtSurveyWebApp.Services
                 (input.LubOil ?? 0) +
                 (input.Others ?? 0); ;
 
-            return Math.Round(result, 3);
+            return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
 

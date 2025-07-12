@@ -14,7 +14,7 @@
         <div class="col-6 text-end">
             <div>
                 <button type="submit" class="btn btn-primary me-2">Save</button>            
-                <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId" class="btn btn-primary">Back</a>
+                <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId" class="btn btn-secondary">Cancel</a>
             </div>
         </div>
     </div>
@@ -30,6 +30,19 @@
                 <h6>Initial Displacement, TPC, LCF</h6>
                 <hr />
                 
+            @if (Model.DraughtBelow.HasValue && Model.DraughtAbove.HasValue)
+            {
+                if (
+                    !(Model.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(Model.DraughtBelow.Value, Model.DraughtAbove.Value) &&
+                    Model.MeanAdjustedDraughtAfterKeelCorrection < Math.Max(Model.DraughtBelow.Value, Model.DraughtAbove.Value))
+                )
+                {
+                    <div class="alert alert-danger">
+                        Mean draught is out of range of table draught values. Calculations may be inaccurate.
+                    </div>
+                }               
+                
+            }
 
                 <div class="row mb-2">
                     <div class="col-3">
@@ -75,6 +88,7 @@
                     <div class="col-3">
                         <label asp-for="DisplacementFromTable" class="small-label"></label>
                         <input class="form-control bg-light" value="@Model.DisplacementFromTable?.ToString("0.000")" readonly />
+                        <input type="hidden" asp-for="DisplacementFromTable" />
                     </div>
                     <div class="col-3">
                         <label asp-for="TPCFromTable" class="small-label"></label>
@@ -111,6 +125,31 @@
 
                 <div class="row mb-2">
                     <div class="col-9">                        
+
+                    @{
+                        string? lcfPosition = null;
+
+                        if (
+                            Model.Inspection != null &&
+                            !Model.Inspection.notShowInputWarnings &&
+                            Model.DraughtAbove.HasValue && Model.DraughtBelow.HasValue &&
+                            Model.LCFAbove.HasValue && Model.LCFBelow.HasValue &&
+                            Model.IsLCFForward == null
+                        )
+                        {
+                            bool isDraughtAboveGreater = Model.DraughtAbove.Value > Model.DraughtBelow.Value;
+                            bool isLCFAboveGreater = Model.LCFAbove.Value > Model.LCFBelow.Value;
+
+                            lcfPosition = (isDraughtAboveGreater == isLCFAboveGreater) ? "AFT" : "FWD";
+
+                            <div class="alert alert-warning">
+                                Based on input LCF is <strong>@lcfPosition</strong>. Please check vessel's tables to confirm 
+                            </div>                            
+                        }                        
+                    }
+
+                    
+
                         <h6>LCF location relative to midship</h6>
                         @* <label class="form-label">LCF location relative to midship</label> *@
                     </div>                                        
@@ -121,7 +160,7 @@
                             <input class="form-check-input" type="radio" asp-for="IsLCFForward" value="true" id="lcfForward"/>                            
                         </div>
                         <div class="form-check">
-                            <label class="form-check-label small-label" for="lcfAft">LCF Aft</label>
+                            <label class="form-check-label small-label" for="lcfAft">LCF AFT</label>
                             <input class="form-check-input" type="radio" asp-for="IsLCFForward" value="false" id="lcfAft" />                            
                         </div>
                     </div>
@@ -204,7 +243,10 @@
                 <div class="row mb-2">                    
                     <div class="col-3">
                         <label asp-for="FirstTrimCorrection" class="small-label"></label>
-                        <input class="form-control bg-light" value="@Model.FirstTrimCorrection?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" 
+                            value="@(Model.FirstTrimCorrection.HasValue
+                                ? Math.Abs(Model.FirstTrimCorrection.Value).ToString("0.000") 
+                                : string.Empty)" readonly />
                     </div>                    
                     <div class="col-3">
                         <label asp-for="SecondTrimCorrection" class="small-label"></label>

@@ -19,10 +19,21 @@
 <div>
     <hr />
     <div class="row" id="draught-inspection-input">
-        <div class="col-6">
+        <div class="col">
             <h4>Inspection</h4>
         </div>
-        <div class="col-6 text-end">
+
+        @* <div class="col-auto">
+            <div class="form-check form-check-inline">
+            <input asp-for="notShowInputWarnings" class="form-check-input" type="checkbox"/>
+            <label asp-for="notShowInputWarnings" class="form-check-label">
+                Don't show inputs warning
+            </label>
+        </div>
+        </div> *@
+        
+
+        <div class="col-auto text-end">
             <a asp-action="Edit" asp-route-id="@Model.Id">Edit </a>
             
         </div>
@@ -41,6 +52,9 @@
         
         <dt class="col-6 col-sm-3">Operation Type</dt>
         <dd class="col-6 col-sm-9">@Html.DisplayFor(model => model.OperationType)</dd>
+
+        <dt class="col-6 col-sm-3">Input alerts</dt>
+        <dd class="col-6 col-sm-9">@(Model.notShowInputWarnings ? "Off" : "On")</dd>
     </dl>
 </div>
 
@@ -304,7 +318,11 @@ else
             <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.MTCMinus50FromTable?.ToString("N3")</dd>
 
             <dt class="col-6 col-sm-3">1st Trim Correction</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.FirstTrimCorrection?.ToString("N3")</dd>
+            <dd class="col-6 col-sm-9">
+                @(initialBlock.HydrostaticResults.FirstTrimCorrection.HasValue
+                    ? Math.Abs(initialBlock.HydrostaticResults.FirstTrimCorrection.Value).ToString("N3")
+                    : null)
+            </dd>
 
             <dt class="col-6 col-sm-3">2nd Trim Correction</dt>
             <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.SecondTrimCorrection?.ToString("N3")</dd>

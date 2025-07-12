@@ -129,8 +129,8 @@ namespace DraughtSurveyWebApp.Controllers
                 VesselName = viewModel.VesselName,
                 Port = viewModel.Port,
                 CompanyReference = viewModel.CompanyReference,
-                OperationType = viewModel.OperationType,
-
+                OperationType = viewModel.OperationType,                            
+                notShowInputWarnings = viewModel.notShowInputWarnings
             };
 
             inspection.DraughtSurveyBlocks = new List<DraughtSurveyBlock>
@@ -188,7 +188,8 @@ namespace DraughtSurveyWebApp.Controllers
                 VesselName = inspection.VesselName,
                 Port = inspection.Port,
                 CompanyReference = inspection.CompanyReference,
-                OperationType = inspection.OperationType
+                OperationType = inspection.OperationType,
+                notShowInputWarnings = inspection.notShowInputWarnings
             };
 
             return View(viewModel);
@@ -239,6 +240,7 @@ namespace DraughtSurveyWebApp.Controllers
                 inspection.Port = viewModel.Port;
                 inspection.CompanyReference = viewModel.CompanyReference;
                 inspection.OperationType = viewModel.OperationType;
+                inspection.notShowInputWarnings = viewModel.notShowInputWarnings;
             }
             
                 
@@ -313,7 +315,8 @@ namespace DraughtSurveyWebApp.Controllers
                 dbValue.VesselName != viewModelValue.VesselName ||
                 dbValue.Port != viewModelValue.Port ||
                 dbValue.CompanyReference != viewModelValue.CompanyReference ||
-                dbValue.OperationType != viewModelValue.OperationType;
+                dbValue.OperationType != viewModelValue.OperationType ||
+                dbValue.notShowInputWarnings != viewModelValue.notShowInputWarnings;
         }
 
         //private bool InspectionExists(int id)
