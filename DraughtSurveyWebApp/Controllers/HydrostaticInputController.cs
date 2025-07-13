@@ -40,6 +40,7 @@ namespace DraughtSurveyWebApp.Controllers
 
             var draughtSurveyBlock = await _context.DraughtSurveyBlocks
                 .Include(h => h.HydrostaticInput)
+                .Include(r => r.DraughtsInput)
                 .Include(r => r.DraughtsResults)
                 .Include(r => r.HydrostaticResults)
                 .Include(i => i.Inspection)
@@ -133,6 +134,10 @@ namespace DraughtSurveyWebApp.Controllers
 
             
             viewModel.Inspection = draughtSurveyBlock.Inspection;
+            viewModel.DraughtsInput = draughtSurveyBlock.DraughtsInput;
+            viewModel.VesselInput = draughtSurveyBlock.Inspection.VesselInput;
+            viewModel.DeductiblesResults = draughtSurveyBlock.DeductiblesResults;
+
             return View(viewModel);
         }
 

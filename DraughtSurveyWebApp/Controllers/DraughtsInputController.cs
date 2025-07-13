@@ -71,6 +71,7 @@ namespace DraughtSurveyWebApp.Controllers
             var inputs = draughtSurveyBlock.DraughtsInput;
             var results = draughtSurveyBlock.DraughtsResults;
 
+            //var test = draughtSurveyBlock.SurveyType.ToString();
 
             var viewModel = new DraughtsInputViewModel
             {
@@ -181,12 +182,12 @@ namespace DraughtSurveyWebApp.Controllers
 
                     foreach (var item in filteredCandidatesForDistances)
                     {
-                        string draught = item.DraughtSurveyBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection?.ToString("N3") ?? "";
+                        string draught = item?.DraughtSurveyBlock?.DraughtsResults?.MeanAdjustedDraughtAfterKeelCorrection?.ToString("N3") ?? "";
 
                         var message = $"For draught: {draught} m, <br/>" +
-                            $"Distance Fwd: {item.DistanceFwd?.ToString("N3")} m {distanceShiftedTo(item.DistanceFwd, item.isFwdDistancetoFwd)}, <br/>" +
-                            $"Distance Mid: {item.DistanceMid?.ToString("N3")} m {distanceShiftedTo(item.DistanceMid, item.isMidDistanceToFwd)}, <br/>" +
-                            $"Distance Aft: {item.DistanceAft?.ToString("N3")} m {distanceShiftedTo(item.DistanceAft, item.isAftDistanceToFwd)}.";
+                            $"Distance Fwd: {item?.DistanceFwd?.ToString("N3")} m {distanceShiftedTo(item?.DistanceFwd, item?.isFwdDistancetoFwd)}, <br/>" +
+                            $"Distance Mid: {item?.DistanceMid?.ToString("N3")} m {distanceShiftedTo(item?.DistanceMid, item?.isMidDistanceToFwd)}, <br/>" +
+                            $"Distance Aft: {item?.DistanceAft?.ToString("N3")} m {distanceShiftedTo(item?.DistanceAft, item?.isAftDistanceToFwd)}.";
 
                         messages.Add(message);
                     }

@@ -21,12 +21,13 @@ namespace DraughtSurveyWebApp.Data
             }
 
             // List of admins
-            var adminUsers = new List<SeedAdmin>
+            List<SeedAdmin> adminUsers = new ()
             {
                 new SeedAdmin { Email = "admin@example.com", Password = "Admin123!"}
                 //new SeedAdmin { Email = "admin1@example.com", Password = "Admin123!"},
                 //new SeedAdmin { Email = "admin2@example.com", Password = "Admin123!"}
             };            
+
 
             foreach (var adminUser in adminUsers)
             {

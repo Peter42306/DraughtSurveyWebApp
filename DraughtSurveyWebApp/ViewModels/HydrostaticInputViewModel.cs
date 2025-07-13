@@ -9,6 +9,9 @@ namespace DraughtSurveyWebApp.ViewModels
         public int DraughtSurveyBlockId { get; set; }
 
         public Inspection? Inspection { get; set; }
+        public DraughtsInput? DraughtsInput { get; set; }
+        public VesselInput? VesselInput { get; set; }
+        public DeductiblesResults? DeductiblesResults { get; set; }
 
         //===================== Data input ============================
 

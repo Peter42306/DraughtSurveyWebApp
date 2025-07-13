@@ -40,7 +40,13 @@ namespace DraughtSurveyWebApp.Controllers
         {
             //TempData["Error"] = $"Received: isActive = {Request.Form["isActive"]}";
 
-            var id = Request.Form["id"];
+            if (string.IsNullOrWhiteSpace(Request.Form["id"]))
+            {
+                TempData["Error"] = "User ID is required";
+                return RedirectToAction(nameof(Index));
+            }
+            
+            var id = Request.Form["id"].ToString();
             var isActive = Request.Form["isActive"].Contains("true");
             var adminNote = Request.Form["adminNote"];
 

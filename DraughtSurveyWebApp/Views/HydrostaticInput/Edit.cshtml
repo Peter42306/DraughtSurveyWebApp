@@ -30,19 +30,16 @@
                 <h6>Initial Displacement, TPC, LCF</h6>
                 <hr />
                 
-            @if (Model.DraughtBelow.HasValue && Model.DraughtAbove.HasValue)
-            {
-                if (
-                    !(Model.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(Model.DraughtBelow.Value, Model.DraughtAbove.Value) &&
-                    Model.MeanAdjustedDraughtAfterKeelCorrection < Math.Max(Model.DraughtBelow.Value, Model.DraughtAbove.Value))
+            @if (Model.DraughtBelow.HasValue && Model.DraughtAbove.HasValue &&
+                 !(Model.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(Model.DraughtBelow.Value, Model.DraughtAbove.Value) &&
+                 Model.MeanAdjustedDraughtAfterKeelCorrection < Math.Max(Model.DraughtBelow.Value, Model.DraughtAbove.Value))
                 )
                 {
                     <div class="alert alert-danger">
                         Mean draught is out of range of table draught values. Calculations may be inaccurate.
                     </div>
                 }               
-                
-            }
+            
 
                 <div class="row mb-2">
                     <div class="col-3">
@@ -257,15 +254,47 @@
                         <input class="form-control bg-light" value="@Model.DisplacementCorrectedForTrim?.ToString("0.000")" readonly />
                     </div>
                 </div>
+
+
+
                 <div class="row mb-2">
-                    <div class="col-6">
+
+                @if (
+                    Model.Inspection != null &&
+                    !Model.Inspection.notShowInputWarnings &&
+                    Model.DraughtsInput != null &&
+                    !Model.DraughtsInput.SeaWaterDensity.HasValue
+                    )
+                {
+                    <div class="alert alert-warning">
+                        Please enter Sea Water Density.
+                    </div>
+                }                
+
+                <div class="col-6">
                     </div>
                     <div class="col-6">
                         <label asp-for="DisplacementCorrectedForDensity" class="small-label"></label>
                         <input class="form-control bg-light" value="@Model.DisplacementCorrectedForDensity?.ToString("0.000")" readonly />
                     </div>
                 </div>
+
+
+
                 <div class="row mb-2">
+
+                @if (
+                    Model.Inspection != null &&
+                    !Model.Inspection.notShowInputWarnings &&
+                    Model.DeductiblesResults != null &&
+                    !Model.DeductiblesResults.TotalDeductibles.HasValue
+                    )
+                {
+                    <div class="alert alert-warning">
+                        Please enter Deductibles.
+                    </div>
+                }
+
                     <div class="col-6">
                     </div>                    
                     <div class="col-6">
@@ -273,7 +302,22 @@
                         <input class="form-control bg-light" value="@Model.NettoDisplacement?.ToString("0.000")" readonly />
                     </div>
                 </div>
+
+
                 <div class="row mb-2">
+
+                @if (
+                    Model.Inspection != null &&
+                    !Model.Inspection.notShowInputWarnings &&
+                    Model.VesselInput != null &&
+                    !Model.VesselInput.LS.HasValue
+                    )
+                {
+                    <div class="alert alert-warning">
+                        Please enter Light Ship.
+                    </div>
+                }
+
                     <div class="col-6">
                     </div>
                     <div class="col-6">

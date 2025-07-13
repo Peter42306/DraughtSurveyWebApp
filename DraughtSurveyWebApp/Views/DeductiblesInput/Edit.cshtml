@@ -11,7 +11,8 @@
             <h4>Edit Deductibles</h4>
         </div>
         <div class="col-6 text-end">
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="submit" class="btn btn-primary me-2">Save</button>
+            <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId" class="btn btn-secondary">Cancel</a>
         </div>
     </div>
     <hr />

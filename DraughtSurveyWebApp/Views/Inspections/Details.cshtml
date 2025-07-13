@@ -251,6 +251,19 @@ else
             <dd class="col-4 col-sm-4"></dd>
             <dd class="col-2 col-sm-2">@initialBlock.DraughtsResults.TrimCorrected?.ToString("N3")</dd>
 
+                @if (initialBlock.HydrostaticInput != null &&
+                        initialBlock.HydrostaticInput.DraughtBelow.HasValue && initialBlock.HydrostaticInput.DraughtAbove.HasValue &&
+                        !(
+                            initialBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(initialBlock.HydrostaticInput.DraughtBelow.Value, initialBlock.HydrostaticInput.DraughtAbove.Value) &&
+                            initialBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection < Math.Max(initialBlock.HydrostaticInput.DraughtBelow.Value, initialBlock.HydrostaticInput.DraughtAbove.Value)
+                        )                            
+                    )
+                {
+                    <div class="alert alert-danger">
+                        Mean draught is out of range of table draught values. Calculations may be inaccurate.
+                    </div>
+                }
+
             <dt class="col-6 col-sm-3">Mean Adjusted Draught</dt>
             <dd class="col-6 col-sm-9">@initialBlock.DraughtsResults.MeanAdjustedDraught?.ToString("N3")</dd>
 

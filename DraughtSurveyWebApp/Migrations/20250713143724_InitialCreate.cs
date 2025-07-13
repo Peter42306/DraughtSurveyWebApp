@@ -168,6 +168,7 @@ namespace DraughtSurveyWebApp.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     ApplicationUserId = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     VesselName = table.Column<string>(type: "TEXT", nullable: false),
                     Port = table.Column<string>(type: "TEXT", nullable: true),
                     CompanyReference = table.Column<string>(type: "TEXT", nullable: true),
@@ -193,8 +194,11 @@ namespace DraughtSurveyWebApp.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     CargoName = table.Column<string>(type: "TEXT", nullable: true),
                     DeclaredWeight = table.Column<double>(type: "REAL", nullable: true),
+                    Shipper = table.Column<string>(type: "TEXT", nullable: true),
+                    Consignee = table.Column<string>(type: "TEXT", nullable: true),
                     LoadingTerminal = table.Column<string>(type: "TEXT", nullable: true),
                     BerthNumber = table.Column<string>(type: "TEXT", nullable: true),
+                    DischargingPort = table.Column<string>(type: "TEXT", nullable: true),
                     InspectionId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -380,6 +384,9 @@ namespace DraughtSurveyWebApp.Migrations
                     TrimCorrected = table.Column<double>(type: "REAL", nullable: true),
                     MeanAdjustedDraught = table.Column<double>(type: "REAL", nullable: true),
                     MeanAdjustedDraughtAfterKeelCorrection = table.Column<double>(type: "REAL", nullable: true),
+                    MeanFwdAftDraught = table.Column<double>(type: "REAL", nullable: true),
+                    MeanOfMeanDraught = table.Column<double>(type: "REAL", nullable: true),
+                    DifferenceMTC1MTC2 = table.Column<double>(type: "REAL", nullable: true),
                     DraughtSurveyBlockId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>

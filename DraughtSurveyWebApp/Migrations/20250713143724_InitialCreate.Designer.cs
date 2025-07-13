@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DraughtSurveyWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250712094657_InitialCreate")]
+    [Migration("20250713143724_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -111,13 +111,22 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<string>("CargoName")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Consignee")
+                        .HasColumnType("TEXT");
+
                     b.Property<double?>("DeclaredWeight")
                         .HasColumnType("REAL");
+
+                    b.Property<string>("DischargingPort")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("InspectionId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("LoadingTerminal")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Shipper")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -311,6 +320,9 @@ namespace DraughtSurveyWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<double?>("DifferenceMTC1MTC2")
+                        .HasColumnType("REAL");
+
                     b.Property<double?>("DraughtCorrectedAft")
                         .HasColumnType("REAL");
 
@@ -351,6 +363,12 @@ namespace DraughtSurveyWebApp.Migrations
                         .HasColumnType("REAL");
 
                     b.Property<double?>("MeanAdjustedDraughtAfterKeelCorrection")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("MeanFwdAftDraught")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("MeanOfMeanDraught")
                         .HasColumnType("REAL");
 
                     b.Property<double?>("TrimApparent")
@@ -490,6 +508,9 @@ namespace DraughtSurveyWebApp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CompanyReference")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("OperationType")
