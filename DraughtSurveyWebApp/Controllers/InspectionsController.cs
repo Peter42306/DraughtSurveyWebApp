@@ -43,6 +43,7 @@ namespace DraughtSurveyWebApp.Controllers
 
             var inspections = User.IsInRole("Admin")
                 ? await _context.Inspections
+                    .Include(i => i.ApplicationUser)
                     .OrderByDescending(i => i.Id)
                     .ToListAsync()
                 : await _context.Inspections
@@ -126,6 +127,7 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 ApplicationUserId = user.Id,
 
+                
                 VesselName = viewModel.VesselName,
                 Port = viewModel.Port,
                 CompanyReference = viewModel.CompanyReference,

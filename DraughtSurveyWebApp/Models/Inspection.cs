@@ -14,11 +14,10 @@ namespace DraughtSurveyWebApp.Models
         public int Id { get; set; }
 
         public string ApplicationUserId { get; set; } = null!;
-
         [ForeignKey(nameof(ApplicationUserId))]
         public ApplicationUser ApplicationUser { get; set; } = null!;
 
-
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public string VesselName { get; set; } = string.Empty;
         public string? Port { get; set; }
         public string? CompanyReference { get; set; }

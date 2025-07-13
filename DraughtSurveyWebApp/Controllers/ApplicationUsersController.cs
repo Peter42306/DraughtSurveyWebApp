@@ -44,7 +44,7 @@ namespace DraughtSurveyWebApp.Controllers
             var isActive = Request.Form["isActive"].Contains("true");
             var adminNote = Request.Form["adminNote"];
 
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _userManager.GetUserAsync(User);            
 
             // Защита: админ не может отключить сам себя
             if (id == currentUser?.Id && !isActive)
@@ -53,6 +53,8 @@ namespace DraughtSurveyWebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+
+            
             var user = await _userManager.FindByIdAsync(id);
 
             if (user != null)

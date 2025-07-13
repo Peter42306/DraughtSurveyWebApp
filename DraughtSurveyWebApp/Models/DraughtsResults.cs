@@ -24,6 +24,10 @@
         public double? MeanAdjustedDraught { get; set; }
         public double? MeanAdjustedDraughtAfterKeelCorrection { get; set; }
 
+        public double? MeanFwdAftDraught { get; set; }
+        public double? MeanOfMeanDraught { get; set; }
+        public double? DifferenceMTC1MTC2 { get; set; }
+
         public int DraughtSurveyBlockId { get; set; }
         public required DraughtSurveyBlock DraughtSurveyBlock { get; set; }
     }
