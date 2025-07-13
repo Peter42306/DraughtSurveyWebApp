@@ -265,7 +265,7 @@ namespace DraughtSurveyWebApp.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    IMO = table.Column<string>(type: "TEXT", nullable: false),
+                    IMO = table.Column<string>(type: "TEXT", maxLength: 7, nullable: false),
                     LBP = table.Column<double>(type: "REAL", nullable: true),
                     BM = table.Column<double>(type: "REAL", nullable: true),
                     LS = table.Column<double>(type: "REAL", nullable: true),

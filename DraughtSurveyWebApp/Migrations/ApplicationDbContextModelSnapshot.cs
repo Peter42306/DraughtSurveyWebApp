@@ -587,6 +587,7 @@ namespace DraughtSurveyWebApp.Migrations
 
                     b.Property<string>("IMO")
                         .IsRequired()
+                        .HasMaxLength(7)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("InspectionId")

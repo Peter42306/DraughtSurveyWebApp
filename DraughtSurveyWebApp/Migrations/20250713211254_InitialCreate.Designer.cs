@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DraughtSurveyWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250713143724_InitialCreate")]
+    [Migration("20250713211254_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -590,6 +590,7 @@ namespace DraughtSurveyWebApp.Migrations
 
                     b.Property<string>("IMO")
                         .IsRequired()
+                        .HasMaxLength(7)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("InspectionId")
