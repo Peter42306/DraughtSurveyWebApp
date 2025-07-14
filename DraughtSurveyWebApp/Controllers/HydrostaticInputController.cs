@@ -1,11 +1,13 @@
 ﻿using DraughtSurveyWebApp.Data;
 using DraughtSurveyWebApp.Models;
 using DraughtSurveyWebApp.Services;
+using static DraughtSurveyWebApp.Utils.Utils;
 using DraughtSurveyWebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DraughtSurveyWebApp.Utils;
 
 namespace DraughtSurveyWebApp.Controllers
 {
@@ -57,6 +59,10 @@ namespace DraughtSurveyWebApp.Controllers
                 return Forbid();
             }
 
+            // Auto-fill hydrostatic input if available
+            await AutoFillHydrostaticInputIfAvailable(draughtSurveyBlock, user);
+
+            // Recalculate all survey calculations
             _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
 
 
@@ -75,10 +81,14 @@ namespace DraughtSurveyWebApp.Controllers
             double? draughtBelow = inputs?.DraughtBelow;
 
 
-            if (draughtAbove.HasValue && draughtBelow.HasValue)
+            if (draughtAbove.HasValue)
             {
                 draughtAboveMTCPlus50 = _surveyCalculationsService.CalculateDraughtForMTCPlus50(draughtAbove.Value);
-                draughtAboveMTCMinus50 = _surveyCalculationsService.CalculateDraughtForMTCMinus50(draughtAbove.Value);
+                draughtAboveMTCMinus50 = _surveyCalculationsService.CalculateDraughtForMTCMinus50(draughtAbove.Value);                
+            }
+
+            if (draughtBelow.HasValue)
+            {                
                 draughtBelowMTCPlus50 = _surveyCalculationsService.CalculateDraughtForMTCPlus50(draughtBelow.Value);
                 draughtBelowMTCMinus50 = _surveyCalculationsService.CalculateDraughtForMTCMinus50(draughtBelow.Value);
             }
@@ -210,10 +220,10 @@ namespace DraughtSurveyWebApp.Controllers
 
             bool changed = IsHydrostaticsInputChanged(input, viewModel);
 
-            _logger.LogWarning("Before changed 1");
+            
             if (changed)
             {
-                _logger.LogWarning("Entered changed 2");
+                
 
                 input.DraughtAbove = viewModel.DraughtAbove;
                 input.DraughtBelow = viewModel.DraughtBelow;
@@ -231,20 +241,27 @@ namespace DraughtSurveyWebApp.Controllers
                 input.MTCMinus50Below = viewModel.MTCMinus50Below;
 
 
-                if (viewModel.DraughtAbove.HasValue)
+                if (viewModel.DraughtAbove.HasValue &&
+                    viewModel.DisplacementAbove.HasValue &&
+                    viewModel.TPCAbove.HasValue &&
+                    viewModel.LCFAbove.HasValue && 
+                    viewModel.IsLCFForward.HasValue &&
+                    viewModel.MTCPlus50Above.HasValue &&
+                    viewModel.MTCMinus50Above.HasValue)
                 {
-                    _logger.LogWarning("Entered changed 3");
+                    
 
                     if (draughtSurveyBlock.Inspection.VesselInput != null)
                     {
                         var existingRowAbove = await _context.UserHydrostaticTableRows
-                        .FirstOrDefaultAsync(r =>
-                        r.ApplicationUserId == user.Id &&
-                        r.VesselInputId == draughtSurveyBlock.Inspection.VesselInput.Id &&
-                        Math.Abs(r.Draught - viewModel.DraughtAbove.Value) < 0.001);
+                            .FirstOrDefaultAsync(r =>
+                            r.ApplicationUserId == user.Id &&                        
+                            r.IMO == draughtSurveyBlock.Inspection.VesselInput.IMO &&
+                            Math.Abs(r.Draught - viewModel.DraughtAbove.Value) < 0.001);
 
                         if (existingRowAbove != null)
                         {
+                            existingRowAbove.Draught = viewModel.DraughtAbove.Value;
                             existingRowAbove.Displacement = viewModel.DisplacementAbove;
                             existingRowAbove.TPC = viewModel.TPCAbove;
                             existingRowAbove.LCF = viewModel.LCFAbove;
@@ -256,12 +273,12 @@ namespace DraughtSurveyWebApp.Controllers
                         {
                             var newRow = new UserHydrostaticTableRow
                             {
-                                ApplicationUser = user,
                                 ApplicationUserId = user.Id,
-
-                                VesselInput = draughtSurveyBlock.Inspection.VesselInput,
-                                VesselInputId = draughtSurveyBlock.Inspection.VesselInput.Id,
+                                ApplicationUser = user,                                
                                 
+                                IMO = draughtSurveyBlock.Inspection.VesselInput.IMO,
+                                VesselName = draughtSurveyBlock.Inspection.VesselName,
+
                                 Draught = viewModel.DraughtAbove.Value,
                                 Displacement = viewModel.DisplacementAbove,
                                 TPC = viewModel.TPCAbove,
@@ -270,11 +287,11 @@ namespace DraughtSurveyWebApp.Controllers
                                 MTCPlus50 = viewModel.MTCPlus50Above,
                                 MTCMinus50 = viewModel.MTCMinus50Above                                
 
-                            };
-                            
-                            _context.UserHydrostaticTableRows.Add(newRow);
-                        }
+                            };                            
 
+                            _context.UserHydrostaticTableRows.Add(newRow);
+
+                        }
 
                     }
 
@@ -282,20 +299,27 @@ namespace DraughtSurveyWebApp.Controllers
                     
                 }
 
-                if (viewModel.DraughtBelow.HasValue)
+                if (viewModel.DraughtBelow.HasValue &&
+                    viewModel.DisplacementBelow.HasValue &&
+                    viewModel.TPCBelow.HasValue &&
+                    viewModel.LCFBelow.HasValue &&
+                    viewModel.IsLCFForward.HasValue &&
+                    viewModel.MTCPlus50Below.HasValue &&
+                    viewModel.MTCMinus50Below.HasValue)
                 {
 
 
                     if (draughtSurveyBlock.Inspection.VesselInput != null)
                     {
                         var existingRowBelow = await _context.UserHydrostaticTableRows
-                        .FirstOrDefaultAsync(r =>
-                        r.ApplicationUserId == user.Id &&
-                        r.VesselInputId == draughtSurveyBlock.Inspection.VesselInput.Id &&
-                        Math.Abs(r.Draught - viewModel.DraughtBelow.Value) < 0.001);
+                            .FirstOrDefaultAsync(r =>
+                            r.ApplicationUserId == user.Id &&                        
+                            r.IMO == draughtSurveyBlock.Inspection.VesselInput.IMO &&
+                            Math.Abs(r.Draught - viewModel.DraughtBelow.Value) < 0.001);
 
                         if (existingRowBelow != null)
                         {
+                            existingRowBelow.Draught = viewModel.DraughtBelow.Value;
                             existingRowBelow.Displacement = viewModel.DisplacementBelow;
                             existingRowBelow.TPC = viewModel.TPCBelow;
                             existingRowBelow.LCF = viewModel.LCFBelow;
@@ -308,10 +332,10 @@ namespace DraughtSurveyWebApp.Controllers
                             var newRow = new UserHydrostaticTableRow
                             {
                                 ApplicationUser = user,
-                                ApplicationUserId = user.Id,
+                                ApplicationUserId = user.Id,                                
 
-                                VesselInput = draughtSurveyBlock.Inspection.VesselInput,
-                                VesselInputId = draughtSurveyBlock.Inspection.VesselInput.Id,
+                                IMO = draughtSurveyBlock.Inspection.VesselInput.IMO,
+                                VesselName = draughtSurveyBlock.Inspection.VesselName,
 
                                 Draught = viewModel.DraughtBelow.Value,
                                 Displacement = viewModel.DisplacementBelow,
@@ -363,28 +387,103 @@ namespace DraughtSurveyWebApp.Controllers
 
 
         private bool IsHydrostaticsInputChanged(HydrostaticInput dbValue, HydrostaticInputViewModel viewModelValue)
-        {
-            _logger.LogWarning("Entered IsHydrostaticsInputChanged");
-            _logger.LogWarning("dbValue: {1}, viewModelValue: {2}", dbValue.DisplacementBelow, viewModelValue.DisplacementBelow);
-            _logger.LogWarning("dbValue: {1}, viewModelValue: {2}", dbValue.DisplacementAbove, viewModelValue.DisplacementAbove);
-            
+        {           
 
-            return
-                !Nullable.Equals(dbValue.DraughtAbove, viewModelValue.DraughtAbove) ||
-                !Nullable.Equals(dbValue.DraughtBelow, viewModelValue.DraughtBelow) ||
+            return                
 
-                !Nullable.Equals(dbValue.DisplacementAbove, viewModelValue.DisplacementAbove) ||
-                !Nullable.Equals(dbValue.DisplacementBelow, viewModelValue.DisplacementBelow) ||
-                !Nullable.Equals(dbValue.TPCAbove, viewModelValue.TPCAbove) ||
-                !Nullable.Equals(dbValue.TPCBelow, viewModelValue.TPCBelow) ||
-                !Nullable.Equals(dbValue.LCFAbove, viewModelValue.LCFAbove) ||
-                !Nullable.Equals(dbValue.LCFBelow, viewModelValue.LCFBelow) ||
-                !Nullable.Equals(dbValue.IsLCFForward, viewModelValue.IsLCFForward) ||
-    
-                !Nullable.Equals(dbValue.MTCPlus50Above, viewModelValue.MTCPlus50Above) ||
-                !Nullable.Equals(dbValue.MTCPlus50Below, viewModelValue.MTCPlus50Below) ||
-                !Nullable.Equals(dbValue.MTCMinus50Above, viewModelValue.MTCMinus50Above) ||
-                !Nullable.Equals(dbValue.MTCMinus50Below, viewModelValue.MTCMinus50Below);
+                !AreEqual(dbValue.DraughtAbove, viewModelValue.DraughtAbove) ||
+                !AreEqual(dbValue.DraughtBelow, viewModelValue.DraughtBelow) ||
+                !AreEqual(dbValue.DisplacementAbove, viewModelValue.DisplacementAbove) ||
+                !AreEqual(dbValue.DisplacementBelow, viewModelValue.DisplacementBelow) ||
+                !AreEqual(dbValue.TPCAbove, viewModelValue.TPCAbove) ||
+                !AreEqual(dbValue.TPCBelow, viewModelValue.TPCBelow) ||
+                !AreEqual(dbValue.LCFAbove, viewModelValue.LCFAbove) ||
+                !AreEqual(dbValue.LCFBelow, viewModelValue.LCFBelow) ||
+                !AreEqual(dbValue.IsLCFForward, viewModelValue.IsLCFForward) ||
+                !AreEqual(dbValue.MTCPlus50Above, viewModelValue.MTCPlus50Above) ||
+                !AreEqual(dbValue.MTCPlus50Below, viewModelValue.MTCPlus50Below) ||
+                !AreEqual(dbValue.MTCMinus50Above, viewModelValue.MTCMinus50Above) ||
+                !AreEqual(dbValue.MTCMinus50Below, viewModelValue.MTCMinus50Below);
         }
+
+        private async Task AutoFillHydrostaticInputIfAvailable(DraughtSurveyBlock block, ApplicationUser user)
+        {
+            var draughtCalculated = block.DraughtsResults?.MeanAdjustedDraughtAfterKeelCorrection;
+            var imo = block.Inspection.VesselInput?.IMO;
+
+            if (!draughtCalculated.HasValue || string.IsNullOrWhiteSpace(imo))
+            {
+                return;
+            }
+
+            var hydrostaticRows = await _context.UserHydrostaticTableRows
+                .Where(r => r.ApplicationUserId == user.Id && r.IMO == imo)
+                .OrderBy(r => r.Draught)
+                .ToListAsync();
+
+            if (!hydrostaticRows.Any())
+            {
+                return;
+            }
+
+            UserHydrostaticTableRow? lowerRow = null;
+            UserHydrostaticTableRow? upperRow = null;
+
+            foreach (var row in hydrostaticRows)
+            {
+                double tolerance = 0.001;
+
+                if (Math.Abs(row.Draught - draughtCalculated.Value) < tolerance)
+                {
+                    lowerRow = row;
+                    upperRow = row;
+                    break;
+                }                
+                
+                if (row.Draught <= draughtCalculated.Value)
+                {
+                    upperRow = row;
+                }
+
+                if (row.Draught >= draughtCalculated.Value)
+                {
+                    lowerRow = row;
+                    break;
+                }
+            }
+
+            if (lowerRow == null || upperRow == null)
+            {
+                return;
+            }
+
+            block.HydrostaticInput ??= new HydrostaticInput
+            {
+                DraughtSurveyBlockId = block.Id,
+                DraughtSurveyBlock = block
+            };
+
+            block.HydrostaticInput.DraughtBelow = lowerRow.Draught;
+            block.HydrostaticInput.DraughtAbove = upperRow.Draught;
+
+            block.HydrostaticInput.DisplacementBelow = lowerRow.Displacement;
+            block.HydrostaticInput.DisplacementAbove = upperRow.Displacement;
+
+            block.HydrostaticInput.TPCBelow = lowerRow.TPC;
+            block.HydrostaticInput.TPCAbove = upperRow.TPC;
+
+            block.HydrostaticInput.LCFBelow = lowerRow.LCF;
+            block.HydrostaticInput.LCFAbove = upperRow.LCF;
+
+            block.HydrostaticInput.IsLCFForward = lowerRow.IsLcfForward ?? upperRow.IsLcfForward;
+
+            block.HydrostaticInput.MTCPlus50Below = lowerRow.MTCPlus50;
+            block.HydrostaticInput.MTCPlus50Above = upperRow.MTCPlus50;
+
+            block.HydrostaticInput.MTCMinus50Below = lowerRow.MTCMinus50;
+            block.HydrostaticInput.MTCMinus50Above = upperRow.MTCMinus50;
+
+        }
+        
     }
 }

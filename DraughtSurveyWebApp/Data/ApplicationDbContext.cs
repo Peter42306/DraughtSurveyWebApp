@@ -40,12 +40,6 @@ namespace DraughtSurveyWebApp.Data
                 .WithMany()
                 .HasForeignKey(u => u.ApplicationUserId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<UserHydrostaticTableRow>()
-                .HasOne(u => u.VesselInput)
-                .WithMany(v => v.UserHydrostaticTableRows)
-                .HasForeignKey(u => u.VesselInputId)
-                .OnDelete(DeleteBehavior.Restrict);            
         }
     }
 }

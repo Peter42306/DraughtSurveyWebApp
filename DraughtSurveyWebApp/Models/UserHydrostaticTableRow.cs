@@ -4,6 +4,9 @@
     {
         public int Id { get; set; }
 
+        
+        public string IMO { get; set; } = string.Empty;
+        public string VesselName { get; set; } = string.Empty;
         public double Draught { get; set; }
 
         public double? Displacement { get; set; }
@@ -15,10 +18,6 @@
 
 
         public required string ApplicationUserId { get; set; }
-        public required ApplicationUser ApplicationUser { get; set; }
-
-
-        public int VesselInputId { get; set; }
-        public required VesselInput VesselInput { get; set; }
+        public required ApplicationUser ApplicationUser { get; set; }        
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DraughtSurveyWebApp.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Eventing.Reader;
 
 namespace DraughtSurveyWebApp.Services
 {
@@ -838,6 +839,14 @@ namespace DraughtSurveyWebApp.Services
                 return result;
             }
 
+            bool isLcfFromAft = LCF > 25;
+            double lcfTemp = LCF;
+
+            if (isLcfFromAft)
+            {
+                lcfTemp = Math.Abs((LBP/2) - LCF);
+            }
+            
             bool isTrimForward = false;
 
             if(correctedTrim < 0)
@@ -847,7 +856,7 @@ namespace DraughtSurveyWebApp.Services
 
             int sign = (isLCFForward == isTrimForward) ? 1 : -1;                        
             
-            result = sign * Math.Abs((correctedTrim * LCF * TPC * 100) / LBP);
+            result = sign * Math.Abs((correctedTrim * lcfTemp * TPC * 100) / LBP);
 
             return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }

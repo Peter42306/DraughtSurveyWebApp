@@ -42,6 +42,9 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("FullName")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
@@ -546,6 +549,10 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<double>("Draught")
                         .HasColumnType("REAL");
 
+                    b.Property<string>("IMO")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<bool?>("IsLcfForward")
                         .HasColumnType("INTEGER");
 
@@ -561,14 +568,13 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<double?>("TPC")
                         .HasColumnType("REAL");
 
-                    b.Property<int>("VesselInputId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("VesselName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("VesselInputId");
 
                     b.ToTable("UserHydrostaticTableRows");
                 });
@@ -587,7 +593,6 @@ namespace DraughtSurveyWebApp.Migrations
 
                     b.Property<string>("IMO")
                         .IsRequired()
-                        .HasMaxLength(7)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("InspectionId")
@@ -860,15 +865,7 @@ namespace DraughtSurveyWebApp.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("DraughtSurveyWebApp.Models.VesselInput", "VesselInput")
-                        .WithMany("UserHydrostaticTableRows")
-                        .HasForeignKey("VesselInputId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("ApplicationUser");
-
-                    b.Navigation("VesselInput");
                 });
 
             modelBuilder.Entity("DraughtSurveyWebApp.Models.VesselInput", b =>
@@ -962,11 +959,6 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Navigation("DraughtSurveyBlocks");
 
                     b.Navigation("VesselInput");
-                });
-
-            modelBuilder.Entity("DraughtSurveyWebApp.Models.VesselInput", b =>
-                {
-                    b.Navigation("UserHydrostaticTableRows");
                 });
 #pragma warning restore 612, 618
         }

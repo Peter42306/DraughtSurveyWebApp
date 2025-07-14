@@ -318,10 +318,34 @@ else
 
             <dt class="col-6 col-sm-3">Table LCF</dt>
             <dd class="col-6 col-sm-9">
-                @(initialBlock.HydrostaticResults.LCFFromTable?.ToString("N3"))
-                @(initialBlock.HydrostaticInput.IsLCFForward != null
-                    ? (initialBlock.HydrostaticInput.IsLCFForward == true ? "FWD" : "AFT")
-                    : "")                                                
+                    @{
+                        var lcf = initialBlock.HydrostaticResults.LCFFromTable;
+                        var lbp = initialBlock.Inspection.VesselInput?.LBP;
+                        string displayValue = string.Empty;
+                        string displayDirection = string.Empty;
+
+                        if (lcf.HasValue && lbp.HasValue)
+                        {
+                            var isLcfFromAft = lcf.Value > 25;
+                            var value = isLcfFromAft 
+                                ? Math.Abs((lbp.Value/2)-lcf.Value) 
+                                : lcf.Value;
+
+                            displayValue = value.ToString("N3");
+                        }
+
+                        var resultValueToView = initialBlock.HydrostaticResults.LCFFromTable?.ToString("N3");
+                        displayDirection  = initialBlock.HydrostaticInput.IsLCFForward != null
+                            ? (initialBlock.HydrostaticInput.IsLCFForward == true ? "FWD" : "AFT")
+                            : string.Empty;
+                    }
+                    
+                    @displayValue
+                    @displayDirection
+                    
+                    
+
+                
             </dd>
 
             <dt class="col-6 col-sm-3">Table MTC +50 cm</dt>
@@ -331,11 +355,11 @@ else
             <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.MTCMinus50FromTable?.ToString("N3")</dd>
 
             <dt class="col-6 col-sm-3">1st Trim Correction</dt>
-            <dd class="col-6 col-sm-9">
-                @(initialBlock.HydrostaticResults.FirstTrimCorrection.HasValue
+            <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.FirstTrimCorrection?.ToString("N3")</dd>
+                @* @(initialBlock.HydrostaticResults.FirstTrimCorrection.HasValue
                     ? Math.Abs(initialBlock.HydrostaticResults.FirstTrimCorrection.Value).ToString("N3")
-                    : null)
-            </dd>
+                    : null) *@
+            
 
             <dt class="col-6 col-sm-3">2nd Trim Correction</dt>
             <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.SecondTrimCorrection?.ToString("N3")</dd>

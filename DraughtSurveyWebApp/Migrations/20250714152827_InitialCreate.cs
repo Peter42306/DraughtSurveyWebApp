@@ -30,6 +30,7 @@ namespace DraughtSurveyWebApp.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
+                    FullName = table.Column<string>(type: "TEXT", nullable: true),
                     IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     LastLoginAt = table.Column<DateTime>(type: "TEXT", nullable: true),
@@ -187,6 +188,34 @@ namespace DraughtSurveyWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserHydrostaticTableRows",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    IMO = table.Column<string>(type: "TEXT", nullable: false),
+                    VesselName = table.Column<string>(type: "TEXT", nullable: false),
+                    Draught = table.Column<double>(type: "REAL", nullable: false),
+                    Displacement = table.Column<double>(type: "REAL", nullable: true),
+                    TPC = table.Column<double>(type: "REAL", nullable: true),
+                    LCF = table.Column<double>(type: "REAL", nullable: true),
+                    IsLcfForward = table.Column<bool>(type: "INTEGER", nullable: true),
+                    MTCPlus50 = table.Column<double>(type: "REAL", nullable: true),
+                    MTCMinus50 = table.Column<double>(type: "REAL", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserHydrostaticTableRows", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserHydrostaticTableRows_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CargoInputs",
                 columns: table => new
                 {
@@ -265,7 +294,7 @@ namespace DraughtSurveyWebApp.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    IMO = table.Column<string>(type: "TEXT", maxLength: 7, nullable: false),
+                    IMO = table.Column<string>(type: "TEXT", nullable: false),
                     LBP = table.Column<double>(type: "REAL", nullable: true),
                     BM = table.Column<double>(type: "REAL", nullable: true),
                     LS = table.Column<double>(type: "REAL", nullable: true),
@@ -464,39 +493,6 @@ namespace DraughtSurveyWebApp.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "UserHydrostaticTableRows",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Draught = table.Column<double>(type: "REAL", nullable: false),
-                    Displacement = table.Column<double>(type: "REAL", nullable: true),
-                    TPC = table.Column<double>(type: "REAL", nullable: true),
-                    LCF = table.Column<double>(type: "REAL", nullable: true),
-                    IsLcfForward = table.Column<bool>(type: "INTEGER", nullable: true),
-                    MTCPlus50 = table.Column<double>(type: "REAL", nullable: true),
-                    MTCMinus50 = table.Column<double>(type: "REAL", nullable: true),
-                    ApplicationUserId = table.Column<string>(type: "TEXT", nullable: false),
-                    VesselInputId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserHydrostaticTableRows", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserHydrostaticTableRows_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_UserHydrostaticTableRows_VesselInputs_VesselInputId",
-                        column: x => x.VesselInputId,
-                        principalTable: "VesselInputs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -598,11 +594,6 @@ namespace DraughtSurveyWebApp.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserHydrostaticTableRows_VesselInputId",
-                table: "UserHydrostaticTableRows",
-                column: "VesselInputId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_VesselInputs_InspectionId",
                 table: "VesselInputs",
                 column: "InspectionId",
@@ -655,13 +646,13 @@ namespace DraughtSurveyWebApp.Migrations
                 name: "UserHydrostaticTableRows");
 
             migrationBuilder.DropTable(
+                name: "VesselInputs");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "DraughtSurveyBlocks");
-
-            migrationBuilder.DropTable(
-                name: "VesselInputs");
 
             migrationBuilder.DropTable(
                 name: "Inspections");

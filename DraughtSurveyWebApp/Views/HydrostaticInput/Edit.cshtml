@@ -89,13 +89,21 @@
                     </div>
                     <div class="col-3">
                         <label asp-for="TPCFromTable" class="small-label"></label>
-                        <input class="form-control bg-light" value="@Model.TPCFromTable?.ToString("0.000")" readonly />
+                        <input class="form-control bg-light" value="@Model.TPCFromTable?.ToString("0.000")" readonly />                        
                     </div>
                     <div class="col-3">
-                        <label asp-for="LCFFromTable" class="small-label"></label>
-                        <input class="form-control bg-light" value="@Model.LCFFromTable?.ToString("0.000")" readonly />
+                        <label asp-for="LCFFromTable" class="small-label"></label>                        
+                        <input class="form-control bg-light"
+                           value="@(Model.VesselInput != null && Model.VesselInput.LBP.HasValue && Model.LCFFromTable.HasValue 
+                                    ? (   Model.LCFFromTable < 25
+                                        ? Model.LCFFromTable?.ToString("0.000")
+                                        : ((Math.Abs((Model.VesselInput.LBP.Value / 2.0) - Model.LCFFromTable.Value))).ToString("0.000")
+                                        )
+                                    : string.Empty
+                                    )" readonly />                                 
                     </div>
                 </div>
+
                 <div class="row mb-2">
                     <div class="col-3">
                         <label asp-for="DraughtBelow" class="control-label small-label"></label>
@@ -240,10 +248,10 @@
                 <div class="row mb-2">                    
                     <div class="col-3">
                         <label asp-for="FirstTrimCorrection" class="small-label"></label>
-                        <input class="form-control bg-light" 
-                            value="@(Model.FirstTrimCorrection.HasValue
+                        <input class="form-control bg-light" value="@Model.FirstTrimCorrection?.ToString("0.000")" readonly/>
+                            @* value="@(Model.FirstTrimCorrection.HasValue
                                 ? Math.Abs(Model.FirstTrimCorrection.Value).ToString("0.000") 
-                                : string.Empty)" readonly />
+                                : string.Empty)" readonly /> *@
                     </div>                    
                     <div class="col-3">
                         <label asp-for="SecondTrimCorrection" class="small-label"></label>
