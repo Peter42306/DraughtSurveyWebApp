@@ -188,31 +188,25 @@ namespace DraughtSurveyWebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserHydrostaticTableRows",
+                name: "UserHydrostaticTableHeaders",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     IMO = table.Column<string>(type: "TEXT", nullable: false),
                     VesselName = table.Column<string>(type: "TEXT", nullable: false),
-                    Draught = table.Column<double>(type: "REAL", nullable: false),
-                    Displacement = table.Column<double>(type: "REAL", nullable: true),
-                    TPC = table.Column<double>(type: "REAL", nullable: true),
-                    LCF = table.Column<double>(type: "REAL", nullable: true),
-                    IsLcfForward = table.Column<bool>(type: "INTEGER", nullable: true),
-                    MTCPlus50 = table.Column<double>(type: "REAL", nullable: true),
-                    MTCMinus50 = table.Column<double>(type: "REAL", nullable: true),
+                    TableStep = table.Column<double>(type: "REAL", nullable: true),
                     ApplicationUserId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserHydrostaticTableRows", x => x.Id);
+                    table.PrimaryKey("PK_UserHydrostaticTableHeaders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserHydrostaticTableRows_AspNetUsers_ApplicationUserId",
+                        name: "FK_UserHydrostaticTableHeaders_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -311,6 +305,32 @@ namespace DraughtSurveyWebApp.Migrations
                         principalTable: "Inspections",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserHydrostaticTableRows",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Draught = table.Column<double>(type: "REAL", nullable: false),
+                    Displacement = table.Column<double>(type: "REAL", nullable: true),
+                    TPC = table.Column<double>(type: "REAL", nullable: true),
+                    LCF = table.Column<double>(type: "REAL", nullable: true),
+                    IsLcfForward = table.Column<bool>(type: "INTEGER", nullable: true),
+                    MTCPlus50 = table.Column<double>(type: "REAL", nullable: true),
+                    MTCMinus50 = table.Column<double>(type: "REAL", nullable: true),
+                    UserHydrostaticTableHeaderId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserHydrostaticTableRows", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserHydrostaticTableRows_UserHydrostaticTableHeaders_UserHydrostaticTableHeaderId",
+                        column: x => x.UserHydrostaticTableHeaderId,
+                        principalTable: "UserHydrostaticTableHeaders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -589,9 +609,14 @@ namespace DraughtSurveyWebApp.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserHydrostaticTableRows_ApplicationUserId",
-                table: "UserHydrostaticTableRows",
+                name: "IX_UserHydrostaticTableHeaders_ApplicationUserId",
+                table: "UserHydrostaticTableHeaders",
                 column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserHydrostaticTableRows_UserHydrostaticTableHeaderId",
+                table: "UserHydrostaticTableRows",
+                column: "UserHydrostaticTableHeaderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_VesselInputs_InspectionId",
@@ -653,6 +678,9 @@ namespace DraughtSurveyWebApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "DraughtSurveyBlocks");
+
+            migrationBuilder.DropTable(
+                name: "UserHydrostaticTableHeaders");
 
             migrationBuilder.DropTable(
                 name: "Inspections");

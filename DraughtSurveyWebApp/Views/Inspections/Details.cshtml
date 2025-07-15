@@ -473,32 +473,283 @@ else
         
 
         <div>
-             <p>
-        <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Times</a>
-        </p>
-
-        <p>
-            <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Draughts</a>
-        </p>
-
-        @* <p>
-            <a asp-action="Edit" asp-controller="DistancesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Distances</a>
-        </p>     *@
-
-        <p>
-            <a asp-action="Edit" asp-controller="HydrostaticsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Hydrostatic Data</a>
-        </p>
-
-        @* <p>
-            <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Dock Water Density</a>
-        </p> *@
-
-        <p>
-            <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Deductibles</a>
-        </p>
-
-        @* <a asp-action="Edit" asp-controller="DraughtSurveyBlock" asp-route-inspectionId></a> *@
+            @if(finalBlock.SurveyTimeStart.HasValue || finalBlock.SurveyTimeEnd.HasValue || finalBlock.CargoOperationsDateTime.HasValue)
+        {
+        
+        <div class="row" id="#final-draught-times">
+            <div class="col-6">
+                <h4>Time Sheet</h4>
+            </div>
+            <div class="col-6 text-end">
+                <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@finalBlock.Id" >Edit Times</a>
+            </div>
         </div>
+        
+        <dl class="row">            
+
+            <dt class="col-6 col-sm-3">Survey commenced</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.SurveyTimeStart?.ToString("yyyy-MM-dd HH:mm")</dd>
+
+            <dt class="col-6 col-sm-3">Survey completed</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.SurveyTimeEnd?.ToString("yyyy-MM-dd HH:mm")</dd>
+
+            <dt class="col-6 col-sm-3">
+                @(Model.OperationType == OperationType.Loading ? "Loading commenced" : "Discharging commenced")
+            </dt>
+            <dd class="col-6 col-sm-9">@finalBlock.CargoOperationsDateTime?.ToString("yyyy-MM-dd HH:mm")</dd>
+        </dl>
+        }
+        else
+        { 
+        <hr />
+        <div class="row">
+            <div class="col-6">
+                <p>Times not entered yet</p>
+            </div>
+            <div class="col-6 text-end">
+                <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Times</a>
+            </div>
+        </div>        
+        }
+        </div>
+
+
+        @if(finalBlock.DraughtsInput != null && finalBlock.DraughtsResults != null)
+    {        
+        @* <dt>Draughts</dt> *@
+        <hr />
+        <div class="row" id="final-draught-draughts">
+            <div class="col-6">
+                <h4>Final Draughts</h4>
+            </div>
+            <div class="col-6 text-end">
+                <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Draughts</a>
+            </div>
+        </div>
+
+        <dl class="row">
+            <dt class="col-2 col-sm-2">PS</dt>
+            <dt class="col-2 col-sm-2">SS</dt>
+            <dt class="col-2 col-sm-2">Mean</dt>
+            <dt class="col-2 col-sm-2">Dist.</dt>
+            <dt class="col-2 col-sm-2">Corr.</dt>
+            <dt class="col-2 col-sm-2">Corr'd</dt>
+
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsInput.DraughtFwdPS?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsInput.DraughtFwdSS?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsResults.DraughtMeanFwd?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsInput.DistanceFwd?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsResults.DraughtCorrectionFwd?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsResults.DraughtCorrectedFwd?.ToString("N3")</dd>
+
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsInput.DraughtMidPS?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsInput.DraughtMidSS?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsResults.DraughtMeanMid?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsInput.DistanceMid?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsResults.DraughtCorrectionMid?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsResults.DraughtCorrectedMid?.ToString("N3")</dd>
+
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsInput.DraughtAftPS?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsInput.DraughtAftSS?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsResults.DraughtMeanAft?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsInput.DistanceAft?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsResults.DraughtCorrectionAft?.ToString("N3")</dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsResults.DraughtCorrectedAft?.ToString("N3")</dd>
+
+            <dd class="col-4 col-sm-4"></dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsResults.TrimApparent?.ToString("N3")</dd>
+            <dd class="col-4 col-sm-4"></dd>
+            <dd class="col-2 col-sm-2">@finalBlock.DraughtsResults.TrimCorrected?.ToString("N3")</dd>
+
+                @if (finalBlock.HydrostaticInput != null &&
+                        finalBlock.HydrostaticInput.DraughtBelow.HasValue && finalBlock.HydrostaticInput.DraughtAbove.HasValue &&
+                        !(
+                            finalBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(finalBlock.HydrostaticInput.DraughtBelow.Value, finalBlock.HydrostaticInput.DraughtAbove.Value) &&
+                            finalBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection < Math.Max(finalBlock.HydrostaticInput.DraughtBelow.Value, finalBlock.HydrostaticInput.DraughtAbove.Value)
+                        )                            
+                    )
+                {
+                    <div class="alert alert-danger">
+                        Mean draught is out of range of table draught values. Calculations may be inaccurate.
+                    </div>
+                }
+
+            <dt class="col-6 col-sm-3">Mean Adjusted Draught</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.DraughtsResults.MeanAdjustedDraught?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">@(finalBlock.DraughtsResults.HoggingSagging < 0 ? "Hogging" : "Sagging")</dt>
+            <dd class="col-6 col-sm-9">
+                @(finalBlock.DraughtsResults.HoggingSagging.HasValue
+                    ? Math.Abs(finalBlock.DraughtsResults.HoggingSagging.Value).ToString("N3")
+                    : "")
+            </dd>
+
+            <dt class="col-6 col-sm-3">@((finalBlock.DraughtsInput.DraughtMidPS - finalBlock.DraughtsInput.DraughtMidSS) < 0 ? "Heel to SS" : "Heel to PS")</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.DraughtsResults.Heel?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">Sea Water Density</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.DraughtsInput.SeaWaterDensity?.ToString("N4")</dd>
+
+            <dt class="col-6 col-sm-3">Keel Correction</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.DraughtsInput.KeelCorrection?.ToString("N3")</dd>
+        </dl>
+    }
+    else
+    {
+        <hr />
+        <div class="row">
+            <div class="col-6">
+                <p>Draughts not entered yet</p>
+            </div>
+            <div class="col-6 text-end">
+                <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Draughts</a>
+            </div>
+        </div>
+    }
+
+    @if (finalBlock.HydrostaticInput != null && finalBlock.HydrostaticResults != null)
+    {
+        <hr />
+        <div class="row" id="final-draught-hydrostatics">
+            <div class="col-6">
+                <h4>Initial Hydrostatics</h4>
+            </div>
+            <div class="col-6 text-end">
+                <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Hydrostatics</a>
+            </div>
+        </div>
+
+        <dl class="row">
+            <dt class="col-6 col-sm-3">Table Displacement</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.DisplacementFromTable?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">Table TPC</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.TPCFromTable?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">Table LCF</dt>
+            <dd class="col-6 col-sm-9">
+                    @{
+                        var lcf = finalBlock.HydrostaticResults.LCFFromTable;
+                        var lbp = finalBlock.Inspection.VesselInput?.LBP;
+                        string displayValue = string.Empty;
+                        string displayDirection = string.Empty;
+
+                        if (lcf.HasValue && lbp.HasValue)
+                        {
+                            var isLcfFromAft = lcf.Value > 25;
+                            var value = isLcfFromAft 
+                                ? Math.Abs((lbp.Value/2)-lcf.Value) 
+                                : lcf.Value;
+
+                            displayValue = value.ToString("N3");
+                        }
+
+                        var resultValueToView = finalBlock.HydrostaticResults.LCFFromTable?.ToString("N3");
+                        displayDirection  = finalBlock.HydrostaticInput.IsLCFForward != null
+                            ? (finalBlock.HydrostaticInput.IsLCFForward == true ? "FWD" : "AFT")
+                            : string.Empty;
+                    }
+                    
+                    @displayValue
+                    @displayDirection
+                    
+                    
+
+                
+            </dd>
+
+            <dt class="col-6 col-sm-3">Table MTC +50 cm</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.MTCPlus50FromTable?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">Table MTC -50 cm</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.MTCMinus50FromTable?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">1st Trim Correction</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.FirstTrimCorrection?.ToString("N3")</dd>
+                @* @(finalBlock.HydrostaticResults.FirstTrimCorrection.HasValue
+                    ? Math.Abs(finalBlock.HydrostaticResults.FirstTrimCorrection.Value).ToString("N3")
+                    : null) *@
+            
+
+            <dt class="col-6 col-sm-3">2nd Trim Correction</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.SecondTrimCorrection?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">D2 corr'd for Trim</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.DisplacementCorrectedForTrim?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">D3 corr'd for Density</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.DisplacementCorrectedForDensity?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">NETTO Displacement</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.NettoDisplacement?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">Cargo + Constant</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.CargoPlusConstant?.ToString("N3")</dd>
+        </dl>
+    }
+    else
+    {
+        <hr />
+        <div class="row">
+            <div class="col-7">
+                <p>Hydrostatics not entered yet</p>
+            </div>
+            <div class="col-5 text-end">
+                <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Hydrostatics</a>
+            </div>
+        </div>
+    }
+
+
+    @if (finalBlock.DeductiblesInput !=null && finalBlock.DeductiblesResults != null)
+    {
+        <hr />
+        <div class="row" id="final-draught-deductibles">
+            <div class="col-6">
+                <h4>Initial Deductibles</h4>
+            </div>
+            <div class="col-6 text-end">
+                <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Deductibles</a>
+            </div>
+        </div>
+
+        <dl class="row">
+            <dt class="col-6 col-sm-3">Ballast Water, mt</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesInput.Ballast?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">Fresh Water, mt</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesInput.FreshWater?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">Fuel Oil, mt</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesInput.FuelOil?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">Diesel Oil, mt</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesInput.DieselOil?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">Lub. Oil, mt</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesInput.LubOil?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">Others, mt</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesInput.Others?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">Total Deductibles, mt</dt>
+            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesResults.TotalDeductibles?.ToString("N3")</dd>
+        </dl>
+    }
+    else
+    {
+        <hr />
+        <div class="row">
+            <div class="col-6">
+                <p>Deductibles not entered yet</p>
+            </div>
+            <div class="col-6 text-end">
+                <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Deductibles</a>
+            </div>
+        </div>
+    }
+
+        
 
     </details>
 

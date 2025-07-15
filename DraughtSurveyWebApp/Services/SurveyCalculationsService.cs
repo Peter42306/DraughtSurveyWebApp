@@ -16,6 +16,34 @@ namespace DraughtSurveyWebApp.Services
             
         }
 
+        // Recalculations of CargoResult
+        public void RecalculateCargo(DraughtSurveyBlock draughtSurveyBlock)
+        {
+            var inspection = draughtSurveyBlock.Inspection;
+
+            if (inspection.CargoInput == null) 
+            {
+                return;
+            }
+
+            if (inspection.CargoResult == null)
+            {
+                return;
+            }
+
+            var initialBlock = inspection.DraughtSurveyBlocks                
+                .FirstOrDefault(b => b.SurveyType == SurveyType.Initial);
+
+            var finalBlock = inspection.DraughtSurveyBlocks
+                .FirstOrDefault(b => b.SurveyType == SurveyType.Final);
+
+            if (initialBlock?.HydrostaticResults == null || finalBlock?.HydrostaticResults == null) return;
+
+
+
+
+        }
+
         // Recalculation of DeductiblesInput and DeductiblesResult
         public void RecalculateDeductibles(DraughtSurveyBlock draughtSurveyBlock)
         {

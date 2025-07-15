@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DraughtSurveyWebApp.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace DraughtSurveyWebApp.ViewModels
 {
@@ -18,5 +19,6 @@ namespace DraughtSurveyWebApp.ViewModels
         [Display(Name = "Cargo Operations commenced")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", ApplyFormatInEditMode = true)]
         public DateTime? CargoOperationsDateTime { get; set; }
+        
     }
 }

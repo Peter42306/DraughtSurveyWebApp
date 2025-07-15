@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DraughtSurveyWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250714152827_InitialCreate")]
+    [Migration("20250715151943_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -536,7 +536,7 @@ namespace DraughtSurveyWebApp.Migrations
                     b.ToTable("Inspections");
                 });
 
-            modelBuilder.Entity("DraughtSurveyWebApp.Models.UserHydrostaticTableRow", b =>
+            modelBuilder.Entity("DraughtSurveyWebApp.Models.UserHydrostaticTableHeader", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -546,15 +546,35 @@ namespace DraughtSurveyWebApp.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("IMO")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double?>("TableStep")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("VesselName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("UserHydrostaticTableHeaders");
+                });
+
+            modelBuilder.Entity("DraughtSurveyWebApp.Models.UserHydrostaticTableRow", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
                     b.Property<double?>("Displacement")
                         .HasColumnType("REAL");
 
                     b.Property<double>("Draught")
                         .HasColumnType("REAL");
-
-                    b.Property<string>("IMO")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<bool?>("IsLcfForward")
                         .HasColumnType("INTEGER");
@@ -571,13 +591,12 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<double?>("TPC")
                         .HasColumnType("REAL");
 
-                    b.Property<string>("VesselName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("UserHydrostaticTableHeaderId")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("UserHydrostaticTableHeaderId");
 
                     b.ToTable("UserHydrostaticTableRows");
                 });
@@ -860,15 +879,26 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("DraughtSurveyWebApp.Models.UserHydrostaticTableRow", b =>
+            modelBuilder.Entity("DraughtSurveyWebApp.Models.UserHydrostaticTableHeader", b =>
                 {
                     b.HasOne("DraughtSurveyWebApp.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("DraughtSurveyWebApp.Models.UserHydrostaticTableRow", b =>
+                {
+                    b.HasOne("DraughtSurveyWebApp.Models.UserHydrostaticTableHeader", "UserHydrostaticTableHeader")
+                        .WithMany("UserHydrostaticTableRows")
+                        .HasForeignKey("UserHydrostaticTableHeaderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("UserHydrostaticTableHeader");
                 });
 
             modelBuilder.Entity("DraughtSurveyWebApp.Models.VesselInput", b =>
@@ -962,6 +992,11 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Navigation("DraughtSurveyBlocks");
 
                     b.Navigation("VesselInput");
+                });
+
+            modelBuilder.Entity("DraughtSurveyWebApp.Models.UserHydrostaticTableHeader", b =>
+                {
+                    b.Navigation("UserHydrostaticTableRows");
                 });
 #pragma warning restore 612, 618
         }

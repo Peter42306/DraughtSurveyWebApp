@@ -291,13 +291,14 @@ namespace DraughtSurveyWebApp.Controllers
                 input.KeelCorrection = viewModel.KeelCorrection;
             }
 
-            _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
-
+            _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);           
             await _context.SaveChangesAsync();
 
-            //return View(viewModel);
-            //return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
-            return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#initial-draught-draughts");
+            string anchor = draughtSurveyBlock.SurveyType == SurveyType.Initial 
+                ? "initial-draught-draughts" 
+                : "final-draught-draughts";
+
+            return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#{anchor}");
         }
 
         private bool IsDraughtsInputChanged(DraughtsInput dbValue, DraughtsInputViewModel viewModelValue)

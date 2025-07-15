@@ -15,7 +15,8 @@ namespace DraughtSurveyWebApp.Data
         public DbSet<DraughtsInput> DraughtsInputs { get; set; }
         public DbSet<DraughtsResults> DraughtsResults { get; set; }
         public DbSet<HydrostaticInput> HydrostaticInputs { get; set; }
-        public DbSet<HydrostaticResults> HydrostaticResults { get; set; }
+        public DbSet<HydrostaticResults> HydrostaticResults { get; set; }        
+        public DbSet<UserHydrostaticTableHeader> UserHydrostaticTableHeaders { get; set; }
         public DbSet<UserHydrostaticTableRow> UserHydrostaticTableRows { get; set; }
         public DbSet<DeductiblesInput> DeductiblesInputs { get; set; }
         public DbSet<DeductiblesResults> DeductiblesResults { get; set; }
@@ -35,11 +36,25 @@ namespace DraughtSurveyWebApp.Data
                 .HasForeignKey(i => i.ApplicationUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<UserHydrostaticTableRow>()
-                .HasOne(u => u.ApplicationUser)
-                .WithMany()
-                .HasForeignKey(u => u.ApplicationUserId)
+            modelBuilder.Entity<UserHydrostaticTableHeader>()
+                .HasMany(u => u.UserHydrostaticTableRows)
+                .WithOne(r => r.UserHydrostaticTableHeader)                                
+                .HasForeignKey(u => u.UserHydrostaticTableHeaderId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            //modelBuilder.Entity<UserHydrostaticTableHeader>()
+            //    .HasOne(u => u.ApplicationUser)
+            //    .WithMany()
+            //    .HasForeignKey(u => u.ApplicationUserId)
+            //    .OnDelete(DeleteBehavior.Restrict);
+
+
+
+            //modelBuilder.Entity<UserHydrostaticTableRow>()
+            //    .HasOne(u => u.ApplicationUser)
+            //    .WithMany()
+            //    .HasForeignKey(u => u.ApplicationUserId)
+            //    .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

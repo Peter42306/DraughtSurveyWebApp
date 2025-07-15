@@ -110,10 +110,11 @@ namespace DraughtSurveyWebApp.Controllers
                 input.CargoOperationsDateTime = viewModel.CargoOperationsDateTime;
             }
             
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();            
 
-            //return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
-            return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#initial-draught-times");
+            string anchor = draughtSurveyBlock.SurveyType == SurveyType.Initial ? "initial-draught-times" : "final-draught-times";
+
+            return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#{anchor}");
         }
 
         private bool IsTimesInputChanged(DraughtSurveyBlock dbValue, EditSurveyTimesViewModel viewModelValue)

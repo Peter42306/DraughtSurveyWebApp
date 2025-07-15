@@ -96,6 +96,20 @@ namespace DraughtSurveyWebApp.Controllers
             };
 
             _context.CargoInputs.Add(cargo);
+
+            var results = new CargoResult    
+            { 
+                InspectionId = viewModel.InspectionId,
+                Inspection = inspection,
+                
+                CargoByDraughtSurvey = null,
+                DifferenceWithBL_Mt = null,
+                DifferenceWithBL_Percents = null,
+                DifferenceWithSDWT_Percents = null
+            };
+
+            _context.CargoResults.Add(results);
+
             await _context.SaveChangesAsync();            
 
             return RedirectToAction("Details", "Inspections", new { id = viewModel.InspectionId});

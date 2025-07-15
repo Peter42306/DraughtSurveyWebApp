@@ -152,8 +152,11 @@ namespace DraughtSurveyWebApp.Controllers
 
             await _context.SaveChangesAsync();
 
-            //return RedirectToAction("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId });
-            return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#initial-draught-deductibles");
+            string anchor = draughtSurveyBlock.SurveyType == SurveyType.Initial 
+                ? "initial-draught-deductibles" 
+                : "final-draught-deductibles";
+
+            return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#{anchor}");
         }
 
         private bool IsDeductiblesInputChanged(DeductiblesInput dbValue, DeductiblesInputViewModel viewModelValue)
