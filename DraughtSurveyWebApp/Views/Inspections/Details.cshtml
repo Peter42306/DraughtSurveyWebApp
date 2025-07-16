@@ -768,3 +768,36 @@ else
     </p>
 
 }
+
+
+
+@if(
+    Model.CargoInput != null && Model.CargoResult != null &&
+    Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Initial) && 
+    Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Final)
+    )
+{
+    <hr />
+    <h4>Cargo Calculations ???????</h4>
+    <hr />
+}
+else
+{
+    <hr />
+    <h4>Cargo Calculations</h4>
+    <hr />
+    <p>
+        <span class="text-muted">Calculations are not ready</span>
+        
+        @if(Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Initial))
+        {
+          <span class="text-muted">Initial survey not completed</span>
+        }
+
+        @if(Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Final))
+        {
+          <span class="text-muted">Initial survey not completed</span>
+        }
+        
+    </p>
+}
