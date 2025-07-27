@@ -58,91 +58,110 @@
     </dl>
 </div>
 
-
-
-@if(Model.VesselInput != null)
+@if (Model.VesselInput != null || Model.CargoInput != null)
 {
     <hr />
-    <div class="row" id="draught-vessel-input">
-        <div class="col-6">
-            <h4>Vessel Information</h4>
-        </div>
-        <div class="col-6 text-end">
-            <a asp-action="Edit" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id">Edit</a>
-        </div>
-    </div>    
-    @* <hr /> *@
 
-    @if (TempData["VesselAutoFilled"] != null)
-    {
-    <div class="alert alert-info">
-        <strong>Note: </strong>
-        @TempData["VesselAutoFilled"]
-    </div>
-    }
+    <div class="row">
 
-    <dl class="row">
-        <dt class="col-6 col-sm-3">IMO</dt>
-        <dd class="col-6 col-sm-9">@Model.VesselInput.IMO</dd>
+        @if(Model.VesselInput != null)
+        {
+            <div class="col-sm-6">           
+    
+                <div class="d-flex justify-content-between align-content-between align-items-center mb-2" id="draught-vessel-input" >                    
+                        <h4>Vessel Information</h4>
+                    
+                    
+                        <a asp-action="Edit" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id">Edit</a>
+                    
+                </div>    
+                @* <hr /> *@
 
-        <dt class="col-6 col-sm-3">LBP</dt>
-        <dd class="col-6 col-sm-9">@Model.VesselInput.LBP?.ToString("N3")</dd>
+                @if (TempData["VesselAutoFilled"] != null)
+                {
+                <div class="alert alert-info">
+                    <strong>Note: </strong>
+                    @TempData["VesselAutoFilled"]
+                </div>
+                }
 
-        <dt class="col-6 col-sm-3">BM</dt>
-        <dd class="col-6 col-sm-9">@Model.VesselInput.BM?.ToString("N3")</dd>
+                <dl class="row">
+                    <dt class="col-6 col-sm-3">IMO</dt>
+                    <dd class="col-6 col-sm-9">@Model.VesselInput.IMO</dd>
 
-        <dt class="col-6 col-sm-3">LS</dt>
-        <dd class="col-6 col-sm-9">@Model.VesselInput.LS?.ToString("N3")</dd>
+                    <dt class="col-6 col-sm-3">LBP</dt>
+                    <dd class="col-6 col-sm-9">@Model.VesselInput.LBP?.ToString("N3")</dd>
 
-        <dt class="col-6 col-sm-3">SDWT</dt>
-        <dd class="col-6 col-sm-9">@Model.VesselInput.SDWT?.ToString("N3")</dd>
+                    <dt class="col-6 col-sm-3">BM</dt>
+                    <dd class="col-6 col-sm-9">@Model.VesselInput.BM?.ToString("N3")</dd>
 
-        <dt class="col-6 col-sm-3">Declared Constant</dt>
-        <dd class="col-6 col-sm-9">@Model.VesselInput.DeclaredConstant?.ToString("N3")</dd>
-    </dl>
+                    <dt class="col-6 col-sm-3">LS</dt>
+                    <dd class="col-6 col-sm-9">@Model.VesselInput.LS?.ToString("N3")</dd>
 
+                    <dt class="col-6 col-sm-3">SDWT</dt>
+                    <dd class="col-6 col-sm-9">@Model.VesselInput.SDWT?.ToString("N3")</dd>
+
+                    <dt class="col-6 col-sm-3">Declared Constant</dt>
+                    <dd class="col-6 col-sm-9">@Model.VesselInput.DeclaredConstant?.ToString("N3")</dd>
+                </dl>   
+                
+                </div>
+    
+                }
+                else
+                {
+                    <div class="col-sm-6">
+                        <hr/>
+                    <span class="text-muted">Vessel Information not entered yet |</span>
+                    <a asp-action="Create" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id">Add Vessel Info</a>
+                    </div>
+            
+                }    
+    
+        
+
+
+        
+            
+                @if (Model.CargoInput != null)
+                {
+                    <div class="col-sm-6">
+                    
+                    <div class="d-flex justify-content-between align-content-between align-items-center mb-2" id="draught-cargo-input">                        
+                            <h4>Cargo Information</h4>                        
+                            <a asp-action="Edit" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Edit</a>                        
+                    </div>        
+
+                    <dl class="row">
+                        <dt class="col-6 col-sm-3">Cargo Name</dt>
+                        <dd class="col-6 col-sm-9">@Model.CargoInput.CargoName</dd>
+
+                        <dt class="col-6 col-sm-3">Declared Weight</dt>
+                        <dd class="col-6 col-sm-9">@Model.CargoInput.DeclaredWeight?.ToString("N3")</dd>
+
+                        <dt class="col-6 col-sm-3">Loading Terminal</dt>
+                        <dd class="col-6 col-sm-9">@Model.CargoInput.LoadingTerminal</dd>
+
+                        <dt class="col-6 col-sm-3">Berth No.</dt>
+                        <dd class="col-6 col-sm-9">@Model.CargoInput.BerthNumber</dd>
+                    </dl>    
+                    </div>
+
+                }
+                else
+                {
+                    <div class="col-sm-6">                        
+                    <span class="text-muted">Cargo Information not entered yet |</span>
+                    <a asp-action="Create" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Add Cargo Info</a>
+                    </div>
+                    
+                }
+            </div>            
     
 }
-else
-{
-    <hr/>
-    <span class="text-muted">Vessel Information not entered yet |</span>
-    <a asp-action="Create" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id">Add Vessel Info</a>
-}
 
 
-@if (Model.CargoInput != null)
-{
-    <hr />
-    <div class="row" id="draught-cargo-input">
-        <div class="col-6">
-            <h4>Cargo Information</h4>
-        </div>
-        <div class="col-6 text-end">
-            <a asp-action="Edit" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Edit</a>
-        </div>
-    </div>        
 
-    <dl class="row">
-        <dt class="col-6 col-sm-3">Cargo Name</dt>
-        <dd class="col-6 col-sm-9">@Model.CargoInput.CargoName</dd>
-
-        <dt class="col-6 col-sm-3">Declared Weight</dt>
-        <dd class="col-6 col-sm-9">@Model.CargoInput.DeclaredWeight?.ToString("N3")</dd>
-
-        <dt class="col-6 col-sm-3">Loading Terminal</dt>
-        <dd class="col-6 col-sm-9">@Model.CargoInput.LoadingTerminal</dd>
-
-        <dt class="col-6 col-sm-3">Berth No.</dt>
-        <dd class="col-6 col-sm-9">@Model.CargoInput.BerthNumber</dd>
-    </dl>    
-}
-else
-{
-    <hr />
-    <span class="text-muted">Cargo Information not entered yet |</span>
-    <a asp-action="Create" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Add Cargo Info</a>
-}
 
 
 
@@ -169,7 +188,7 @@ else
         
         <div class="row" id="initial-draught-times">
             <div class="col-6">
-                <h4>Time Sheet</h4>
+                <h4>Initial Time Sheet</h4>
             </div>
             <div class="col-6 text-end">
                 <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@initialBlock.Id" >Edit Times</a>
@@ -195,7 +214,7 @@ else
         <hr />
         <div class="row">
             <div class="col-6">
-                <p>Times not entered yet</p>
+                <p>Initial times not entered yet</p>
             </div>
             <div class="col-6 text-end">
                 <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Times</a>
@@ -251,7 +270,7 @@ else
             <dd class="col-4 col-sm-4"></dd>
             <dd class="col-2 col-sm-2">@initialBlock.DraughtsResults.TrimCorrected?.ToString("N3")</dd>
 
-                @if (initialBlock.HydrostaticInput != null &&
+                @* @if (initialBlock.HydrostaticInput != null &&
                         initialBlock.HydrostaticInput.DraughtBelow.HasValue && initialBlock.HydrostaticInput.DraughtAbove.HasValue &&
                         !(
                             initialBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(initialBlock.HydrostaticInput.DraughtBelow.Value, initialBlock.HydrostaticInput.DraughtAbove.Value) &&
@@ -262,7 +281,7 @@ else
                     <div class="alert alert-danger">
                         Mean draught is out of range of table draught values. Calculations may be inaccurate.
                     </div>
-                }
+                } *@
 
             <dt class="col-6 col-sm-3">Mean Adjusted Draught</dt>
             <dd class="col-6 col-sm-9">@initialBlock.DraughtsResults.MeanAdjustedDraught?.ToString("N3")</dd>
@@ -289,7 +308,7 @@ else
         <hr />
         <div class="row">
             <div class="col-6">
-                <p>Draughts not entered yet</p>
+                <p>Initial draughts not entered yet</p>
             </div>
             <div class="col-6 text-end">
                 <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Draughts</a>
@@ -308,8 +327,24 @@ else
                 <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Hydrostatics</a>
             </div>
         </div>
+        
 
-        <dl class="row">
+        <dl class="row">           
+
+            @if (initialBlock.HydrostaticInput != null &&
+                 initialBlock.HydrostaticInput.DraughtBelow.HasValue && initialBlock.HydrostaticInput.DraughtAbove.HasValue &&
+                 initialBlock.DraughtsResults != null &&
+                    !(
+                     initialBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(initialBlock.HydrostaticInput.DraughtBelow.Value, initialBlock.HydrostaticInput.DraughtAbove.Value) &&
+                     initialBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection < Math.Max(initialBlock.HydrostaticInput.DraughtBelow.Value, initialBlock.HydrostaticInput.DraughtAbove.Value)
+                    )                            
+                 )
+                {
+                    <div class="alert alert-danger">
+                        Mean draught is out of range of table draught values. Calculations may be inaccurate.
+                    </div>
+                }
+
             <dt class="col-6 col-sm-3">Table Displacement</dt>
             <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.DisplacementFromTable?.ToString("N3")</dd>
 
@@ -335,9 +370,14 @@ else
                         }
 
                         var resultValueToView = initialBlock.HydrostaticResults.LCFFromTable?.ToString("N3");
-                        displayDirection  = initialBlock.HydrostaticInput.IsLCFForward != null
+
+                        if (initialBlock.HydrostaticInput != null)
+                        {
+                            displayDirection  = initialBlock.HydrostaticInput.IsLCFForward != null
                             ? (initialBlock.HydrostaticInput.IsLCFForward == true ? "FWD" : "AFT")
                             : string.Empty;
+                        }
+
                     }
                     
                     @displayValue
@@ -382,7 +422,7 @@ else
         <hr />
         <div class="row">
             <div class="col-7">
-                <p>Hydrostatics not entered yet</p>
+                <p>Initial hydrostatics not entered yet</p>
             </div>
             <div class="col-5 text-end">
                 <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Hydrostatics</a>
@@ -431,7 +471,7 @@ else
         <hr />
         <div class="row">
             <div class="col-6">
-                <p>Deductibles not entered yet</p>
+                <p>Initial deductibles not entered yet</p>
             </div>
             <div class="col-6 text-end">
                 <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Deductibles</a>
@@ -478,7 +518,7 @@ else
         
         <div class="row" id="#final-draught-times">
             <div class="col-6">
-                <h4>Time Sheet</h4>
+                <h4>Final Time Sheet</h4>
             </div>
             <div class="col-6 text-end">
                 <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@finalBlock.Id" >Edit Times</a>
@@ -504,7 +544,7 @@ else
         <hr />
         <div class="row">
             <div class="col-6">
-                <p>Times not entered yet</p>
+                <p>Final times not entered yet</p>
             </div>
             <div class="col-6 text-end">
                 <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Times</a>
@@ -561,7 +601,7 @@ else
             <dd class="col-4 col-sm-4"></dd>
             <dd class="col-2 col-sm-2">@finalBlock.DraughtsResults.TrimCorrected?.ToString("N3")</dd>
 
-                @if (finalBlock.HydrostaticInput != null &&
+                @* @if (finalBlock.HydrostaticInput != null &&
                         finalBlock.HydrostaticInput.DraughtBelow.HasValue && finalBlock.HydrostaticInput.DraughtAbove.HasValue &&
                         !(
                             finalBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(finalBlock.HydrostaticInput.DraughtBelow.Value, finalBlock.HydrostaticInput.DraughtAbove.Value) &&
@@ -572,7 +612,7 @@ else
                     <div class="alert alert-danger">
                         Mean draught is out of range of table draught values. Calculations may be inaccurate.
                     </div>
-                }
+                } *@
 
             <dt class="col-6 col-sm-3">Mean Adjusted Draught</dt>
             <dd class="col-6 col-sm-9">@finalBlock.DraughtsResults.MeanAdjustedDraught?.ToString("N3")</dd>
@@ -599,7 +639,7 @@ else
         <hr />
         <div class="row">
             <div class="col-6">
-                <p>Draughts not entered yet</p>
+                <p>Final draughts not entered yet</p>
             </div>
             <div class="col-6 text-end">
                 <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Draughts</a>
@@ -612,7 +652,7 @@ else
         <hr />
         <div class="row" id="final-draught-hydrostatics">
             <div class="col-6">
-                <h4>Initial Hydrostatics</h4>
+                <h4>Final Hydrostatics</h4>
             </div>
             <div class="col-6 text-end">
                 <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Hydrostatics</a>
@@ -620,6 +660,21 @@ else
         </div>
 
         <dl class="row">
+
+            @if (finalBlock.HydrostaticInput != null &&
+                 finalBlock.HydrostaticInput.DraughtBelow.HasValue && finalBlock.HydrostaticInput.DraughtAbove.HasValue &&
+                 finalBlock.DraughtsResults != null &&
+                    !(
+                     finalBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(finalBlock.HydrostaticInput.DraughtBelow.Value, finalBlock.HydrostaticInput.DraughtAbove.Value) &&
+                     finalBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection < Math.Max(finalBlock.HydrostaticInput.DraughtBelow.Value, finalBlock.HydrostaticInput.DraughtAbove.Value)
+                    )                            
+                  )
+                {
+                    <div class="alert alert-danger">
+                        Mean draught is out of range of table draught values. Calculations may be inaccurate.
+                    </div>
+                }
+
             <dt class="col-6 col-sm-3">Table Displacement</dt>
             <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.DisplacementFromTable?.ToString("N3")</dd>
 
@@ -645,9 +700,14 @@ else
                         }
 
                         var resultValueToView = finalBlock.HydrostaticResults.LCFFromTable?.ToString("N3");
-                        displayDirection  = finalBlock.HydrostaticInput.IsLCFForward != null
+
+                        if (finalBlock.HydrostaticInput != null)
+                        {
+                            displayDirection  = finalBlock.HydrostaticInput.IsLCFForward != null
                             ? (finalBlock.HydrostaticInput.IsLCFForward == true ? "FWD" : "AFT")
                             : string.Empty;
+                        }
+
                     }
                     
                     @displayValue
@@ -692,7 +752,7 @@ else
         <hr />
         <div class="row">
             <div class="col-7">
-                <p>Hydrostatics not entered yet</p>
+                <p>Final hydrostatics not entered yet</p>
             </div>
             <div class="col-5 text-end">
                 <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Hydrostatics</a>
@@ -706,7 +766,7 @@ else
         <hr />
         <div class="row" id="final-draught-deductibles">
             <div class="col-6">
-                <h4>Initial Deductibles</h4>
+                <h4>Final Deductibles</h4>
             </div>
             <div class="col-6 text-end">
                 <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Deductibles</a>
@@ -741,7 +801,7 @@ else
         <hr />
         <div class="row">
             <div class="col-6">
-                <p>Deductibles not entered yet</p>
+                <p>Final deductibles not entered yet</p>
             </div>
             <div class="col-6 text-end">
                 <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Deductibles</a>
@@ -772,14 +832,29 @@ else
 
 
 @if(
-    Model.CargoInput != null && Model.CargoResult != null &&
+    Model.CargoInput != null &&     
+    Model.CargoResult != null &&        
     Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Initial) && 
     Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Final)
     )
 {
     <hr />
-    <h4>Cargo Calculations ???????</h4>
+    <h4>Cargo Calculations</h4>
     <hr />
+
+    <dl class="row">
+            <dt class="col-6 col-sm-3">Cargo as per draught survey, mt</dt>
+            <dd class="col-6 col-sm-9">@Model.CargoResult?.CargoByDraughtSurvey?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-3">Difference with Bill of Lading, mt</dt>
+            <dd class="col-6 col-sm-9">@Model.CargoResult?.DifferenceWithBL_Mt?.ToString("N3")</dd>            
+
+            <dt class="col-6 col-sm-3">Difference with Bill of Lading, %</dt>
+            <dd class="col-6 col-sm-9">@Model.CargoResult?.DifferenceWithBL_Percents?.ToString("N3")</dd>            
+
+            <dt class="col-6 col-sm-3">Difference with SDWT, %</dt>
+            <dd class="col-6 col-sm-9">@Model.CargoResult?.DifferenceWithSDWT_Percents?.ToString("N3")</dd>            
+    </dl>
 }
 else
 {
@@ -799,5 +874,5 @@ else
           <span class="text-muted">Initial survey not completed</span>
         }
         
-    </p>
+    </p>        
 }

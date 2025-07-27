@@ -6,6 +6,13 @@ namespace DraughtSurveyWebApp.Services
 {
     public class SurveyCalculationsService
     {
+        private readonly ILogger<SurveyCalculationsService> _logger;
+
+        public SurveyCalculationsService(ILogger<SurveyCalculationsService> logger)
+        {
+            _logger = logger;
+        }
+
         public void RecalculateAll(DraughtSurveyBlock block)
         {
             if (block == null) return;
@@ -16,33 +23,48 @@ namespace DraughtSurveyWebApp.Services
             
         }
 
-        // Recalculations of CargoResult
-        public void RecalculateCargo(DraughtSurveyBlock draughtSurveyBlock)
-        {
-            var inspection = draughtSurveyBlock.Inspection;
+        //// Recalculations of CargoResult
+        //public void RecalculateCargo(DraughtSurveyBlock draughtSurveyBlock)
+        //{
+        //    var inspection = draughtSurveyBlock.Inspection;
 
-            if (inspection.CargoInput == null) 
-            {
-                return;
-            }
+        //    if (inspection == null || inspection.CargoInput == null) 
+        //    {
+        //        return;
+        //    }            
 
-            if (inspection.CargoResult == null)
-            {
-                return;
-            }
+        //    var initialBlock = inspection.DraughtSurveyBlocks                
+        //        .FirstOrDefault(b => b.SurveyType == SurveyType.Initial);
 
-            var initialBlock = inspection.DraughtSurveyBlocks                
-                .FirstOrDefault(b => b.SurveyType == SurveyType.Initial);
+        //    var finalBlock = inspection.DraughtSurveyBlocks
+        //        .FirstOrDefault(b => b.SurveyType == SurveyType.Final);
 
-            var finalBlock = inspection.DraughtSurveyBlocks
-                .FirstOrDefault(b => b.SurveyType == SurveyType.Final);
+        //    var initialNetto = initialBlock?.HydrostaticResults?.NettoDisplacement;
+        //    var finalNetto = finalBlock?.HydrostaticResults?.NettoDisplacement;
 
-            if (initialBlock?.HydrostaticResults == null || finalBlock?.HydrostaticResults == null) return;
+        //    if (!initialNetto.HasValue || !finalNetto.HasValue)
+        //    {
+        //        return;
+        //    }
+
+        //    double cargoByDraughtSurvey = finalNetto.Value - initialNetto.Value;
 
 
+            
+        //    if (inspection.CargoResult == null)
+        //    {
+        //        inspection.CargoResult = new CargoResult
+        //        {
+        //            InspectionId = inspection.Id,
+        //            Inspection = inspection
+        //        };
+        //    }
+            
+
+        //    inspection.CargoResult.CargoByDraughtSurvey = cargoByDraughtSurvey;
+        //}
 
 
-        }
 
         // Recalculation of DeductiblesInput and DeductiblesResult
         public void RecalculateDeductibles(DraughtSurveyBlock draughtSurveyBlock)
@@ -388,7 +410,6 @@ namespace DraughtSurveyWebApp.Services
 
 
             // Calculation of Cargo + Constant
-
             double? cargoPlusConstant = null;
             double? lightShip = draughtSurveyBlock.Inspection?.VesselInput?.LS;
 

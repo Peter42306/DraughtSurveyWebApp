@@ -152,7 +152,7 @@ namespace DraughtSurveyWebApp.Controllers
         }
 
 
-        // POST: 
+        // POST: /HydrostaticInput/Edit?draughtSurveyBlockId=5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(HydrostaticInputViewModel viewModel)
@@ -170,15 +170,21 @@ namespace DraughtSurveyWebApp.Controllers
 
 
             var draughtSurveyBlock = await _context.DraughtSurveyBlocks
-                .Include(b => b.DraughtsInput)
-                .Include(r => r.DraughtsResults)
-                .Include(h => h.HydrostaticInput)
-                .Include(r => r.HydrostaticResults)
-                .Include(b => b.DeductiblesInput)
-                .Include(r => r.DeductiblesResults)
-                .Include(i => i.Inspection)
-                    .ThenInclude(i => i.VesselInput)
-                .FirstOrDefaultAsync(b => b.Id == viewModel.DraughtSurveyBlockId);
+                 .Include(b => b.DraughtsInput)
+                 .Include(b => b.DraughtsResults)
+                 .Include(b => b.HydrostaticInput)
+                 .Include(b => b.HydrostaticResults)
+                 .Include(b => b.DeductiblesInput)
+                 .Include(b => b.DeductiblesResults)
+                 .Include(b => b.Inspection)
+                     .ThenInclude(i => i.VesselInput)
+                 .Include(b => b.Inspection)
+                     .ThenInclude(i => i.CargoResult)
+                 .Include(b => b.Inspection)
+                     .ThenInclude(i => i.CargoInput)
+                 .Include(b => b.Inspection)
+                     .ThenInclude(i => i.DraughtSurveyBlocks)
+                 .FirstOrDefaultAsync(b => b.Id == viewModel.DraughtSurveyBlockId);
 
             if (draughtSurveyBlock == null)
             {
@@ -291,6 +297,77 @@ namespace DraughtSurveyWebApp.Controllers
             }
 
             _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
+
+
+
+
+
+            // Recalculation of results if available 
+
+            var initialBlock = await _context.DraughtSurveyBlocks
+                .Include(b => b.HydrostaticResults)
+                .FirstOrDefaultAsync(b =>
+                b.InspectionId == draughtSurveyBlock.InspectionId &&
+                b.SurveyType == SurveyType.Initial);
+
+            var finalBlock = await _context.DraughtSurveyBlocks
+                .Include(b => b.HydrostaticResults)
+                .FirstOrDefaultAsync(b =>
+                b.InspectionId == draughtSurveyBlock.InspectionId &&
+                b.SurveyType == SurveyType.Final);
+
+            var initialNetto = initialBlock?.HydrostaticResults?.NettoDisplacement;
+            var finalNetto = finalBlock?.HydrostaticResults?.NettoDisplacement;
+
+
+            double? cargoByDraughtSurvey = null;
+            double? differenceWithBL_Mt = null;
+            double? differenceWithBL_Percents = null;
+            double? DifferenceWithSDWT_Percents = null;
+
+            // Calculate cargo by draught survey
+            if (initialNetto.HasValue && finalNetto.HasValue)
+            {
+                cargoByDraughtSurvey = Math.Abs(Math.Round(finalNetto.Value - initialNetto.Value, 3, MidpointRounding.AwayFromZero));
+            }
+
+            if (draughtSurveyBlock.Inspection.CargoResult == null)
+            {
+                draughtSurveyBlock.Inspection.CargoResult = new CargoResult
+                {
+                    InspectionId = draughtSurveyBlock.InspectionId,
+                    Inspection = draughtSurveyBlock.Inspection
+                };
+            }
+
+
+            // Calculate difference with Bill of Lading
+            var declaredWeight = draughtSurveyBlock.Inspection.CargoInput?.DeclaredWeight;
+
+            if (cargoByDraughtSurvey.HasValue && declaredWeight.HasValue)
+            {
+                differenceWithBL_Mt = Math.Round(cargoByDraughtSurvey.Value - declaredWeight.Value, 3, MidpointRounding.AwayFromZero);
+                differenceWithBL_Percents = Math.Round((differenceWithBL_Mt.Value / declaredWeight.Value) * 100, 3, MidpointRounding.AwayFromZero);
+            }
+
+            // Calculate difference with SDWT
+            var sdwt = draughtSurveyBlock.Inspection.VesselInput?.SDWT;
+
+            if (cargoByDraughtSurvey.HasValue && sdwt.HasValue)
+            {
+                DifferenceWithSDWT_Percents = Math.Round((cargoByDraughtSurvey.Value / sdwt.Value) * 100, 3, MidpointRounding.AwayFromZero);
+            }
+
+
+            // Update CargoResult with calculated values
+            draughtSurveyBlock.Inspection.CargoResult.CargoByDraughtSurvey = cargoByDraughtSurvey;
+            draughtSurveyBlock.Inspection.CargoResult.DifferenceWithBL_Mt = differenceWithBL_Mt;
+            draughtSurveyBlock.Inspection.CargoResult.DifferenceWithBL_Percents = differenceWithBL_Percents;
+            draughtSurveyBlock.Inspection.CargoResult.DifferenceWithSDWT_Percents = DifferenceWithSDWT_Percents;
+
+
+
+
             await _context.SaveChangesAsync();
 
             string anchor = draughtSurveyBlock.SurveyType == SurveyType.Initial 
@@ -299,6 +376,7 @@ namespace DraughtSurveyWebApp.Controllers
 
             return Redirect($"{Url.Action("Details", "Inspections", new { id = draughtSurveyBlock.InspectionId })}#{anchor}");
         }
+        
 
 
         private bool IsHydrostaticsInputChanged(HydrostaticInput dbValue, HydrostaticInputViewModel viewModelValue)
@@ -352,54 +430,60 @@ namespace DraughtSurveyWebApp.Controllers
                 .OrderBy(r => r.Draught)
                 .ToList();
 
-
+            double? tableStep = tableHeader.TableStep;
             var draughtsInTableRows = tableRows.Select(r => r.Draught).ToList();
-
-            var tableStep = GetStepIf4Draughts(draughtsInTableRows);
 
             if (tableStep == null)
             {
-                return;
-            }
+                tableStep = GetStepIf4Draughts(draughtsInTableRows);
+                
+                if (tableStep == null)
+                {                    
+                    return;
+                }
 
-
-            if (tableHeader.TableStep == null)
-            {
                 tableHeader.TableStep = tableStep;
                 await _context.SaveChangesAsync();
             }
-           
+
+            double step = tableStep.Value;
+            double tolerance = 0.0001;
 
             UserHydrostaticTableRow? lowerRow = null;
             UserHydrostaticTableRow? upperRow = null;
-            
-            double tolerance = 0.001;
 
-            foreach (var row in tableRows)
-            {
-                if (Math.Abs(row.Draught - draughtCalculated.Value) < tolerance)
-                {
-                    lowerRow = row;
-                    upperRow = row;
-                    break;
-                }
+            // Find the closest rows above and below the calculated draught
+            for (int i = 0; i < tableRows.Count - 1; i++)
+            {                
+                var current = tableRows[i]; // current row
+                var next = tableRows[i + 1]; // next row
 
-                if (row.Draught <= draughtCalculated.Value)
-                {
-                    upperRow = row;
-                }
+                double currentStep = Math.Abs(current.Draught - next.Draught); // Calculate the step between current and next draught
 
-                if (row.Draught >= draughtCalculated.Value)
+                // Check if the current step is within the tolerance of the defined step
+                if (Math.Abs(currentStep - step) < tolerance)
                 {
-                    lowerRow = row;
-                    break;
+                    // Check if the calculated draught is within the range of current and next draught
+                    if (
+                        draughtCalculated.Value >= current.Draught - tolerance &&
+                        draughtCalculated.Value <= next.Draught + tolerance)
+                    {
+                        lowerRow = current;
+                        upperRow = next;
+                        break;
+                    }
+                    
                 }
             }
+           
 
             if (lowerRow == null || upperRow == null)
             {
                 return;
             }
+
+            
+            // Auto-fill the HydrostaticInput for the block
 
             block.HydrostaticInput ??= new HydrostaticInput
             {
@@ -426,6 +510,8 @@ namespace DraughtSurveyWebApp.Controllers
 
             block.HydrostaticInput.MTCMinus50Below = lowerRow.MTCMinus50;
             block.HydrostaticInput.MTCMinus50Above = upperRow.MTCMinus50;
+
+            // ViewBag.InfoMessage = "Autofill applied from stored hydrostatic table";
 
         }
 
@@ -464,7 +550,6 @@ namespace DraughtSurveyWebApp.Controllers
                 {
                     ApplicationUserId = user.Id,
                     ApplicationUser = user,
-
                     IMO = imo,
                     VesselName = vesselName,
                 };
@@ -476,12 +561,18 @@ namespace DraughtSurveyWebApp.Controllers
             
             if (draught.HasValue)
             {
-                var existingRow = tableHeader.UserHydrostaticTableRows
-                    .FirstOrDefault(r =>
+                var existingRow = await _context.UserHydrostaticTableRows
+                    .FirstOrDefaultAsync(r =>
+                    r.UserHydrostaticTableHeaderId == tableHeader.Id &&
                     Math.Abs(r.Draught - draught.Value) < 0.001);
+
+                //var existingRow = tableHeader.UserHydrostaticTableRows
+                //    .FirstOrDefault(r =>
+                //    Math.Abs(r.Draught - draught.Value) < 0.001);
 
                 if (existingRow != null)
                 {
+                    // Update existing row
                     existingRow.Displacement = displacement;
                     existingRow.TPC = tpc;
                     existingRow.LCF = lcf;
@@ -491,11 +582,11 @@ namespace DraughtSurveyWebApp.Controllers
                 }
                 else
                 {
-                    tableHeader.UserHydrostaticTableRows.Add(new UserHydrostaticTableRow
+                    // Add new row
+                    var newRow = new UserHydrostaticTableRow
                     {
                         UserHydrostaticTableHeaderId = tableHeader.Id,
                         UserHydrostaticTableHeader = tableHeader,
-
                         Draught = draught.Value,
                         Displacement = displacement,
                         TPC = tpc,
@@ -503,8 +594,29 @@ namespace DraughtSurveyWebApp.Controllers
                         IsLcfForward = isLcfForward,
                         MTCPlus50 = mtcPlus50,
                         MTCMinus50 = mtcMinus50
-                    });
+                    };
+
+                    _context.UserHydrostaticTableRows.Add(newRow);
+
+
+
+
+                    //tableHeader.UserHydrostaticTableRows.Add(new UserHydrostaticTableRow
+                    //{
+                    //    UserHydrostaticTableHeaderId = tableHeader.Id,
+                    //    UserHydrostaticTableHeader = tableHeader,
+
+                    //    Draught = draught.Value,
+                    //    Displacement = displacement,
+                    //    TPC = tpc,
+                    //    LCF = lcf,
+                    //    IsLcfForward = isLcfForward,
+                    //    MTCPlus50 = mtcPlus50,
+                    //    MTCMinus50 = mtcMinus50
+                    //});
                 }
+
+                await _context.SaveChangesAsync();
 
             }
         }

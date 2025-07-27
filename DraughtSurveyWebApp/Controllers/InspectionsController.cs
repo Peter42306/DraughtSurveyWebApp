@@ -71,6 +71,7 @@ namespace DraughtSurveyWebApp.Controllers
             var inspection = await _context.Inspections
                 .Include(i => i.VesselInput)
                 .Include(i => i.CargoInput)
+                .Include(i => i.CargoResult)
                 .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.DraughtsInput)                
                 .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.DraughtsResults)
                 .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.HydrostaticInput)
@@ -139,17 +140,29 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 new DraughtSurveyBlock
                 {
+                    InspectionId = inspection.Id,
                     Inspection = inspection,
                     SurveyType = SurveyType.Initial,
                     Notes = string.Empty
                 },
                 new DraughtSurveyBlock
                 {
+                    InspectionId = inspection.Id,
                     Inspection = inspection,
                     SurveyType = SurveyType.Final,
                     Notes = string.Empty
                 },
             };
+
+            inspection.CargoResult = new CargoResult
+            {
+                Inspection = inspection,
+                InspectionId = inspection.Id,
+                CargoByDraughtSurvey = null,
+                DifferenceWithBL_Mt = null,
+                DifferenceWithBL_Percents = null,
+                DifferenceWithSDWT_Percents = null
+            };            
 
 
             _context.Inspections.Add(inspection);

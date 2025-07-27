@@ -37,57 +37,34 @@
 
 
 
-        // Necessary check if there are 4 inputs, 2 for initial and 2 for final draught survey
+        
         public static double? GetStepIf4Draughts(List<double>draughts, double tolerance = 0.0001)
         {
-            // Check if draughts list is null or has less than 4 elements
+            
             if (draughts == null || draughts.Count < 4)
             {
                 return null;
             }
 
-            // Remove duplicates and sort the draughts
+            
             var sortedDraughts = draughts.Distinct().OrderBy(d => d).ToList();
 
-            // If there are less than 2 unique draughts after sorting, return null
-            var steps = new List<double>();
-
-            // Check the number of unique draughts
-            for (int i = 0; i < sortedDraughts.Count - 1; i++)
-            {
-                // Calculate the difference between consecutive draughts
-                double delta = sortedDraughts[i + 1] - sortedDraughts[i];
-                
-                if (Math.Abs(delta) > 0)
-                {
-                    // Add the delta to the steps list if it's not zero
-                    steps.Add(delta);
-                }
-            }
-
-            // If there are less than 2 steps, return null
-            if (steps.Count < 2)
+            if (sortedDraughts.Count != 4)
             {
                 return null;
             }
 
-            // Group the steps by their values and order them by count in descending order
-            var mostCommonStep = steps
-                .GroupBy(s => s)
-                .OrderByDescending(g => g.Count())
-                .FirstOrDefault()?.Key;
+            var step1 = Math.Abs(sortedDraughts[1] - sortedDraughts[0]);
+            var step2 = Math.Abs(sortedDraughts[3] - sortedDraughts[2]);
 
-            // If there are less than 2 steps are not equal within the tolerance, return null
-            if (
-                (mostCommonStep != null) &&
-                (steps.Count(s => Math.Abs(s - mostCommonStep.Value) < tolerance) < 2)
-                )
+            if (Math.Abs(step1-step2) < tolerance)
+            {
+                return step1;
+            }
+            else
             {
                 return null;
             }
-
-            // Return the most common step if it exists
-            return mostCommonStep;
 
         }
 

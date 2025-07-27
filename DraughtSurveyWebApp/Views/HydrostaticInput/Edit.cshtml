@@ -142,14 +142,23 @@
                             Model.IsLCFForward == null
                         )
                         {
-                            bool isDraughtAboveGreater = Model.DraughtAbove.Value > Model.DraughtBelow.Value;
-                            bool isLCFAboveGreater = Model.LCFAbove.Value > Model.LCFBelow.Value;
+                            if (Model.LCFAbove.Value == Model.LCFBelow.Value)
+                            {
+                                <div class="alert alert-warning">
+                                    LCF values above and below are e qual. Please check vessel's tables for LCF position.
+                                </div>
+                            }
+                            else
+                            {
+                                bool isDraughtAboveGreater = Model.DraughtAbove.Value > Model.DraughtBelow.Value;
+                                bool isLCFAboveGreater = Model.LCFAbove.Value > Model.LCFBelow.Value;
 
-                            lcfPosition = (isDraughtAboveGreater == isLCFAboveGreater) ? "AFT" : "FWD";
+                                lcfPosition = (isDraughtAboveGreater == isLCFAboveGreater) ? "AFT" : "FWD";
 
-                            <div class="alert alert-warning">
-                                Based on input LCF is <strong>@lcfPosition</strong>. Please check vessel's tables to confirm 
-                            </div>                            
+                                <div class="alert alert-warning">
+                                    Based on input LCF is <strong>@lcfPosition</strong>. Please check vessel's tables to confirm
+                                </div>
+                            }                            
                         }                        
                     }
 
@@ -294,8 +303,9 @@
                 @if (
                     Model.Inspection != null &&
                     !Model.Inspection.notShowInputWarnings &&
-                    Model.DeductiblesResults != null &&
-                    !Model.DeductiblesResults.TotalDeductibles.HasValue
+                    Model.DeductiblesResults == null &&
+                    !Model.NettoDisplacement.HasValue
+                    @* !Model.DeductiblesResults.TotalDeductibles.HasValue *@
                     )
                 {
                     <div class="alert alert-warning">
@@ -318,6 +328,7 @@
                     Model.Inspection != null &&
                     !Model.Inspection.notShowInputWarnings &&
                     Model.VesselInput != null &&
+                    Model.NettoDisplacement.HasValue &&
                     !Model.VesselInput.LS.HasValue
                     )
                 {
