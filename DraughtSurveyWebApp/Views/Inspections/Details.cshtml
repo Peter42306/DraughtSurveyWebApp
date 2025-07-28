@@ -168,16 +168,16 @@
         
         <dl class="row">            
 
-            <dt class="col-6 col-sm-3">Survey commenced</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.SurveyTimeStart?.ToString("yyyy-MM-dd HH:mm")</dd>
+            <dt class="col-6 col-sm-7">Survey commenced</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.SurveyTimeStart?.ToString("yyyy-MM-dd HH:mm")</dd>
 
-            <dt class="col-6 col-sm-3">Survey completed</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.SurveyTimeEnd?.ToString("yyyy-MM-dd HH:mm")</dd>
+            <dt class="col-6 col-sm-7">Survey completed</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.SurveyTimeEnd?.ToString("yyyy-MM-dd HH:mm")</dd>
 
-            <dt class="col-6 col-sm-3">
+            <dt class="col-6 col-sm-7">
                 @(Model.OperationType == OperationType.Loading ? "Loading commenced" : "Discharging commenced")
             </dt>
-            <dd class="col-6 col-sm-9">@initialBlock.CargoOperationsDateTime?.ToString("yyyy-MM-dd HH:mm")</dd>
+            <dd class="col-6 col-sm-5">@initialBlock.CargoOperationsDateTime?.ToString("yyyy-MM-dd HH:mm")</dd>
         </dl>
         }
         else
@@ -254,24 +254,24 @@
                     </div>
                 } *@
 
-            <dt class="col-6 col-sm-3">Mean Adjusted Draught</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.DraughtsResults.MeanAdjustedDraught?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Mean Adjusted Draught</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.DraughtsResults.MeanAdjustedDraught?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">@(initialBlock.DraughtsResults.HoggingSagging < 0 ? "Hogging" : "Sagging")</dt>
-            <dd class="col-6 col-sm-9">
+            <dt class="col-6 col-sm-7">@(initialBlock.DraughtsResults.HoggingSagging < 0 ? "Hogging" : "Sagging")</dt>
+            <dd class="col-6 col-sm-5">
                 @(initialBlock.DraughtsResults.HoggingSagging.HasValue
                     ? Math.Abs(initialBlock.DraughtsResults.HoggingSagging.Value).ToString("N3")
                     : "")
             </dd>
 
-            <dt class="col-6 col-sm-3">@((initialBlock.DraughtsInput.DraughtMidPS - initialBlock.DraughtsInput.DraughtMidSS) < 0 ? "Heel to SS" : "Heel to PS")</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.DraughtsResults.Heel?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">@((initialBlock.DraughtsInput.DraughtMidPS - initialBlock.DraughtsInput.DraughtMidSS) < 0 ? "Heel to SS" : "Heel to PS")</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.DraughtsResults.Heel?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Sea Water Density</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.DraughtsInput.SeaWaterDensity?.ToString("N4")</dd>
+            <dt class="col-6 col-sm-7">Sea Water Density</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.DraughtsInput.SeaWaterDensity?.ToString("N4")</dd>
 
-            <dt class="col-6 col-sm-3">Keel Correction</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.DraughtsInput.KeelCorrection?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Keel Correction</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.DraughtsInput.KeelCorrection?.ToString("N3")</dd>
         </dl>
     }
     else
@@ -316,14 +316,14 @@
                     </div>
                 }
 
-            <dt class="col-6 col-sm-3">Table Displacement</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.DisplacementFromTable?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Table Displacement</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.HydrostaticResults.DisplacementFromTable?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Table TPC</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.TPCFromTable?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Table TPC</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.HydrostaticResults.TPCFromTable?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Table LCF</dt>
-            <dd class="col-6 col-sm-9">
+            <dt class="col-6 col-sm-7">Table LCF</dt>
+            <dd class="col-6 col-sm-5">
                     @{
                         var lcf = initialBlock.HydrostaticResults.LCFFromTable;
                         var lbp = initialBlock.Inspection.VesselInput?.LBP;
@@ -359,33 +359,33 @@
                 
             </dd>
 
-            <dt class="col-6 col-sm-3">Table MTC +50 cm</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.MTCPlus50FromTable?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Table MTC +50 cm</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.HydrostaticResults.MTCPlus50FromTable?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Table MTC -50 cm</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.MTCMinus50FromTable?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Table MTC -50 cm</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.HydrostaticResults.MTCMinus50FromTable?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">1st Trim Correction</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.FirstTrimCorrection?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">1st Trim Correction</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.HydrostaticResults.FirstTrimCorrection?.ToString("N3")</dd>
                 @* @(initialBlock.HydrostaticResults.FirstTrimCorrection.HasValue
                     ? Math.Abs(initialBlock.HydrostaticResults.FirstTrimCorrection.Value).ToString("N3")
                     : null) *@
             
 
-            <dt class="col-6 col-sm-3">2nd Trim Correction</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.SecondTrimCorrection?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">2nd Trim Correction</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.HydrostaticResults.SecondTrimCorrection?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">D2 corr'd for Trim</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.DisplacementCorrectedForTrim?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">D2 corr'd for Trim</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.HydrostaticResults.DisplacementCorrectedForTrim?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">D3 corr'd for Density</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.DisplacementCorrectedForDensity?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">D3 corr'd for Density</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.HydrostaticResults.DisplacementCorrectedForDensity?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">NETTO Displacement</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.NettoDisplacement?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">NETTO Displacement</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.HydrostaticResults.NettoDisplacement?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Cargo + Constant</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.HydrostaticResults.CargoPlusConstant?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Cargo + Constant</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.HydrostaticResults.CargoPlusConstant?.ToString("N3")</dd>
         </dl>
     }
     else
@@ -415,26 +415,26 @@
         </div>
 
         <dl class="row">
-            <dt class="col-6 col-sm-3">Ballast Water, mt</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.DeductiblesInput.Ballast?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Ballast Water, mt</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.DeductiblesInput.Ballast?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Fresh Water, mt</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.DeductiblesInput.FreshWater?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Fresh Water, mt</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.DeductiblesInput.FreshWater?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Fuel Oil, mt</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.DeductiblesInput.FuelOil?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Fuel Oil, mt</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.DeductiblesInput.FuelOil?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Diesel Oil, mt</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.DeductiblesInput.DieselOil?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Diesel Oil, mt</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.DeductiblesInput.DieselOil?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Lub. Oil, mt</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.DeductiblesInput.LubOil?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Lub. Oil, mt</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.DeductiblesInput.LubOil?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Others, mt</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.DeductiblesInput.Others?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Others, mt</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.DeductiblesInput.Others?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Total Deductibles, mt</dt>
-            <dd class="col-6 col-sm-9">@initialBlock.DeductiblesResults.TotalDeductibles?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Total Deductibles, mt</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.DeductiblesResults.TotalDeductibles?.ToString("N3")</dd>
         </dl>
     }
     else
@@ -501,16 +501,16 @@ else
         
         <dl class="row">            
 
-            <dt class="col-6 col-sm-3">Survey commenced</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.SurveyTimeStart?.ToString("yyyy-MM-dd HH:mm")</dd>
+            <dt class="col-6 col-sm-7">Survey commenced</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.SurveyTimeStart?.ToString("yyyy-MM-dd HH:mm")</dd>
 
-            <dt class="col-6 col-sm-3">Survey completed</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.SurveyTimeEnd?.ToString("yyyy-MM-dd HH:mm")</dd>
+            <dt class="col-6 col-sm-7">Survey completed</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.SurveyTimeEnd?.ToString("yyyy-MM-dd HH:mm")</dd>
 
-            <dt class="col-6 col-sm-3">
+            <dt class="col-6 col-sm-7">
                 @(Model.OperationType == OperationType.Loading ? "Loading commenced" : "Discharging commenced")
             </dt>
-            <dd class="col-6 col-sm-9">@finalBlock.CargoOperationsDateTime?.ToString("yyyy-MM-dd HH:mm")</dd>
+            <dd class="col-6 col-sm-5">@finalBlock.CargoOperationsDateTime?.ToString("yyyy-MM-dd HH:mm")</dd>
         </dl>
         }
         else
@@ -588,24 +588,24 @@ else
                     </div>
                 } *@
 
-            <dt class="col-6 col-sm-3">Mean Adjusted Draught</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.DraughtsResults.MeanAdjustedDraught?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Mean Adjusted Draught</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.DraughtsResults.MeanAdjustedDraught?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">@(finalBlock.DraughtsResults.HoggingSagging < 0 ? "Hogging" : "Sagging")</dt>
-            <dd class="col-6 col-sm-9">
+            <dt class="col-6 col-sm-7">@(finalBlock.DraughtsResults.HoggingSagging < 0 ? "Hogging" : "Sagging")</dt>
+            <dd class="col-6 col-sm-5">
                 @(finalBlock.DraughtsResults.HoggingSagging.HasValue
                     ? Math.Abs(finalBlock.DraughtsResults.HoggingSagging.Value).ToString("N3")
                     : "")
             </dd>
 
-            <dt class="col-6 col-sm-3">@((finalBlock.DraughtsInput.DraughtMidPS - finalBlock.DraughtsInput.DraughtMidSS) < 0 ? "Heel to SS" : "Heel to PS")</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.DraughtsResults.Heel?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">@((finalBlock.DraughtsInput.DraughtMidPS - finalBlock.DraughtsInput.DraughtMidSS) < 0 ? "Heel to SS" : "Heel to PS")</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.DraughtsResults.Heel?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Sea Water Density</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.DraughtsInput.SeaWaterDensity?.ToString("N4")</dd>
+            <dt class="col-6 col-sm-7">Sea Water Density</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.DraughtsInput.SeaWaterDensity?.ToString("N4")</dd>
 
-            <dt class="col-6 col-sm-3">Keel Correction</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.DraughtsInput.KeelCorrection?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Keel Correction</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.DraughtsInput.KeelCorrection?.ToString("N3")</dd>
         </dl>
     }
     else
@@ -649,14 +649,14 @@ else
                     </div>
                 }
 
-            <dt class="col-6 col-sm-3">Table Displacement</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.DisplacementFromTable?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Table Displacement</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.HydrostaticResults.DisplacementFromTable?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Table TPC</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.TPCFromTable?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Table TPC</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.HydrostaticResults.TPCFromTable?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Table LCF</dt>
-            <dd class="col-6 col-sm-9">
+            <dt class="col-6 col-sm-7">Table LCF</dt>
+            <dd class="col-6 col-sm-5">
                     @{
                         var lcf = finalBlock.HydrostaticResults.LCFFromTable;
                         var lbp = finalBlock.Inspection.VesselInput?.LBP;
@@ -692,33 +692,33 @@ else
                 
             </dd>
 
-            <dt class="col-6 col-sm-3">Table MTC +50 cm</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.MTCPlus50FromTable?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Table MTC +50 cm</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.HydrostaticResults.MTCPlus50FromTable?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Table MTC -50 cm</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.MTCMinus50FromTable?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Table MTC -50 cm</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.HydrostaticResults.MTCMinus50FromTable?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">1st Trim Correction</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.FirstTrimCorrection?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">1st Trim Correction</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.HydrostaticResults.FirstTrimCorrection?.ToString("N3")</dd>
                 @* @(finalBlock.HydrostaticResults.FirstTrimCorrection.HasValue
                     ? Math.Abs(finalBlock.HydrostaticResults.FirstTrimCorrection.Value).ToString("N3")
                     : null) *@
             
 
-            <dt class="col-6 col-sm-3">2nd Trim Correction</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.SecondTrimCorrection?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">2nd Trim Correction</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.HydrostaticResults.SecondTrimCorrection?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">D2 corr'd for Trim</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.DisplacementCorrectedForTrim?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">D2 corr'd for Trim</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.HydrostaticResults.DisplacementCorrectedForTrim?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">D3 corr'd for Density</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.DisplacementCorrectedForDensity?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">D3 corr'd for Density</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.HydrostaticResults.DisplacementCorrectedForDensity?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">NETTO Displacement</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.NettoDisplacement?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">NETTO Displacement</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.HydrostaticResults.NettoDisplacement?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Cargo + Constant</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.HydrostaticResults.CargoPlusConstant?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Cargo + Constant</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.HydrostaticResults.CargoPlusConstant?.ToString("N3")</dd>
         </dl>
     }
     else
@@ -748,26 +748,26 @@ else
         </div>
 
         <dl class="row">
-            <dt class="col-6 col-sm-3">Ballast Water, mt</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesInput.Ballast?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Ballast Water, mt</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.DeductiblesInput.Ballast?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Fresh Water, mt</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesInput.FreshWater?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Fresh Water, mt</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.DeductiblesInput.FreshWater?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Fuel Oil, mt</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesInput.FuelOil?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Fuel Oil, mt</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.DeductiblesInput.FuelOil?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Diesel Oil, mt</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesInput.DieselOil?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Diesel Oil, mt</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.DeductiblesInput.DieselOil?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Lub. Oil, mt</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesInput.LubOil?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Lub. Oil, mt</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.DeductiblesInput.LubOil?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Others, mt</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesInput.Others?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Others, mt</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.DeductiblesInput.Others?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Total Deductibles, mt</dt>
-            <dd class="col-6 col-sm-9">@finalBlock.DeductiblesResults.TotalDeductibles?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Total Deductibles, mt</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.DeductiblesResults.TotalDeductibles?.ToString("N3")</dd>
         </dl>
     }
     else
@@ -828,17 +828,17 @@ else
     <hr />
 
     <dl class="row">
-            <dt class="col-6 col-sm-3">Cargo as per draught survey, mt</dt>
-            <dd class="col-6 col-sm-9">@Model.CargoResult?.CargoByDraughtSurvey?.ToString("N3")</dd>
+            <dt class="col-6 col-sm-7">Cargo as per draught survey, mt</dt>
+            <dd class="col-6 col-sm-5">@Model.CargoResult?.CargoByDraughtSurvey?.ToString("N3")</dd>
 
-            <dt class="col-6 col-sm-3">Difference with Bill of Lading, mt</dt>
-            <dd class="col-6 col-sm-9">@Model.CargoResult?.DifferenceWithBL_Mt?.ToString("N3")</dd>            
+            <dt class="col-6 col-sm-7">Difference with Bill of Lading, mt</dt>
+            <dd class="col-6 col-sm-5">@Model.CargoResult?.DifferenceWithBL_Mt?.ToString("N3")</dd>            
 
-            <dt class="col-6 col-sm-3">Difference with Bill of Lading, %</dt>
-            <dd class="col-6 col-sm-9">@Model.CargoResult?.DifferenceWithBL_Percents?.ToString("N3")</dd>            
+            <dt class="col-6 col-sm-7">Difference with Bill of Lading, %</dt>
+            <dd class="col-6 col-sm-5">@Model.CargoResult?.DifferenceWithBL_Percents?.ToString("N3")</dd>            
 
-            <dt class="col-6 col-sm-3">Difference with SDWT, %</dt>
-            <dd class="col-6 col-sm-9">@Model.CargoResult?.DifferenceWithSDWT_Percents?.ToString("N3")</dd>            
+            <dt class="col-6 col-sm-7">Difference with SDWT, %</dt>
+            <dd class="col-6 col-sm-5">@Model.CargoResult?.DifferenceWithSDWT_Percents?.ToString("N3")</dd>            
     </dl>
 
     </details>   
