@@ -16,156 +16,127 @@
 
 
 
-<div>
-    <hr />
-    <div class="row" id="draught-inspection-input">
-        <div class="col">
+<div class="row">
+
+    <!-- INSPECTION -->
+    <div class="col-sm-4">
+
+        <hr />
+        <div class="d-flex justify-content-between align-content-between align-items-center mb-2"> 
             <h4>Inspection</h4>
-        </div>
-
-        @* <div class="col-auto">
-            <div class="form-check form-check-inline">
-            <input asp-for="notShowInputWarnings" class="form-check-input" type="checkbox"/>
-            <label asp-for="notShowInputWarnings" class="form-check-label">
-                Don't show inputs warning
-            </label>
-        </div>
-        </div> *@
-        
-
-        <div class="col-auto text-end">
             <a asp-action="Edit" asp-route-id="@Model.Id">Edit </a>
-            
         </div>
-    </div>   
-    @* <hr /> *@
 
-    <dl class="row">
-        <dt class="col-6 col-sm-3">Vessel</dt>
-        <dd class="col-6 col-sm-9">@Model.VesselName</dd>
-        
-        <dt class="col-6 col-sm-3">@Html.DisplayNameFor(model => model.Port)</dt>
-        <dd class="col-6 col-sm-9">@Html.DisplayFor(model => model.Port)</dd>
-        
-        <dt class="col-6 col-sm-3">File Reference</dt>
-        <dd class="col-6 col-sm-9">@Html.DisplayFor(model => model.CompanyReference)</dd>
-        
-        <dt class="col-6 col-sm-3">Operation Type</dt>
-        <dd class="col-6 col-sm-9">@Html.DisplayFor(model => model.OperationType)</dd>
+        <dl class="row">
+            <dt class="col-6 col-lg-7">Vessel</dt>
+            <dd class="col-6 col-lg-5">@Model.VesselName</dd>
 
-        <dt class="col-6 col-sm-3">Input alerts</dt>
-        <dd class="col-6 col-sm-9">@(Model.notShowInputWarnings ? "Off" : "On")</dd>
-    </dl>
-</div>
+            <dt class="col-6 col-lg-7">@Html.DisplayNameFor(model => model.Port)</dt>
+            <dd class="col-6 col-lg-5">@Html.DisplayFor(model => model.Port)</dd>
 
-@if (Model.VesselInput != null || Model.CargoInput != null)
-{
-    <hr />
+            <dt class="col-6 col-lg-7">File Reference</dt>
+            <dd class="col-6 col-lg-5">@Html.DisplayFor(model => model.CompanyReference)</dd>
 
-    <div class="row">
+            <dt class="col-6 col-lg-7">Operation Type</dt>
+            <dd class="col-6 col-lg-5">@Html.DisplayFor(model => model.OperationType)</dd>
 
+            <dt class="col-6 col-lg-7">Input alerts</dt>
+            <dd class="col-6 col-lg-5">@(Model.notShowInputWarnings ? "Off" : "On")</dd>
+        </dl>
+
+    </div>
+
+    <!-- VESSEL -->
+    <div class="col-sm-4">           
+        <hr />    
         @if(Model.VesselInput != null)
-        {
-            <div class="col-sm-6">           
-    
-                <div class="d-flex justify-content-between align-content-between align-items-center mb-2" id="draught-vessel-input" >                    
-                        <h4>Vessel Information</h4>
-                    
-                    
-                        <a asp-action="Edit" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id">Edit</a>
-                    
-                </div>    
-                @* <hr /> *@
-
-                @if (TempData["VesselAutoFilled"] != null)
-                {
+        {            
+            <div class="d-flex justify-content-between align-content-between align-items-center mb-2" id="draught-vessel-input" >                    
+                <h4>Vessel Information</h4>                    
+                <a asp-action="Edit" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id">Edit</a>                    
+            </div>    
+            
+            @if (TempData["VesselAutoFilled"] != null)
+            {
                 <div class="alert alert-info">
-                    <strong>Note: </strong>
-                    @TempData["VesselAutoFilled"]
+                    <strong>Note: </strong>@TempData["VesselAutoFilled"]
                 </div>
-                }
+            }
+            
+            <dl class="row">
+                <dt class="col-6 col-lg-7">IMO</dt>
+                <dd class="col-6 col-lg-5">@Model.VesselInput.IMO</dd>
 
-                <dl class="row">
-                    <dt class="col-6 col-sm-3">IMO</dt>
-                    <dd class="col-6 col-sm-9">@Model.VesselInput.IMO</dd>
+                <dt class="col-6 col-lg-7">LBP</dt>
+                <dd class="col-6 col-lg-5">@Model.VesselInput.LBP?.ToString("N3")</dd>
 
-                    <dt class="col-6 col-sm-3">LBP</dt>
-                    <dd class="col-6 col-sm-9">@Model.VesselInput.LBP?.ToString("N3")</dd>
+                <dt class="col-6 col-lg-7">BM</dt>
+                <dd class="col-6 col-lg-5">@Model.VesselInput.BM?.ToString("N3")</dd>
 
-                    <dt class="col-6 col-sm-3">BM</dt>
-                    <dd class="col-6 col-sm-9">@Model.VesselInput.BM?.ToString("N3")</dd>
+                <dt class="col-6 col-lg-7">LS</dt>
+                <dd class="col-6 col-lg-5">@Model.VesselInput.LS?.ToString("N3")</dd>
 
-                    <dt class="col-6 col-sm-3">LS</dt>
-                    <dd class="col-6 col-sm-9">@Model.VesselInput.LS?.ToString("N3")</dd>
+                <dt class="col-6 col-lg-7">SDWT</dt>
+                <dd class="col-6 col-lg-5">@(Model.VesselInput.SDWT?.ToString("N3")+ " mt")</dd>
 
-                    <dt class="col-6 col-sm-3">SDWT</dt>
-                    <dd class="col-6 col-sm-9">@Model.VesselInput.SDWT?.ToString("N3")</dd>
-
-                    <dt class="col-6 col-sm-3">Declared Constant</dt>
-                    <dd class="col-6 col-sm-9">@Model.VesselInput.DeclaredConstant?.ToString("N3")</dd>
-                </dl>   
+                <dt class="col-6 col-lg-7">Declared Constant</dt>
+                <dd class="col-6 col-lg-5">@Model.VesselInput.DeclaredConstant?.ToString("N3")</dd>
+            </dl> 
+            
+            }
+            else
+            {
                 
-                </div>
-    
-                }
-                else
-                {
-                    <div class="col-sm-6">
-                        <hr/>
+                    
                     <span class="text-muted">Vessel Information not entered yet |</span>
                     <a asp-action="Create" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id">Add Vessel Info</a>
-                    </div>
+                
+            }    
+
+       </div>
             
-                }    
-    
-        
+       <!-- CARGO -->
+       <div class="col-sm-4">
+           <hr />
+           @if (Model.CargoInput != null)
+           {
+               <div class="d-flex justify-content-between align-content-between align-items-center mb-2" id="draught-cargo-input">                        
+                   <h4>Cargo Information</h4>                        
+                   <a asp-action="Edit" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Edit</a>                        
+               </div>        
 
+               <dl class="row">
+                   <dt class="col-6 col-lg-7">Cargo Name</dt>
+                   <dd class="col-6 col-lg-5">@Model.CargoInput.CargoName</dd>
+                            
+                   <dt class="col-6 col-lg-7">Declared Weight</dt>
+                   <dd class="col-6 col-lg-5">@Model.CargoInput.DeclaredWeight?.ToString("N3")</dd>
 
-        
-            
-                @if (Model.CargoInput != null)
-                {
-                    <div class="col-sm-6">
-                    
-                    <div class="d-flex justify-content-between align-content-between align-items-center mb-2" id="draught-cargo-input">                        
-                            <h4>Cargo Information</h4>                        
-                            <a asp-action="Edit" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Edit</a>                        
-                    </div>        
+                   <dt class="col-6 col-lg-7">Loading Terminal</dt>
+                   <dd class="col-6 col-lg-5">@Model.CargoInput.LoadingTerminal</dd>
 
-                    <dl class="row">
-                        <dt class="col-6 col-sm-3">Cargo Name</dt>
-                        <dd class="col-6 col-sm-9">@Model.CargoInput.CargoName</dd>
-
-                        <dt class="col-6 col-sm-3">Declared Weight</dt>
-                        <dd class="col-6 col-sm-9">@Model.CargoInput.DeclaredWeight?.ToString("N3")</dd>
-
-                        <dt class="col-6 col-sm-3">Loading Terminal</dt>
-                        <dd class="col-6 col-sm-9">@Model.CargoInput.LoadingTerminal</dd>
-
-                        <dt class="col-6 col-sm-3">Berth No.</dt>
-                        <dd class="col-6 col-sm-9">@Model.CargoInput.BerthNumber</dd>
-                    </dl>    
-                    </div>
-
+                   <dt class="col-6 col-lg-7">Berth No.</dt>
+                   <dd class="col-6 col-lg-5">@Model.CargoInput.BerthNumber</dd>
+               </dl>    
                 }
                 else
                 {
-                    <div class="col-sm-6">                        
-                    <span class="text-muted">Cargo Information not entered yet |</span>
-                    <a asp-action="Create" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Add Cargo Info</a>
-                    </div>
+                    
+                        <span class="text-muted">Cargo Information not entered yet |</span>
+                        <a asp-action="Create" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Add Cargo Info</a>
+                    
                     
                 }
-            </div>            
-    
-}
+        </div>            
+</div>
 
 
+<!-- INITIAL & FINAL DRAUGHTS -->
+<div class="row">
 
-
-
-
-@if(Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Initial))
+    <!-- INITIAL -->
+    <div class="col-sm-6">
+        @if(Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Initial))
 {
     var initialBlock = Model.DraughtSurveyBlocks.First(ds => ds.SurveyType == SurveyType.Initial);
     <hr />
@@ -211,7 +182,7 @@
         }
         else
         { 
-        <hr />
+        
         <div class="row">
             <div class="col-6">
                 <p>Initial times not entered yet</p>
@@ -496,8 +467,11 @@ else
     </p>   
     
 }
+    </div>
 
-@if (Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Final))
+    <!-- FINAL -->
+    <div class="col-sm-6">
+        @if (Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Final))
 {
     var finalBlock = Model.DraughtSurveyBlocks.First(ds => ds.SurveyType == SurveyType.Final);
     <hr />
@@ -508,9 +482,9 @@ else
         <summary class="h4 mb-2">
             Final Draught Survey
             @* <span class="ms-auto">&#9662;</span>             *@
-            <hr />
+            
         </summary>
-        
+        <hr />
 
         <div>
             @if(finalBlock.SurveyTimeStart.HasValue || finalBlock.SurveyTimeEnd.HasValue || finalBlock.CargoOperationsDateTime.HasValue)
@@ -541,7 +515,7 @@ else
         }
         else
         { 
-        <hr />
+        
         <div class="row">
             <div class="col-6">
                 <p>Final times not entered yet</p>
@@ -828,6 +802,12 @@ else
     </p>
 
 }
+    </div>
+</div>
+
+
+
+
 
 
 
@@ -839,7 +819,12 @@ else
     )
 {
     <hr />
-    <h4>Cargo Calculations</h4>
+
+    <details open>
+        <summary class="h4 mb-2">
+            Cargo Calculations
+        </summary>
+    
     <hr />
 
     <dl class="row">
@@ -855,24 +840,30 @@ else
             <dt class="col-6 col-sm-3">Difference with SDWT, %</dt>
             <dd class="col-6 col-sm-9">@Model.CargoResult?.DifferenceWithSDWT_Percents?.ToString("N3")</dd>            
     </dl>
+
+    </details>   
 }
 else
 {
     <hr />
-    <h4>Cargo Calculations</h4>
-    <hr />
-    <p>
-        <span class="text-muted">Calculations are not ready</span>
-        
-        @if(Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Initial))
-        {
-          <span class="text-muted">Initial survey not completed</span>
-        }
 
-        @if(Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Final))
-        {
-          <span class="text-muted">Initial survey not completed</span>
-        }
-        
-    </p>        
+    <details open>
+        <summary class="h4 mb-2">
+            Cargo Calculations
+        </summary>   
+    
+    <hr />        
+    
+    @if(Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Initial))
+    {
+        <div class="text-muted">Initial survey not completed</div>
+    }
+    
+    @if(Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Final))
+    {
+        <div class="text-muted">Final survey not completed</div>
+    }
+
+    </details>       
+    
 }
