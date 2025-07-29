@@ -112,7 +112,11 @@ namespace DraughtSurveyWebApp.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
+
+                
                 var user = await _userManager.FindByEmailAsync(Input.Email);
+                
+
                 if (user != null && !user.IsActive)
                 {
                     ModelState.AddModelError(string.Empty, "Your account is deactivated");
@@ -126,8 +130,6 @@ namespace DraughtSurveyWebApp.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
-
                     user.LoginCount++;
                     user.LastLoginAt = DateTime.UtcNow;
                     await _userManager.UpdateAsync(user);
@@ -139,8 +141,7 @@ namespace DraughtSurveyWebApp.Areas.Identity.Pages.Account
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
                 }
                 if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
+                {                    
                     return RedirectToPage("./Lockout");
                 }
                 else

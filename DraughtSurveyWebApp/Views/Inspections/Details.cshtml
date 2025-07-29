@@ -42,6 +42,9 @@
 
             <dt class="col-6 col-lg-7">Input alerts</dt>
             <dd class="col-6 col-lg-5">@(Model.notShowInputWarnings ? "Off" : "On")</dd>
+
+            <dt class="col-6 col-lg-7">Hydrostatic autofill</dt>
+            <dd class="col-6 col-lg-5">@(Model.notApplyAutoFillingHydrostatics ? "Off" : "On")</dd>            
         </dl>
 
     </div>
@@ -86,11 +89,10 @@
             }
             else
             {
-                
-                    
-                    <span class="text-muted">Vessel Information not entered yet |</span>
-                    <a asp-action="Create" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id">Add Vessel Info</a>
-                
+                <div class="d-flex justify-content-between align-content-between align-items-center mb-2">
+                    <span class="text-muted">Vessel Information not entered yet</span>
+                    <a asp-action="Create" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id">Edit</a>
+                </div>                
             }    
 
        </div>
@@ -121,11 +123,10 @@
                 }
                 else
                 {
-                    
-                        <span class="text-muted">Cargo Information not entered yet |</span>
-                        <a asp-action="Create" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Add Cargo Info</a>
-                    
-                    
+                    <div class="d-flex justify-content-between align-content-between align-items-center mb-2">
+                        <span class="text-muted">Cargo Information not entered yet</span>
+                        <a asp-action="Create" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Edit</a>
+                    </div>                                      
                 }
         </div>            
 </div>

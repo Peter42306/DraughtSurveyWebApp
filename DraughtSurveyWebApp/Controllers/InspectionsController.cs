@@ -133,7 +133,9 @@ namespace DraughtSurveyWebApp.Controllers
                 Port = viewModel.Port,
                 CompanyReference = viewModel.CompanyReference,
                 OperationType = viewModel.OperationType,                            
-                notShowInputWarnings = viewModel.notShowInputWarnings
+                notShowInputWarnings = viewModel.notShowInputWarnings,
+                notApplyAutoFillingHydrostatics = viewModel.notApplyAutoFillingHydrostatics
+
             };
 
             inspection.DraughtSurveyBlocks = new List<DraughtSurveyBlock>
@@ -204,7 +206,8 @@ namespace DraughtSurveyWebApp.Controllers
                 Port = inspection.Port,
                 CompanyReference = inspection.CompanyReference,
                 OperationType = inspection.OperationType,
-                notShowInputWarnings = inspection.notShowInputWarnings
+                notShowInputWarnings = inspection.notShowInputWarnings,
+                notApplyAutoFillingHydrostatics = inspection.notApplyAutoFillingHydrostatics
             };
 
             return View(viewModel);
@@ -256,6 +259,7 @@ namespace DraughtSurveyWebApp.Controllers
                 inspection.CompanyReference = viewModel.CompanyReference;
                 inspection.OperationType = viewModel.OperationType;
                 inspection.notShowInputWarnings = viewModel.notShowInputWarnings;
+                inspection.notApplyAutoFillingHydrostatics = viewModel.notApplyAutoFillingHydrostatics;
             }
             
                 
@@ -331,7 +335,8 @@ namespace DraughtSurveyWebApp.Controllers
                 dbValue.Port != viewModelValue.Port ||
                 dbValue.CompanyReference != viewModelValue.CompanyReference ||
                 dbValue.OperationType != viewModelValue.OperationType ||
-                dbValue.notShowInputWarnings != viewModelValue.notShowInputWarnings;
+                dbValue.notShowInputWarnings != viewModelValue.notShowInputWarnings ||
+                dbValue.notApplyAutoFillingHydrostatics != viewModelValue.notApplyAutoFillingHydrostatics;
         }
 
         //private bool InspectionExists(int id)

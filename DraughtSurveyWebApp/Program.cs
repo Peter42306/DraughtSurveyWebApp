@@ -20,7 +20,16 @@ namespace DraughtSurveyWebApp
                 options.UseSqlite(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+            builder.Services
+                .AddDefaultIdentity<ApplicationUser>(options => 
+                { 
+                    options.SignIn.RequireConfirmedAccount = true; 
+                    options.User.RequireUniqueEmail = true;
+
+                    options.Lockout.MaxFailedAccessAttempts = 5;
+                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                    options.Lockout.AllowedForNewUsers = true;
+                })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             
@@ -28,7 +37,9 @@ namespace DraughtSurveyWebApp
 
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IImageService, ImageService>();
-            builder.Services.AddScoped<SurveyCalculationsService>();
+            builder.Services.AddScoped<SurveyCalculationsService>();            
+            builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+            builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
             //builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             builder.Services.ConfigureApplicationCookie(options =>

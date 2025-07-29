@@ -28,6 +28,7 @@ namespace DraughtSurveyWebApp.Models
         public CargoResult? CargoResult { get; set; }
 
         public bool notShowInputWarnings { get; set; } = false;
+        public bool notApplyAutoFillingHydrostatics { get; set; } = false;
 
         public List<DraughtSurveyBlock> DraughtSurveyBlocks { get; set; } = new();        
     }

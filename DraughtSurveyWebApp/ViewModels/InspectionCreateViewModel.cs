@@ -12,5 +12,6 @@ namespace DraughtSurveyWebApp.ViewModels
         public OperationType? OperationType { get; set; }
         public bool UseExistingVessel { get; set; } = false;
         public bool notShowInputWarnings { get; set; } = false;
+        public bool notApplyAutoFillingHydrostatics { get; set; } = false;
     }
 }

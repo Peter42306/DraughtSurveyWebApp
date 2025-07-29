@@ -14,6 +14,8 @@ namespace DraughtSurveyWebApp.ViewModels
         public string? Port { get; set; }        
         public string? CompanyReference { get; set; }       
         public OperationType? OperationType { get; set; }
+        public bool UseExistingVessel { get; set; }
         public bool notShowInputWarnings { get; set; }
+        public bool notApplyAutoFillingHydrostatics { get; set; }
     }
 }

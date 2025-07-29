@@ -59,8 +59,13 @@ namespace DraughtSurveyWebApp.Controllers
                 return Forbid();
             }
 
+
             // Auto-fill hydrostatic input if available
-            await AutoFillHydrostaticInputIfAvailable(draughtSurveyBlock, user);
+            if (!draughtSurveyBlock.Inspection.notApplyAutoFillingHydrostatics)
+            {
+                await AutoFillHydrostaticInputIfAvailable(draughtSurveyBlock, user);
+            }
+            
 
             // Recalculate all survey calculations
             _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
