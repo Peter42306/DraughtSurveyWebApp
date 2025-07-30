@@ -36,20 +36,35 @@ namespace DraughtSurveyWebApp.Areas.Identity.Pages.Account
             public string Email { get; set; } = string.Empty;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void OnGet()
         {
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("[ResendConfirmation] Invalid model for email: {Email}", Input.Email);
                 return Page();
             }
 
             var user = await _userManager.FindByEmailAsync(Input.Email);
-            if (user == null || await _userManager.IsEmailConfirmedAsync(user))
+            if (user == null)
             {
+                _logger.LogWarning("[ResendConfirmation] Email not found: {Email}", Input.Email);
+                return RedirectToPage("./ResendEmailConfirmationConfirmation");
+            }
+
+            if (await _userManager.IsEmailConfirmedAsync(user))
+            {
+                _logger.LogWarning("[ResendConfirmation] Email already confirmed: {Email}", Input.Email);
                 return RedirectToPage("./ResendEmailConfirmationConfirmation");
             }
 
@@ -62,13 +77,25 @@ namespace DraughtSurveyWebApp.Areas.Identity.Pages.Account
                 values: new { userId = user.Id, code = encodeToken },
                 protocol: Request.Scheme);
 
-            if (user.Email != null && confirmationLink != null)
+            _logger.LogWarning("[ResendConfirmation] Sending email to: {Email}", user.Email);
+            _logger.LogWarning("[ResendConfirmation] Confirmation link: {Link}", confirmationLink);
+
+
+            try
             {
-                await _emailSender.SendEmailAsync(
-                    user.Email,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(confirmationLink)}'>clicking here</a>.");
+                if (user.Email != null && confirmationLink != null)
+                {
+                    await _emailSender.SendEmailAsync(
+                        user.Email,
+                        "Confirm your email",
+                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(confirmationLink)}'>clicking here</a>.");
+                }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[ResendConfirmation] Failed to send email to: {Email}", user.Email);
+            }
+                       
 
             return RedirectToPage("./ResendEmailConfirmationConfirmation");
         }

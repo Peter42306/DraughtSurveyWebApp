@@ -6,6 +6,6 @@
 
 <h1>Thank you for registering</h1>
 
-<p>
-    Please check your email and confirm your account by clicking the verification link
-</p>
+<p>Please check your email and confirm your account by clicking the verification link</p>
+<p>We have sent a confirmation link to <strong>@Model.Email</strong>.</p>
+<p>If you did not receive the email, <a asp-page="./ResendEmailConfirmation" asp-route-email="@Model.Email">click here</a> to resend.</p>

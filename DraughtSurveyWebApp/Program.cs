@@ -32,6 +32,14 @@ namespace DraughtSurveyWebApp
                 })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.ConfigureApplicationCookie(options => 
+            {
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.SlidingExpiration = true;
+            });
             
             builder.Services.AddControllersWithViews();
 
@@ -41,12 +49,7 @@ namespace DraughtSurveyWebApp
             builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
             builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
             //builder.Services.AddAutoMapper(typeof(MappingProfile));
-
-            builder.Services.ConfigureApplicationCookie(options =>
-            {
-                options.LoginPath = "/Identity/Account/Login";
-                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-            });
+            
 
             var app = builder.Build();
 
@@ -73,6 +76,7 @@ namespace DraughtSurveyWebApp
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

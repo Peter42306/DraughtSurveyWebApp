@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace DraughtSurveyWebApp.Areas.Identity.Pages.Account
 {
-    public class ConfirmEmailModel : PageModel
+    public class AccessDeniedModel : PageModel
     {
         public void OnGet()
         {

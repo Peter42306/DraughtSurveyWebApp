@@ -5,8 +5,11 @@ namespace DraughtSurveyWebApp.Areas.Identity.Pages.Account
 {
     public class RegisterConfirmationModel : PageModel
     {
-        public void OnGet()
+        public string Email { get; set; } = string.Empty;
+
+        public void OnGet(string? email = null)
         {
+            Email = email ?? string.Empty;
         }
     }
 }

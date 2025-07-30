@@ -108,17 +108,33 @@ namespace DraughtSurveyWebApp.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
 
+            _logger.LogWarning("[Login] Attempt login for {Email}", Input.Email);
+
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            _logger.LogWarning("[Login] Attempt login for {Email}", Input.Email);
 
             if (ModelState.IsValid)
             {
 
                 
                 var user = await _userManager.FindByEmailAsync(Input.Email);
-                
+
+                if (user == null)
+                {
+                    _logger.LogWarning("[Login] User not found: {Email}", Input.Email);
+                }
+
+                if (!user.EmailConfirmed)
+                {
+                    _logger.LogWarning("[Login] Email not confirmed for {Email}", Input.Email);
+                    ModelState.AddModelError(string.Empty, "Email not confirmed.");
+                    return Page();
+                }
 
                 if (user != null && !user.IsActive)
                 {
+                    _logger.LogWarning("[Login] User is deactivated: {Email}", Input.Email);
                     ModelState.AddModelError(string.Empty, "Your account is deactivated");
                     return Page();
                 }
@@ -130,6 +146,8 @@ namespace DraughtSurveyWebApp.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    _logger.LogInformation("[Login] Login success: {Email}", Input.Email);
+
                     user.LoginCount++;
                     user.LastLoginAt = DateTime.UtcNow;
                     await _userManager.UpdateAsync(user);
@@ -138,20 +156,24 @@ namespace DraughtSurveyWebApp.Areas.Identity.Pages.Account
                 }
                 if (result.RequiresTwoFactor)
                 {
+                    _logger.LogInformation("[Login] Requires 2FA: {Email}", Input.Email);
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
                 }
                 if (result.IsLockedOut)
-                {                    
+                {
+                    _logger.LogWarning("[Login] User locked out: {Email}", Input.Email);
                     return RedirectToPage("./Lockout");
                 }
                 else
                 {
+                    _logger.LogWarning("[Login] Invalid login attempt: {Email}", Input.Email);
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }
             }
 
             // If we got this far, something failed, redisplay form
+            _logger.LogWarning("[Login] Model state invalid for {Email}", Input.Email);
             return Page();
         }
     }
