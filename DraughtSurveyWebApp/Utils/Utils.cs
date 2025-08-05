@@ -35,6 +35,47 @@
             return a.HasValue == b.HasValue;
         }
 
+        public static double? TryDetectTableStep(List<double>draughts)
+        {
+            if (draughts == null || draughts.Count < 4)
+            {
+                return null;
+            }
+
+            if (draughts.Count == 4)
+            {
+                var stepFromFourDraughts = GetStepIf4Draughts(draughts);
+                if (stepFromFourDraughts.HasValue)
+                {
+                    return stepFromFourDraughts;
+                }
+            }
+
+            if (draughts.Count >= 5 && draughts.Count < 10)
+            {
+                var stepFromManyDraughts = GetTableStepIfMore10Draughts(draughts, reliability: 0.6);
+                if (stepFromManyDraughts.HasValue)
+                {
+                    return stepFromManyDraughts;
+                }
+
+                return null;
+            }
+
+            if (draughts.Count >=10)
+            {
+                var stepFromManyDraughts = GetTableStepIfMore10Draughts(draughts, reliability: 0.8);
+                if (stepFromManyDraughts.HasValue)
+                {
+                    return stepFromManyDraughts;
+                }
+
+                return null;
+            }
+
+            return null;
+        }
+
 
 
         
@@ -46,8 +87,12 @@
                 return null;
             }
 
-            
-            var sortedDraughts = draughts.Distinct().OrderBy(d => d).ToList();
+
+            var sortedDraughts = draughts
+                .Select(d => Math.Round(d, 4))
+                .Distinct()
+                .OrderBy(d => d)
+                .ToList();
 
             if (sortedDraughts.Count != 4)
             {
@@ -72,12 +117,17 @@
 
         public static double? GetTableStepIfMore10Draughts(List<double>draughts, double tolerance=0.0001, double reliability = 0.8)
         {
-            if(draughts.Count < 20)
+            if(draughts.Count < 5)
             {
                 return null;
             }
 
-            var sortedDraughts = draughts.Distinct().OrderBy(d => d).ToList();
+            var sortedDraughts = draughts
+                .Select(d => Math.Round(d, 4))
+                .Distinct()
+                .OrderBy(d => d)
+                .ToList();
+
             var steps = new List<double>();
             for (int i = 0; i < sortedDraughts.Count - 1; i++)
             {
@@ -95,7 +145,7 @@
             }
 
             var groupedSteps = steps
-                .GroupBy(s => s)
+                .GroupBy(s => Math.Round(s, 4))
                 .OrderByDescending(g => g.Count())
                 .FirstOrDefault();
 

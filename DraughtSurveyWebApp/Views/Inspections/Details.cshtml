@@ -10,7 +10,7 @@
         <h4>@Model.VesselName</h4>
     </div>
     <div class="col-4 text-end">
-        <a asp-action="Index">All Inspections</a>
+        <a asp-action="Index" class="btn btn-outline-primary">Back</a>
     </div>
 </div>
 
@@ -24,7 +24,7 @@
         <hr />
         <div class="d-flex justify-content-between align-content-between align-items-center mb-2"> 
             <h4>Inspection</h4>
-            <a asp-action="Edit" asp-route-id="@Model.Id">Edit </a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Edit </a>
         </div>
 
         <dl class="row">
@@ -80,7 +80,7 @@
                 <dd class="col-6 col-lg-5">@Model.VesselInput.LS?.ToString("N3")</dd>
 
                 <dt class="col-6 col-lg-7">SDWT</dt>
-                <dd class="col-6 col-lg-5">@(Model.VesselInput.SDWT?.ToString("N3")+ " mt")</dd>
+                <dd class="col-6 col-lg-5">@Model.VesselInput.SDWT?.ToString("N3")</dd>
 
                 <dt class="col-6 col-lg-7">Declared Constant</dt>
                 <dd class="col-6 col-lg-5">@Model.VesselInput.DeclaredConstant?.ToString("N3")</dd>
@@ -270,6 +270,9 @@
 
             <dt class="col-6 col-sm-7">Sea Water Density</dt>
             <dd class="col-6 col-sm-5">@initialBlock.DraughtsInput.SeaWaterDensity?.ToString("N4")</dd>
+
+            <dt class="col-6 col-sm-7">Swell</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.DraughtsInput.Swell?.ToString("N2")</dd>
 
             <dt class="col-6 col-sm-7">Keel Correction</dt>
             <dd class="col-6 col-sm-5">@initialBlock.DraughtsInput.KeelCorrection?.ToString("N3")</dd>
@@ -470,6 +473,9 @@ else
 }
     </div>
 
+
+
+
     <!-- FINAL -->
     <div class="col-sm-6">
         @if (Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Final))
@@ -604,6 +610,9 @@ else
 
             <dt class="col-6 col-sm-7">Sea Water Density</dt>
             <dd class="col-6 col-sm-5">@finalBlock.DraughtsInput.SeaWaterDensity?.ToString("N4")</dd>
+            
+            <dt class="col-6 col-sm-7">Swell</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.DraughtsInput.Swell?.ToString("N2")</dd>
 
             <dt class="col-6 col-sm-7">Keel Correction</dt>
             <dd class="col-6 col-sm-5">@finalBlock.DraughtsInput.KeelCorrection?.ToString("N3")</dd>
@@ -810,7 +819,13 @@ else
 
 
 
-
+@{
+    var initialBlockCargoCalulationsOpen = Model.DraughtSurveyBlocks.FirstOrDefault(ds => ds.SurveyType == SurveyType.Initial);
+    var finallBlockCargoCalulationsOpen = Model.DraughtSurveyBlocks.FirstOrDefault(ds => ds.SurveyType == SurveyType.Final);
+    var isCargoCalulationsOpen = 
+            initialBlockCargoCalulationsOpen?.HydrostaticResults?.NettoDisplacement != null &&
+            finallBlockCargoCalulationsOpen?.HydrostaticResults?.NettoDisplacement != null;
+}
 
 @if(
     Model.CargoInput != null &&     
@@ -821,7 +836,9 @@ else
 {
     <hr />
 
-    <details open>
+    
+
+    <details @(isCargoCalulationsOpen ? "open" : null)>
         <summary class="h4 mb-2">
             Cargo Calculations
         </summary>
@@ -829,17 +846,20 @@ else
     <hr />
 
     <dl class="row">
-            <dt class="col-6 col-sm-7">Cargo as per draught survey, mt</dt>
-            <dd class="col-6 col-sm-5">@Model.CargoResult?.CargoByDraughtSurvey?.ToString("N3")</dd>
-
-            <dt class="col-6 col-sm-7">Difference with Bill of Lading, mt</dt>
-            <dd class="col-6 col-sm-5">@Model.CargoResult?.DifferenceWithBL_Mt?.ToString("N3")</dd>            
-
-            <dt class="col-6 col-sm-7">Difference with Bill of Lading, %</dt>
-            <dd class="col-6 col-sm-5">@Model.CargoResult?.DifferenceWithBL_Percents?.ToString("N3")</dd>            
-
-            <dt class="col-6 col-sm-7">Difference with SDWT, %</dt>
-            <dd class="col-6 col-sm-5">@Model.CargoResult?.DifferenceWithSDWT_Percents?.ToString("N3")</dd>            
+        <dt class="col-8 col-sm-4">Cargo as per Bill of Lading, mt</dt>
+        <dd class="col-4 col-sm-8">@Model.CargoInput.DeclaredWeight?.ToString("N3")</dd>
+        
+        <dt class="col-8 col-sm-4">Cargo as per draught survey, mt</dt>
+        <dd class="col-4 col-sm-8">@Model.CargoResult?.CargoByDraughtSurvey?.ToString("N3")</dd>
+        
+        <dt class="col-8 col-sm-4">Difference with Bill of Lading, mt</dt>
+        <dd class="col-4 col-sm-8">@Model.CargoResult?.DifferenceWithBL_Mt?.ToString("N3")</dd>            
+        
+        <dt class="col-8 col-sm-4">Difference with Bill of Lading, %</dt>
+        <dd class="col-4 col-sm-8">@Model.CargoResult?.DifferenceWithBL_Percents?.ToString("N3")</dd>            
+        
+        <dt class="col-8 col-sm-4">Difference with SDWT, %</dt>
+        <dd class="col-4 col-sm-8">@Model.CargoResult?.DifferenceWithSDWT_Percents?.ToString("N3")</dd>            
     </dl>
 
     </details>   
@@ -848,21 +868,50 @@ else
 {
     <hr />
 
-    <details open>
+    <details @(isCargoCalulationsOpen ? "open" : null)>
         <summary class="h4 mb-2">
             Cargo Calculations
         </summary>   
     
-    <hr />        
-    
-    @if(Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Initial))
+    <hr />            
+
+    @if(        
+        !Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Initial &&
+        ds?.HydrostaticResults?.NettoDisplacement != null) || 
+        !Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Final &&
+        ds?.HydrostaticResults?.NettoDisplacement != null))
     {
-        <div class="text-muted">Initial survey not completed</div>
+        <div class="alert alert-warning">Calculations not completed.</div>
     }
-    
-    @if(Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Final))
+
+    @if(
+        Model.CargoInput == null || 
+        Model.CargoInput.DeclaredWeight == null)
     {
-        <div class="text-muted">Final survey not completed</div>
+        <div class="alert alert-warning">
+            Please fill in the cargo quantity data.
+
+
+                @if (Model.CargoInput == null)
+                {
+                    <a
+                        asp-controller="CargoInput" 
+                        asp-action="Create" 
+                        asp-route-inspectionId="@Model.Id">
+                        Create
+                    </a>
+                }
+                else
+                {
+                    <a
+                        asp-controller="CargoInput" 
+                        asp-action="Edit" 
+                        asp-route-inspectionId="@Model.Id">
+                        Edit
+                    </a>
+                }
+
+        </div>
     }
 
     </details>       

@@ -13,6 +13,8 @@ namespace DraughtSurveyWebApp.ViewModels
         public VesselInput? VesselInput { get; set; }
         public DeductiblesResults? DeductiblesResults { get; set; }
 
+        public SurveyType SurveyType { get; set; }
+
         //===================== Data input ============================
 
         // ==================== Table draughts ========================

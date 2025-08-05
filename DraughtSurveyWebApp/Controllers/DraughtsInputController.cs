@@ -78,6 +78,8 @@ namespace DraughtSurveyWebApp.Controllers
                 DraughtSurveyBlockId = draughtSurveyBlock.Id,
                 InspectionId = draughtSurveyBlock.InspectionId,
 
+                SurveyType = draughtSurveyBlock.SurveyType,
+
                 DraughtFwdPS = inputs?.DraughtFwdPS,
                 DraughtFwdSS = inputs?.DraughtFwdSS,
                 DraughtMidPS = inputs?.DraughtMidPS,
@@ -91,6 +93,7 @@ namespace DraughtSurveyWebApp.Controllers
 
                 KeelCorrection = inputs?.KeelCorrection,
                 SeaWaterDensity = inputs?.SeaWaterDensity,
+                Swell = inputs?.Swell,
 
                 IsFwdDistancetoFwd = inputs?.isFwdDistancetoFwd ?? false,
                 IsMidDistanceToFwd = inputs?.isMidDistanceToFwd ?? false,
@@ -210,6 +213,9 @@ namespace DraughtSurveyWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(DraughtsInputViewModel viewModel)
         {
+            _logger.LogWarning("Edit called for DraughtSurveyBlockId: {0} at {1}", viewModel.DraughtSurveyBlockId, DateTime.UtcNow);
+
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -295,6 +301,7 @@ namespace DraughtSurveyWebApp.Controllers
 
                 input.SeaWaterDensity = viewModel.SeaWaterDensity;
                 input.KeelCorrection = viewModel.KeelCorrection;
+                input.Swell = viewModel.Swell;
             }
 
             _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
@@ -393,7 +400,8 @@ namespace DraughtSurveyWebApp.Controllers
                 dbValue.isAftDistanceToFwd != viewModelValue.IsAftDistanceToFwd ||
 
                 dbValue.SeaWaterDensity != viewModelValue.SeaWaterDensity ||
-                dbValue.KeelCorrection != viewModelValue.KeelCorrection;
+                dbValue.KeelCorrection != viewModelValue.KeelCorrection ||
+                dbValue.Swell != viewModelValue.Swell;
         }        
     }
 }

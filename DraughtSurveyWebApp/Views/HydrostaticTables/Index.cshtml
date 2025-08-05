@@ -1,0 +1,33 @@
+﻿@model List<UserHydrostaticTableHeader>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h4>Your Hydrostatic Tables</h4>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>IMO</th>
+            <th>Vessel</th>
+            <th>Rows</th>
+            <th>Step</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.IMO</td>
+                <td>@item.VesselName</td>
+                <td>@item.UserHydrostaticTableRows?.Count</td>
+                <td>@Math.Round(item.TableStep ?? 0, 3)</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

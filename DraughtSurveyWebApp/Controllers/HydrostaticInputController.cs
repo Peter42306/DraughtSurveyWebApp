@@ -105,6 +105,8 @@ namespace DraughtSurveyWebApp.Controllers
                 DraughtSurveyBlockId = draughtSurveyBlock.Id,
                 InspectionId = draughtSurveyBlock.InspectionId,
 
+                SurveyType = draughtSurveyBlock.SurveyType,
+
                 DraughtBelow = inputs?.DraughtBelow,
                 DraughtAbove = inputs?.DraughtAbove,
                 MeanAdjustedDraught = resultsDraughts?.MeanAdjustedDraught,
@@ -440,41 +442,35 @@ namespace DraughtSurveyWebApp.Controllers
 
             if (tableStep == null)
             {
-                tableStep = GetStepIf4Draughts(draughtsInTableRows);
-                
-                if (tableStep == null)
-                {                    
-                    return;
-                }
-
-                tableHeader.TableStep = tableStep;
-                await _context.SaveChangesAsync();
+                return;                
             }
 
-            double step = tableStep.Value;
+            double step = Math.Round(tableStep.Value, 4);
             double tolerance = 0.0001;
 
             UserHydrostaticTableRow? lowerRow = null;
             UserHydrostaticTableRow? upperRow = null;
 
-            // Find the closest rows above and below the calculated draught
+            // Find the closest rows above and below the calculated draught within the step
             for (int i = 0; i < tableRows.Count - 1; i++)
             {                
-                var current = tableRows[i]; // current row
-                var next = tableRows[i + 1]; // next row
+                var d1 = tableRows[i]; // above row
+                var d2 = tableRows[i + 1]; // below row                
 
-                double currentStep = Math.Abs(current.Draught - next.Draught); // Calculate the step between current and next draught
+                double delta = Math.Abs(d2.Draught - d1.Draught);
 
                 // Check if the current step is within the tolerance of the defined step
-                if (Math.Abs(currentStep - step) < tolerance)
+                if (Math.Abs(delta - step) < tolerance)
                 {
+                    double minDraught = Math.Min(d1.Draught, d2.Draught);
+                    double maxDraught = Math.Max(d1.Draught, d2.Draught);
+
                     // Check if the calculated draught is within the range of current and next draught
-                    if (
-                        draughtCalculated.Value >= current.Draught - tolerance &&
-                        draughtCalculated.Value <= next.Draught + tolerance)
+                    if (draughtCalculated.Value >= minDraught - tolerance &&
+                        draughtCalculated.Value <= maxDraught + tolerance)
                     {
-                        lowerRow = current;
-                        upperRow = next;
+                        lowerRow = d1.Draught < d2.Draught ? tableRows[i] : tableRows[i + 1];
+                        upperRow = d1.Draught < d2.Draught ? tableRows[i + 1] : tableRows[i];
                         break;
                     }
                     
@@ -485,6 +481,13 @@ namespace DraughtSurveyWebApp.Controllers
             if (lowerRow == null || upperRow == null)
             {
                 return;
+            }
+
+            if (lowerRow.Draught > upperRow.Draught)
+            {
+                var temp = lowerRow;
+                lowerRow = upperRow;
+                upperRow = temp;
             }
 
             
@@ -516,7 +519,7 @@ namespace DraughtSurveyWebApp.Controllers
             block.HydrostaticInput.MTCMinus50Below = lowerRow.MTCMinus50;
             block.HydrostaticInput.MTCMinus50Above = upperRow.MTCMinus50;
 
-            // ViewBag.InfoMessage = "Autofill applied from stored hydrostatic table";
+            TempData["AutoFillingNotice"] = "Autofill applied from stored hydrostatic table";            
 
         }
 
@@ -546,6 +549,12 @@ namespace DraughtSurveyWebApp.Controllers
             double? mtcPlus50,
             double? mtcMinus50)
         {
+            if (!draught.HasValue || !displacement.HasValue || !tpc.HasValue || !lcf.HasValue ||
+                !isLcfForward.HasValue || !mtcPlus50.HasValue || !mtcMinus50.HasValue)
+            {
+                return;
+            }
+
             var tableHeader = await _context.UserHydrostaticTableHeaders
                 .FirstOrDefaultAsync(h => h.ApplicationUserId == user.Id && h.IMO == imo);
 
@@ -563,67 +572,44 @@ namespace DraughtSurveyWebApp.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            
-            if (draught.HasValue)
-            {
-                var existingRow = await _context.UserHydrostaticTableRows
-                    .FirstOrDefaultAsync(r =>
+
+
+            var existingRow = await _context.UserHydrostaticTableRows
+                .FirstOrDefaultAsync(r =>
                     r.UserHydrostaticTableHeaderId == tableHeader.Id &&
                     Math.Abs(r.Draught - draught.Value) < 0.001);
 
-                //var existingRow = tableHeader.UserHydrostaticTableRows
-                //    .FirstOrDefault(r =>
-                //    Math.Abs(r.Draught - draught.Value) < 0.001);
 
-                if (existingRow != null)
-                {
-                    // Update existing row
-                    existingRow.Displacement = displacement;
-                    existingRow.TPC = tpc;
-                    existingRow.LCF = lcf;
-                    existingRow.IsLcfForward = isLcfForward;
-                    existingRow.MTCPlus50 = mtcPlus50;
-                    existingRow.MTCMinus50 = mtcMinus50;
-                }
-                else
-                {
-                    // Add new row
-                    var newRow = new UserHydrostaticTableRow
-                    {
-                        UserHydrostaticTableHeaderId = tableHeader.Id,
-                        UserHydrostaticTableHeader = tableHeader,
-                        Draught = draught.Value,
-                        Displacement = displacement,
-                        TPC = tpc,
-                        LCF = lcf,
-                        IsLcfForward = isLcfForward,
-                        MTCPlus50 = mtcPlus50,
-                        MTCMinus50 = mtcMinus50
-                    };
-
-                    _context.UserHydrostaticTableRows.Add(newRow);
-
-
-
-
-                    //tableHeader.UserHydrostaticTableRows.Add(new UserHydrostaticTableRow
-                    //{
-                    //    UserHydrostaticTableHeaderId = tableHeader.Id,
-                    //    UserHydrostaticTableHeader = tableHeader,
-
-                    //    Draught = draught.Value,
-                    //    Displacement = displacement,
-                    //    TPC = tpc,
-                    //    LCF = lcf,
-                    //    IsLcfForward = isLcfForward,
-                    //    MTCPlus50 = mtcPlus50,
-                    //    MTCMinus50 = mtcMinus50
-                    //});
-                }
-
-                await _context.SaveChangesAsync();
-
+            if (existingRow != null)
+            {
+                // Update existing row
+                existingRow.Displacement = displacement;
+                existingRow.TPC = tpc;
+                existingRow.LCF = lcf;
+                existingRow.IsLcfForward = isLcfForward;
+                existingRow.MTCPlus50 = mtcPlus50;
+                existingRow.MTCMinus50 = mtcMinus50;
             }
+            else
+            {
+                // Add new row
+                var newRow = new UserHydrostaticTableRow
+                {
+                    UserHydrostaticTableHeaderId = tableHeader.Id,
+                    UserHydrostaticTableHeader = tableHeader,
+                    Draught = draught.Value,
+                    Displacement = displacement,
+                    TPC = tpc,
+                    LCF = lcf,
+                    IsLcfForward = isLcfForward,
+                    MTCPlus50 = mtcPlus50,
+                    MTCMinus50 = mtcMinus50
+                };
+
+                _context.UserHydrostaticTableRows.Add(newRow);
+            }
+
+            await _context.SaveChangesAsync();            
         }
 
 

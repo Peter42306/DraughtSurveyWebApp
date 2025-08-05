@@ -1,4 +1,5 @@
-﻿using DraughtSurveyWebApp.Models;
+﻿using DraughtSurveyWebApp.Data;
+using DraughtSurveyWebApp.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Eventing.Reader;
 
@@ -6,17 +7,45 @@ namespace DraughtSurveyWebApp.Services
 {
     public class SurveyCalculationsService
     {
+        private readonly ApplicationDbContext _context;
         private readonly ILogger<SurveyCalculationsService> _logger;
 
-        public SurveyCalculationsService(ILogger<SurveyCalculationsService> logger)
+        public SurveyCalculationsService(
+            ApplicationDbContext context,
+            ILogger<SurveyCalculationsService> logger)
         {
+            _context = context;
             _logger = logger;
         }
 
+        //public async Task RecaclulateInspecytionAndSaveAsync(int inspectionId)
+        //{
+        //    var inspection = await _context.Inspections
+        //        .Include(inspection => inspection.VesselInput)
+        //        .Include(inspection => inspection.CargoInput)
+        //        .Include(inspection => inspection.DraughtSurveyBlocks).ThenInclude(block => block.DraughtsInput)
+        //        .Include(inspection => inspection.DraughtSurveyBlocks).ThenInclude(block => block.DraughtsResults)
+        //        .Include(inspection => inspection.DraughtSurveyBlocks).ThenInclude(block => block.HydrostaticInput)
+        //        .Include(inspection => inspection.DraughtSurveyBlocks).ThenInclude(block => block.HydrostaticResults)
+        //        .Include(inspection => inspection.DraughtSurveyBlocks).ThenInclude(block=> block.DeductiblesInput)
+        //        .Include(inspection => inspection.DraughtSurveyBlocks).ThenInclude(block => block.DeductiblesResults)
+        //        .FirstOrDefaultAsync(i => i.Id == inspectionId);
+
+        //    if (inspection == null)
+        //    {
+        //        return;
+        //    }
+
+        //    foreach (var block in inspection.DraughtSurveyBlocks)
+        //    {
+        //        RecalculateAll(block);
+        //    }
+
+        //    await _context.SaveChangesAsync();
+        //}
+
         public void RecalculateAll(DraughtSurveyBlock block)
         {
-            if (block == null) return;
-
             RecalculateDraughts(block);
             RecalculateDeductibles(block);
             RecalculateHydrostatics(block);

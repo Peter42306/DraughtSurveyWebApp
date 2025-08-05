@@ -27,19 +27,26 @@
 
         <div class="row">
             <div class="col-lg-6">
-                <h6>Initial Displacement, TPC, LCF</h6>
+            <h6>@(Model.SurveyType == SurveyType.Initial ? "Initial Displacement, TPC, LCF" : "Final Displacement, TPC, LCF")</h6>                
                 <hr />
                 
             @if (Model.DraughtBelow.HasValue && Model.DraughtAbove.HasValue &&
-                 !(Model.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(Model.DraughtBelow.Value, Model.DraughtAbove.Value) &&
-                 Model.MeanAdjustedDraughtAfterKeelCorrection < Math.Max(Model.DraughtBelow.Value, Model.DraughtAbove.Value))
-                )
-                {
-                    <div class="alert alert-danger">
-                        Mean draught is out of range of table draught values. Calculations may be inaccurate.
-                    </div>
-                }               
-            
+                    !(Model.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(Model.DraughtBelow.Value, Model.DraughtAbove.Value) &&
+                    Model.MeanAdjustedDraughtAfterKeelCorrection < Math.Max(Model.DraughtBelow.Value, Model.DraughtAbove.Value))
+                    )
+            {
+                <div class="alert alert-danger">
+                    Mean draught is out of range of table draught values. Calculations may be inaccurate.
+                </div>
+            }
+
+            @if (TempData["AutoFillingNotice"] != null)
+            {
+                <div class="alert alert-info">
+                    @TempData["AutoFillingNotice"]
+                </div>
+            }
+
 
                 <div class="row mb-2">
                     <div class="col-3">
@@ -184,7 +191,8 @@
             </div>
 
             <div class="col-lg-6">
-                <h6>Initial MTC +/-50 cm</h6>
+
+                <h6>@(Model.SurveyType == SurveyType.Initial ? "Initial MTC +/-50 cm" : "Final MTC +/-50 cm")</h6>                
                 <hr />
                 
                 <div class="row mb-2">                    
@@ -272,33 +280,39 @@
                     </div>
                 </div>
 
-
-
-                <div class="row mb-2">
-
+            
+                
                 @if (
-                    Model.Inspection != null &&
-                    !Model.Inspection.notShowInputWarnings &&
-                    Model.DraughtsInput != null &&
-                    !Model.DraughtsInput.SeaWaterDensity.HasValue
-                    )
-                {
-                    <div class="alert alert-warning">
-                        Please enter Sea Water Density.
-                    </div>
-                }                
+                        Model.Inspection != null &&
+                        !Model.Inspection.notShowInputWarnings &&
+                        Model.DraughtsInput != null &&
+                        !Model.DraughtsInput.SeaWaterDensity.HasValue
+                        )
+                        {
+                            <div class="alert alert-warning">
+                                Please enter Sea Water Density.
+                                <a 
+                                    asp-controller="DraughtsInput" 
+                                    asp-action="Edit" 
+                                    asp-route-draughtSurveyBlockId="@Model.DraughtSurveyBlockId">
+                                    Edit
+                                </a>
+                            </div>
+                        }
 
-                <div class="col-6">
+            <div class="row mb-2">
+
+                      
+
+                    <div class="col-6">
                     </div>
+
                     <div class="col-6">
                         <label asp-for="DisplacementCorrectedForDensity" class="small-label"></label>
                         <input class="form-control bg-light" value="@Model.DisplacementCorrectedForDensity?.ToString("0.000")" readonly />
                     </div>
                 </div>
 
-
-
-                <div class="row mb-2">
 
                 @if (
                     Model.Inspection != null &&
@@ -310,19 +324,25 @@
                 {
                     <div class="alert alert-warning">
                         Please enter Deductibles.
+                        <a asp-controller="DeductiblesInput" asp-action="Edit" asp-route-draughtSurveyBlockId="@Model.DraughtSurveyBlockId">
+                            Edit
+                        </a>
                     </div>
                 }
 
+                <div class="row mb-2">
+
+                
+
                     <div class="col-6">
                     </div>                    
+
                     <div class="col-6">
                         <label asp-for="NettoDisplacement" class="small-label"></label>
                         <input class="form-control bg-light" value="@Model.NettoDisplacement?.ToString("0.000")" readonly />
                     </div>
                 </div>
 
-
-                <div class="row mb-2">
 
                 @if (
                     Model.Inspection != null &&
@@ -336,6 +356,10 @@
                         Please enter Light Ship.
                     </div>
                 }
+
+                <div class="row mb-2">
+
+                
 
                     <div class="col-6">
                     </div>

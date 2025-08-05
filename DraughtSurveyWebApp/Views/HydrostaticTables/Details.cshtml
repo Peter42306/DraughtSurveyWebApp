@@ -1,0 +1,43 @@
+﻿@model DraughtSurveyWebApp.Models.UserHydrostaticTableHeader
+
+@{
+    ViewData["Details"] = "Details";
+}
+
+<h4>MV @Model.VesselName (IMO No. @Model.IMO)</h4>
+<h4>Hydrostatic data</h4>
+
+<a asp-action="AddRow" asp-route-headerId="@Model.Id">Add</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Draught</th>
+            <th>Displacement</th>
+            <th>TPC</th>
+            <th>LCF</th>
+            <th>LCF position</th>
+            <th>MTC +50</th>
+            <th>MTC -50</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in Model.UserHydrostaticTableRows.OrderBy(r => r.Draught))
+        {
+            <tr>
+                <td>@row.Draught</td>
+                <td>@row.Displacement</td>
+                <td>@row.TPC</td>
+                <td>@row.LCF</td>
+                <td>@(row.IsLcfForward == true ? "Forward" : "Aft")</td>
+                <td>@row.MTCPlus50</td>
+                <td>@row.MTCMinus50</td>
+                <td>
+                    <a asp-action="EditRow" asp-route-id="@row.Id">Edit</a>
+                    <a asp-action="DeletRow" asp-route-id="@row.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

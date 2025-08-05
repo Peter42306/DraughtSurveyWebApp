@@ -15,8 +15,8 @@
                 </div>
                 <div class="col-6 text-end">
                     <div>
-                        <button type="submit" class="btn btn-primary">Save</button>
-                        <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary">Cancel</a>
+                        <button type="submit" class="btn btn-outline-primary">Save</button>
+                        <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Cancel</a>
                     </div>
                 </div>
             </div>
@@ -24,31 +24,31 @@
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="VesselName" class="control-label">Vessel</label>
                 <input asp-for="VesselName" class="form-control" />
                 <span asp-validation-for="VesselName" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="Port" class="control-label">Port</label>
                 <input asp-for="Port" class="form-control" />
                 <span asp-validation-for="Port" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="CompanyReference" class="control-label">File Reference</label>
                 <input asp-for="CompanyReference" class="form-control" />
                 <span asp-validation-for="CompanyReference" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="OperationType" class="control-label">Operation Type</label>
                 <select asp-for="OperationType" class="form-control" asp-items="Html.GetEnumSelectList<OperationType>()"></select>
                 <span asp-validation-for="OperationType" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-2">
                 <input asp-for="notShowInputWarnings" class="form-check-input" type="checkbox" />
                 <label asp-for="notShowInputWarnings" class="form-check-label">Do not show input warnings</label>
             </div>                        
-            <div class="form-group">
+            <div class="mb-2">
                 <input asp-for="notApplyAutoFillingHydrostatics" class="form-check-input" type="checkbox" />
                 <label asp-for="notApplyAutoFillingHydrostatics" class="form-check-label">Do not apply auto-filling of hydrostatic</label>
             </div>

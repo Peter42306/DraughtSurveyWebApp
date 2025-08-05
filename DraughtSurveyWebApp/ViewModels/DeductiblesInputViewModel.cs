@@ -1,4 +1,6 @@
-﻿namespace DraughtSurveyWebApp.ViewModels
+﻿using DraughtSurveyWebApp.Models;
+
+namespace DraughtSurveyWebApp.ViewModels
 {
     public class DeductiblesInputViewModel
     {
@@ -18,5 +20,7 @@
         // ==================== Results ===============================
 
         public double? TotalDeductibles { get; set; }
+
+        public SurveyType SurveyType { get; set; }
     }
 }

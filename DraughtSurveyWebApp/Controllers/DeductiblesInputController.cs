@@ -59,6 +59,8 @@ namespace DraughtSurveyWebApp.Controllers
                 InspectionId = draughtSurveyBlock.InspectionId,
                 DraughtSurveyBlockId = draughtSurveyBlock.Id,
 
+                SurveyType = draughtSurveyBlock.SurveyType,
+
                 Ballast = inputs?.Ballast,
                 FreshWater = inputs?.FreshWater,
                 FuelOil = inputs?.FuelOil,

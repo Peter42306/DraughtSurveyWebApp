@@ -14,6 +14,6 @@
         public double? MTCMinus50 { get; set; }
 
         public int UserHydrostaticTableHeaderId { get; set; }
-        public required UserHydrostaticTableHeader UserHydrostaticTableHeader { get; set; } = null!;
+        public UserHydrostaticTableHeader? UserHydrostaticTableHeader { get; set; }
     }
 }

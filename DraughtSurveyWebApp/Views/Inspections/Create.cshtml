@@ -11,45 +11,58 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
+            <div class="row">
+                <div class="col-6">
+                    <h4>Create Inspection</h4>
+                </div>
+                <div class="col-6 text-end">
+                    <div>
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                        <a asp-action="Index" class="btn btn-primary">Cancel</a>
+                    </div>
+                </div>
+            </div>
+
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="VesselName" class="control-label"></label>
                 <input asp-for="VesselName" class="form-control" />
                 <span asp-validation-for="VesselName" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="Port" class="control-label"></label>
                 <input asp-for="Port" class="form-control" />
                 <span asp-validation-for="Port" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="CompanyReference" class="control-label"></label>
                 <input asp-for="CompanyReference" class="form-control" />
                 <span asp-validation-for="CompanyReference" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="OperationType" class="control-label"></label>
                 <select asp-for="OperationType" class="form-control" asp-items="Html.GetEnumSelectList<OperationType>()"></select>
                 <span asp-validation-for="OperationType" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-check mb-3">
                 <input asp-for="notShowInputWarnings" class="form-check-input" type="checkbox"/>
                 <label asp-for="notShowInputWarnings" class="form-check-label">Do not show input warnings</label>
             </div>            
-            <div class="form-group">
+            <div class="form-check mb-2">
                 <input asp-for="notApplyAutoFillingHydrostatics" class="form-check-input" type="checkbox" />
                 <label asp-for="notApplyAutoFillingHydrostatics" class="form-check-label">Do not apply auto-filling of hydrostatic</label>
             </div>
-            <div class="form-group">
+            @* <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+            </div> *@
         </form>
     </div>
 </div>
 
-<div>
+@* <div>
     <a asp-action="Index">Back to List</a>
-</div>
+</div> *@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

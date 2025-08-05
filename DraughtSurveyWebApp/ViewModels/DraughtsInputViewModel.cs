@@ -50,6 +50,9 @@ namespace DraughtSurveyWebApp.ViewModels
         [Display(Name = "Keel Correction")]
         public double? KeelCorrection { get; set; }
 
+        [Display(Name = "Swell")]
+        public double? Swell {  get; set; }
+
 
         public bool? IsFwdDistancetoFwd { get; set; }
         public bool? IsMidDistanceToFwd { get; set; }
@@ -107,5 +110,8 @@ namespace DraughtSurveyWebApp.ViewModels
 
         [Display(Name = "Corrected Aft")]
         public double? DraughtCorrectedAft { get; set; }
+
+
+        public SurveyType SurveyType { get; set; }
     }
 }

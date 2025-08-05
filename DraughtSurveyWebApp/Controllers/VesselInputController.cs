@@ -16,15 +16,18 @@ namespace DraughtSurveyWebApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly SurveyCalculationsService _surveyCalculationsService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<VesselInputController> _logger;   
 
         public VesselInputController(
             ApplicationDbContext context, 
             SurveyCalculationsService surveyCalculationsService,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ILogger<VesselInputController> logger)
         {
             _context = context;            
             _surveyCalculationsService = surveyCalculationsService;
             _userManager = userManager;
+            _logger = logger;
         }
 
         // GET: VesselInput/Create?inspectionId=5
@@ -220,7 +223,7 @@ namespace DraughtSurveyWebApp.Controllers
                 vessel.LS = viewModel.LS;
                 vessel.SDWT = viewModel.SDWT;
                 vessel.DeclaredConstant = viewModel.DeclaredConstant;
-            }            
+            }
 
             var draughtSurveyBlocks = await _context.DraughtSurveyBlocks
             .Where(b => b.InspectionId == inspectionId)
@@ -230,8 +233,9 @@ namespace DraughtSurveyWebApp.Controllers
             .Include(b => b.HydrostaticResults)
             .Include(b => b.DeductiblesInput)
             .Include(b => b.DeductiblesResults)
-            .Include(b => b.Inspection)
-                .ThenInclude(i => i.VesselInput)
+            .Include(b => b.Inspection).ThenInclude(b => b.CargoInput)
+            .Include(b => b.Inspection).ThenInclude(b => b.CargoResult)
+            .Include(b => b.Inspection).ThenInclude(i => i.VesselInput)
             .ToListAsync();
 
             foreach (var draughtSurveyBlock in draughtSurveyBlocks)
@@ -239,6 +243,62 @@ namespace DraughtSurveyWebApp.Controllers
                 _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
             }
 
+
+
+            // Recalculation of results if available             
+
+            var inspection = vessel.Inspection;
+
+
+            var initialBlock = draughtSurveyBlocks.FirstOrDefault(b => b.SurveyType == SurveyType.Initial);
+            var finalBlock = draughtSurveyBlocks.FirstOrDefault(b => b.SurveyType == SurveyType.Final);
+            var cargoResult = inspection?.CargoResult;
+            
+
+            var initialNetto = initialBlock?.HydrostaticResults?.NettoDisplacement;
+            var finalNetto = finalBlock?.HydrostaticResults?.NettoDisplacement;
+                        
+
+            double? cargoByDraughtSurvey = null;
+            double? differenceWithBL_Mt = null;
+            double? differenceWithBL_Percents = null;
+            double? DifferenceWithSDWT_Percents = null;
+
+            // Calculate cargo by draught survey
+            if (initialNetto.HasValue && finalNetto.HasValue)
+            {
+                cargoByDraughtSurvey = Math.Abs(Math.Round(finalNetto.Value - initialNetto.Value, 3, MidpointRounding.AwayFromZero));
+            }
+
+            // Calculate difference with SDWT
+            var declaredWeight = inspection?.CargoInput?.DeclaredWeight;            
+
+            if (cargoByDraughtSurvey.HasValue && declaredWeight.HasValue)
+            {
+                differenceWithBL_Mt = Math.Round(cargoByDraughtSurvey.Value - declaredWeight.Value, 3, MidpointRounding.AwayFromZero);
+                differenceWithBL_Percents = Math.Round((differenceWithBL_Mt.Value / declaredWeight.Value) * 100, 3, MidpointRounding.AwayFromZero);
+            }
+
+            var sdwt = vessel.SDWT;
+            
+            if (differenceWithBL_Mt.HasValue && sdwt.HasValue)
+            {
+                DifferenceWithSDWT_Percents = Math.Round((differenceWithBL_Mt.Value / sdwt.Value) * 100, 3, MidpointRounding.AwayFromZero);
+            }
+            
+
+            // Update CargoResult with calculated values
+
+
+            if (cargoResult != null)
+            {
+                cargoResult.CargoByDraughtSurvey = cargoByDraughtSurvey;
+                cargoResult.DifferenceWithBL_Mt = differenceWithBL_Mt;
+                cargoResult.DifferenceWithBL_Percents = differenceWithBL_Percents;
+                cargoResult.DifferenceWithSDWT_Percents = DifferenceWithSDWT_Percents;
+            }           
+            
+            
 
             await _context.SaveChangesAsync();
 

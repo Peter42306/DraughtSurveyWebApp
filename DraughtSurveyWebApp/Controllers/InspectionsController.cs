@@ -326,8 +326,14 @@ namespace DraughtSurveyWebApp.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
-        }
+        }        
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dbValue"></param>
+        /// <param name="viewModelValue"></param>
+        /// <returns></returns>
         private bool IsInspectionInputChanged(Inspection dbValue, InspectionEditViewModel viewModelValue)
         {
             return

@@ -24,25 +24,25 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="InspectionId" />
 
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="CargoName"></label>
                 <input asp-for="CargoName" class="form-control" />
                 <span asp-validation-for="CargoName" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="DeclaredWeight"></label>
                 <input asp-for="DeclaredWeight" class="form-control" type="number" step="0.001" />
                 <span asp-validation-for="DeclaredWeight" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="LoadingTerminal"></label>
                 <input asp-for="LoadingTerminal" class="form-control" />
                 <span asp-validation-for="LoadingTerminal" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="BerthNumber"></label>
                 <input asp-for="BerthNumber" class="form-control" />
                 <span asp-validation-for="BerthNumber" class="text-danger"></span>

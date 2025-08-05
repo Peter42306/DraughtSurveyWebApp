@@ -34,35 +34,35 @@
                 <span asp-validation-for="IMO" class="text-danger"></span>
 
                 <p>
-                    Please enter the IMO number and click 'Save'. If a vessel with this IMO already exists in your database, the fields LBP, BM, Light Ship, SDWT, and Declared Constant will be filled in automatically. You can edit them if needed.
+                    Please enter the IMO number. If a vessel with this IMO already exists in your database, the fields LBP, BM, Light Ship, SDWT, and Declared Constant will be filled in automatically. You can edit them if needed.
                 </p>
             </div>           
 
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="LBP"></label>
                 <input asp-for="LBP" class="form-control" type="number" step="0.001"/>
                 <span asp-validation-for="LBP" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="BM"></label>
                 <input asp-for="BM" class="form-control" type="number" step="0.001"/>
                 <span asp-validation-for="BM" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="LS"></label>
                 <input asp-for="LS" class="form-control" type="number" step="0.001" />
                 <span asp-validation-for="LS" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="SDWT"></label>
                 <input asp-for="SDWT" class="form-control" type="number" step="0.001" />
                 <span asp-validation-for="SDWT" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-2">
                 <label asp-for="DeclaredConstant"></label>
                 <input asp-for="DeclaredConstant" class="form-control" type="number" step="0.001" />
                 <span asp-validation-for="DeclaredConstant" class="text-danger"></span>

@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }        
 
-        public string? Swell { get; set; }
+        public double? Swell { get; set; }
 
         // Apparent draughts
         public double? DraughtFwdPS { get; set; }

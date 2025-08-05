@@ -103,13 +103,37 @@ namespace DraughtSurveyWebApp.Controllers
 
             bool changed = IsTimesInputChanged(input, viewModel);
 
+
+
+            if (viewModel.SurveyTimeStart.HasValue && viewModel.SurveyTimeEnd.HasValue &&
+                    viewModel.SurveyTimeEnd < viewModel.SurveyTimeStart)
+            {
+                ModelState.AddModelError("SurveyTimeEnd", "Survey end time cannot be ealier than start time.");
+            }
+
+            if (viewModel.SurveyTimeEnd.HasValue && viewModel.CargoOperationsDateTime.HasValue &&
+                viewModel.CargoOperationsDateTime < viewModel.SurveyTimeEnd)
+            {
+                ModelState.AddModelError("CargoOperationsDateTime", "Cargo operations cannot be started before survey completed.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.InspectionId = viewModel.InspectionId;
+                return View(viewModel);
+            }
+
+
             if (changed)
             {
+                
+
                 input.SurveyTimeStart = viewModel.SurveyTimeStart;
                 input.SurveyTimeEnd = viewModel.SurveyTimeEnd;
                 input.CargoOperationsDateTime = viewModel.CargoOperationsDateTime;
             }
             
+
             await _context.SaveChangesAsync();            
 
             string anchor = draughtSurveyBlock.SurveyType == SurveyType.Initial ? "initial-draught-times" : "final-draught-times";
