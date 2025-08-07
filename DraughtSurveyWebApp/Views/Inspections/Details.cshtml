@@ -481,10 +481,11 @@ else
         @if (Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Final))
 {
     var finalBlock = Model.DraughtSurveyBlocks.First(ds => ds.SurveyType == SurveyType.Final);
+    var initialBlock = Model.DraughtSurveyBlocks.First(ds => ds.SurveyType == SurveyType.Initial);
     <hr />
     @* <h4>Final Survey Steps</h4> *@
 
-    <details open>
+    <details @(initialBlock?.HydrostaticResults?.NettoDisplacement != null ? "open" : "")>
 
         <summary class="h4 mb-2">
             Final Draught Survey
@@ -838,7 +839,7 @@ else
 
     
 
-    <details @(isCargoCalulationsOpen ? "open" : null)>
+    <details @(isCargoCalulationsOpen ? "open" : "")>
         <summary class="h4 mb-2">
             Cargo Calculations
         </summary>

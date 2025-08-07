@@ -457,24 +457,29 @@ namespace DraughtSurveyWebApp.Controllers
                 var d1 = tableRows[i]; // above row
                 var d2 = tableRows[i + 1]; // below row                
 
-                double delta = Math.Abs(d2.Draught - d1.Draught);
-
-                // Check if the current step is within the tolerance of the defined step
-                if (Math.Abs(delta - step) < tolerance)
+                if (d2.Draught.HasValue && d1.Draught.HasValue)
                 {
-                    double minDraught = Math.Min(d1.Draught, d2.Draught);
-                    double maxDraught = Math.Max(d1.Draught, d2.Draught);
+                    double delta = Math.Abs(d2.Draught.Value - d1.Draught.Value);
 
-                    // Check if the calculated draught is within the range of current and next draught
-                    if (draughtCalculated.Value >= minDraught - tolerance &&
-                        draughtCalculated.Value <= maxDraught + tolerance)
+                    // Check if the current step is within the tolerance of the defined step
+                    if (Math.Abs(delta - step) < tolerance)
                     {
-                        lowerRow = d1.Draught < d2.Draught ? tableRows[i] : tableRows[i + 1];
-                        upperRow = d1.Draught < d2.Draught ? tableRows[i + 1] : tableRows[i];
-                        break;
+                        double minDraught = Math.Min(d1.Draught.Value, d2.Draught.Value);
+                        double maxDraught = Math.Max(d1.Draught.Value, d2.Draught.Value);
+
+                        // Check if the calculated draught is within the range of current and next draught
+                        if (draughtCalculated.Value >= minDraught - tolerance &&
+                            draughtCalculated.Value <= maxDraught + tolerance)
+                        {
+                            lowerRow = d1.Draught < d2.Draught ? tableRows[i] : tableRows[i + 1];
+                            upperRow = d1.Draught < d2.Draught ? tableRows[i + 1] : tableRows[i];
+                            break;
+                        }
+
                     }
-                    
-                }
+                }                
+
+                
             }
            
 
@@ -572,12 +577,13 @@ namespace DraughtSurveyWebApp.Controllers
                 await _context.SaveChangesAsync();
             }
 
-
+            
 
             var existingRow = await _context.UserHydrostaticTableRows
                 .FirstOrDefaultAsync(r =>
                     r.UserHydrostaticTableHeaderId == tableHeader.Id &&
-                    Math.Abs(r.Draught - draught.Value) < 0.001);
+                    r.Draught.HasValue &&
+                    Math.Abs(r.Draught.Value - draught.Value) < 0.001);
 
 
             if (existingRow != null)

@@ -4,10 +4,20 @@
     ViewData["Details"] = "Details";
 }
 
-<h4>MV @Model.VesselName (IMO No. @Model.IMO)</h4>
-<h4>Hydrostatic data</h4>
+<h4>mv @Model.VesselName (IMO No. @Model.IMO)</h4>
+<hr />
+<div class="row">
+    <div class="col-6">
+        <h5>Hydrostatic Table</h5>
+    </div>
+    <div class="col-6 text-end">
+        <a asp-action="AddRow" asp-route-headerId="@Model.Id" class="btn btn-outline-primary">Add Row</a>
+        <a asp-action="Index" asp-controller="HydrostaticTables" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</div>
+<hr />
 
-<a asp-action="AddRow" asp-route-headerId="@Model.Id">Add</a>
+
 
 <table class="table">
     <thead>
@@ -30,12 +40,28 @@
                 <td>@row.Displacement</td>
                 <td>@row.TPC</td>
                 <td>@row.LCF</td>
-                <td>@(row.IsLcfForward == true ? "Forward" : "Aft")</td>
+                <td>
+                    @{
+                        if (row.IsLcfForward == true)
+                        {
+                            @:Forward
+                        }
+                        else if (row.IsLcfForward == false)
+                        {
+                            @:Aft
+                        }
+                        else
+                        {
+                            @:
+                        }
+                    }
+                </td>
+                @* <td>@(row.IsLcfForward == true ? "Forward" : "Aft")</td> *@
                 <td>@row.MTCPlus50</td>
                 <td>@row.MTCMinus50</td>
                 <td>
                     <a asp-action="EditRow" asp-route-id="@row.Id">Edit</a>
-                    <a asp-action="DeletRow" asp-route-id="@row.Id">Delete</a>
+                    <a asp-action="DeleteRow" asp-route-id="@row.Id">Delete</a>
                 </td>
             </tr>
         }

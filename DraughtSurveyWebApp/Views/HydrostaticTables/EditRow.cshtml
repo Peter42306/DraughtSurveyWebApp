@@ -1,0 +1,68 @@
+﻿@model DraughtSurveyWebApp.Models.UserHydrostaticTableRow
+
+@{
+    ViewData["Title"] = "Hydrostatic Table";
+}
+
+<h2>Edit row in hydrostatic table</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddRow" asp-controller="HydrostaticTables" method="post">
+            <input type="hidden" asp-for="UserHydrostaticTableHeaderId" />
+
+            <div class="mb-2">
+                <label asp-for="Draught" class="control-label"></label>
+                <input asp-for="Draught" class="form-control bg-light" readonly/>
+                <span asp-validation-for="Draught" class="text-danger"></span>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="Displacement" class="control-label"></label>
+                <input asp-for="Displacement" class="form-control" type="number" step="0.001"/>
+                <span asp-validation-for="Displacement" class="text-danger"></span>
+            </div>            
+
+            <div class="mb-2">
+                <label asp-for="TPC" class="control-label"></label>
+                <input asp-for="TPC" class="form-control" type="number" step="0.001" />
+                <span asp-validation-for="TPC" class="text-danger"></span>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="LCF" class="control-label"></label>
+                <input asp-for="LCF" class="form-control" type="number" step="0.001" />
+                <span asp-validation-for="LCF" class="text-danger"></span>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="IsLcfForward" class="control-label"></label>
+                <select asp-for="IsLcfForward" class="form-control">
+                    <option value="">Select</option>
+                    <option value="true">Forward</option>
+                    <option value="false">Aft</option>
+                </select>
+                <span asp-validation-for="IsLcfForward" class="text-danger"></span>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="MTCPlus50" class="control-label">
+                    @(Model.Draught.HasValue ? $"MTC at draught {Model.Draught + 0.5:F3} m" : "MTC +50")
+                </label>
+                <input asp-for="MTCPlus50" class="form-control" type="number" step="0.001" />
+                <span asp-validation-for="MTCPlus50" class="text-danger"></span>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="MTCMinus50" class="control-label">
+                    @(Model.Draught.HasValue ? $"MTC at draught {Model.Draught - 0.5:F3} m" : "MTC +50")
+                </label>                
+                <input asp-for="MTCMinus50" class="form-control" type="number" step="0.001" />
+                <span asp-validation-for="MTCMinus50" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-outline-primary">Save</button>
+            <a asp-action="Details" asp-route-id="@Model.UserHydrostaticTableHeaderId" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

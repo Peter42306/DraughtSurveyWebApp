@@ -1,0 +1,81 @@
+﻿@model DraughtSurveyWebApp.Models.UserHydrostaticTableRow
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<hr />
+
+<dl class="row">
+    <dt class="col-6 col-sm-2">
+        @Html.DisplayNameFor(model => model.Draught)
+    </dt>
+    <dd class="col-6 col-sm-10">
+        @Html.DisplayFor(model => model.Draught)
+    </dd>
+
+    <dt class="col-6 col-sm-2">
+        @Html.DisplayNameFor(model => model.Displacement)
+    </dt>
+    <dd class="col-6 col-sm-10">
+        @Html.DisplayFor(model => model.Displacement)
+    </dd>
+
+    <dt class="col-6 col-sm-2">
+        @Html.DisplayNameFor(model => model.TPC)
+    </dt>
+    <dd class="col-6 col-sm-10">
+        @Html.DisplayFor(model => model.TPC)
+    </dd>
+
+    <dt class="col-6 col-sm-2">
+        @Html.DisplayNameFor(model => model.LCF)
+    </dt>
+    <dd class="col-6 col-sm-10">
+        @Html.DisplayFor(model => model.LCF)
+    </dd>
+
+    <dt class="col-6 col-sm-2">
+        @Html.DisplayNameFor(model => model.IsLcfForward)
+    </dt>
+    <dd class="col-6 col-sm-10">
+        @{
+            if (Model.IsLcfForward == true)
+            {
+                @:Forward
+            }
+            else if (Model.IsLcfForward == false)
+            {
+                @:Aft
+            }
+            else
+            {
+                @:
+            }
+        }        
+    </dd>
+
+    <dt class="col-6 col-sm-2">
+        @Html.DisplayNameFor(model => model.MTCPlus50)
+    </dt>
+    <dd class="col-6 col-sm-10">
+        @Html.DisplayFor(model => model.MTCPlus50)
+    </dd>
+
+    <dt class="col-6 col-sm-2">
+        @Html.DisplayNameFor(model => model.MTCMinus50)
+    </dt>
+    <dd class="col-6 col-sm-10">
+        @Html.DisplayFor(model => model.MTCMinus50)
+    </dd>
+</dl>
+
+<form asp-action="DeleteRowConfirmed" asp-route-id="@Model.Id" method="post">
+    <input type="hidden" asp-for="Id"/>
+    <button type="submit" class="btn btn-outline-danger">Delete</button>
+    <a asp-action="Details" asp-route-id="@Model.UserHydrostaticTableHeaderId" class="btn btn-outline-secondary">Cancel</a>
+</form>
+

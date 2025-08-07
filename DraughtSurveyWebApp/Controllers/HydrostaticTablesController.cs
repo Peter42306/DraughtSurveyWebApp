@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace DraughtSurveyWebApp.Controllers
 {
@@ -51,9 +52,19 @@ namespace DraughtSurveyWebApp.Controllers
             return View(header);
         }
 
-        // GET: 
-        public IActionResult AddRow(int headerId)
+        // GET: /HydrostaticTables/AddRow?headerId=1
+        public async Task<IActionResult> AddRow(int headerId)
         {
+            var userId = _userManager.GetUserId(User);
+
+            var header = await _context.UserHydrostaticTableHeaders
+                .FirstOrDefaultAsync(h => h.Id == headerId && h.ApplicationUserId == userId);
+
+            if (header == null)
+            {
+                return Unauthorized();
+            }
+
             var model = new UserHydrostaticTableRow
             {
                 UserHydrostaticTableHeaderId = headerId                
@@ -62,6 +73,7 @@ namespace DraughtSurveyWebApp.Controllers
             return View(model);
         }
 
+        // POST:
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddRow(UserHydrostaticTableRow row)
@@ -71,20 +83,155 @@ namespace DraughtSurveyWebApp.Controllers
                 return View(row);
             }
 
+            var userId = _userManager.GetUserId(User);
+
             var header = await _context.UserHydrostaticTableHeaders
+                .Include(h => h.UserHydrostaticTableRows)
                 .FirstOrDefaultAsync(h => h.Id == row.UserHydrostaticTableHeaderId);
 
-            if (header == null || header.ApplicationUserId != _userManager.GetUserId(User))
+            if (header == null)
+            {
+                return NotFound();
+            }
+
+            if (header.ApplicationUserId != _userManager.GetUserId(User))
             {
                 return Unauthorized();
             }
 
-            row.UserHydrostaticTableHeader = header;
-            _context.UserHydrostaticTableRows.Add(row);
+
+            if (!row.Draught.HasValue)
+            {
+                ModelState.AddModelError(nameof(row.Draught), "Please enter a draught value");
+                return View(row);
+            }
+
+            if (row.Draught.Value == 0)
+            {
+                ModelState.AddModelError(nameof(row.Draught), "Please enter a valid draught value");
+                return View(row);
+            }
+
+            var existingRow = await _context.UserHydrostaticTableRows
+                .FirstOrDefaultAsync(r => 
+                    r.UserHydrostaticTableHeaderId == row.UserHydrostaticTableHeaderId &&
+                    r.Draught.HasValue &&                    
+                    Math.Abs(r.Draught.Value-row.Draught.Value) < 0.001);
+
+            
+
+            if (existingRow != null)
+            {
+                existingRow.Displacement = row.Displacement;
+                existingRow.TPC = row.TPC;
+                existingRow.LCF = row.LCF;
+                existingRow.IsLcfForward = row.IsLcfForward;
+                existingRow.MTCPlus50 = row.MTCPlus50;
+                existingRow.MTCMinus50 = row.MTCMinus50;
+
+                _context.Update(existingRow);
+            }
+            else
+            {
+                row.UserHydrostaticTableHeader = header;
+                _context.UserHydrostaticTableRows.Add(row);
+            }
+            
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Details), new { id = row.UserHydrostaticTableHeaderId });
         }
 
+        // GET:
+        public async Task<IActionResult> DeleteRow(int id)
+        {
+            var row = await _context.UserHydrostaticTableRows
+                .Include(r => r.UserHydrostaticTableHeader)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (row == null || row?.UserHydrostaticTableHeader?.ApplicationUserId != _userManager.GetUserId(User))
+            {
+                return NotFound();
+            }
+
+            return View(row);
+        }
+
+        // POST:
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteRowConfirmed(int id)
+        {
+            var row = await _context.UserHydrostaticTableRows
+                .Include(r => r.UserHydrostaticTableHeader)
+                .FirstOrDefaultAsync(r => r.Id == id);
+            
+            if (row?.UserHydrostaticTableHeader?.ApplicationUserId != _userManager.GetUserId(User))
+            {
+                return NotFound();
+            }
+
+            if (row == null)
+            {
+                return NotFound();
+            }
+
+            _context.UserHydrostaticTableRows.Remove(row);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = row.UserHydrostaticTableHeaderId });
+
+        }
+
+        // GET:
+        public async Task<IActionResult> EditRow(int id)
+        {
+            var row = await _context.UserHydrostaticTableRows
+                .Include(r => r.UserHydrostaticTableHeader)
+                .FirstOrDefaultAsync (r => r.Id == id);
+
+            if (row == null || row?.UserHydrostaticTableHeader?.ApplicationUserId != _userManager.GetUserId(User))
+            {
+                return NotFound();
+            }
+
+            return View(row);
+        }
+
+        // POST:
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditRow(UserHydrostaticTableRow row)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(row);
+            }
+
+            var existing = await _context.UserHydrostaticTableRows
+                .Include(r => r.UserHydrostaticTableHeader)
+                .FirstOrDefaultAsync(r => r.Id == row.Id);            
+
+            if (existing?.UserHydrostaticTableHeader?.ApplicationUserId != _userManager.GetUserId(User))
+            {
+                return Unauthorized();
+            }
+
+            if (existing == null)
+            {
+                return NotFound();
+            }
+
+            existing.Draught = row.Draught;
+            existing.Displacement = row.Displacement;
+            existing.TPC = row.TPC;
+            existing.LCF = row.LCF;
+            existing.IsLcfForward = row.IsLcfForward;
+            existing.MTCPlus50 = row.MTCPlus50;
+            existing.MTCMinus50 = row.MTCMinus50;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Details), new { id = row.UserHydrostaticTableHeaderId});
+        }
 
 
 
