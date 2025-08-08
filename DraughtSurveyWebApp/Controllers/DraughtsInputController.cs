@@ -91,6 +91,9 @@ namespace DraughtSurveyWebApp.Controllers
                 DistanceMid = inputs?.DistanceMid,
                 DistanceAft = inputs?.DistanceAft,
 
+                BreadthForward = inputs?.BreadthForward,
+                BreadthAft = inputs?.BreadthAft,
+
                 KeelCorrection = inputs?.KeelCorrection,
                 SeaWaterDensity = inputs?.SeaWaterDensity,
                 Swell = inputs?.Swell,
@@ -295,6 +298,9 @@ namespace DraughtSurveyWebApp.Controllers
                 input.DistanceMid = viewModel.DistanceMid;
                 input.DistanceAft = viewModel.DistanceAft;
 
+                input.BreadthForward = viewModel.BreadthForward;
+                input.BreadthAft = viewModel.BreadthAft;
+
                 input.isFwdDistancetoFwd = viewModel.IsFwdDistancetoFwd;
                 input.isMidDistanceToFwd = viewModel.IsMidDistanceToFwd;
                 input.isAftDistanceToFwd = viewModel.IsAftDistanceToFwd;
@@ -394,6 +400,9 @@ namespace DraughtSurveyWebApp.Controllers
                 dbValue.DistanceFwd != viewModelValue.DistanceFwd ||
                 dbValue.DistanceMid != viewModelValue.DistanceMid ||
                 dbValue.DistanceAft != viewModelValue.DistanceAft ||
+
+                dbValue.BreadthForward != viewModelValue.BreadthForward ||
+                dbValue.BreadthAft != viewModelValue.BreadthAft ||
 
                 dbValue.isFwdDistancetoFwd != viewModelValue.IsFwdDistancetoFwd ||
                 dbValue.isMidDistanceToFwd!= viewModelValue.IsMidDistanceToFwd ||

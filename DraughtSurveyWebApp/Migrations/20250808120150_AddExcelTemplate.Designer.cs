@@ -3,6 +3,7 @@ using System;
 using DraughtSurveyWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DraughtSurveyWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250808120150_AddExcelTemplate")]
+    partial class AddExcelTemplate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.15");
@@ -436,7 +439,7 @@ namespace DraughtSurveyWebApp.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("ExcelTemplates");
+                    b.ToTable("ExcelTemplate");
                 });
 
             modelBuilder.Entity("DraughtSurveyWebApp.Models.HydrostaticInput", b =>

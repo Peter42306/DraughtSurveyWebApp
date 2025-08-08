@@ -14,6 +14,10 @@
         public double? DraughtAftPS { get; set; }
         public double? DraughtAftSS { get; set; }
 
+        // Breadth for estimation of sea side draughts
+        public double? BreadthForward { get; set; }
+        public double? BreadthAft { get; set; }
+
         // Distances
         public double? DistanceFwd { get; set; }
         public double? DistanceMid { get; set; }
@@ -22,7 +26,6 @@
         public bool? isFwdDistancetoFwd { get; set; }
         public bool? isMidDistanceToFwd { get; set; }
         public bool? isAftDistanceToFwd { get; set; }
-
 
 
         public double? SeaWaterDensity { get; set; }

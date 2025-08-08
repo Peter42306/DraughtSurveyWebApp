@@ -11,7 +11,16 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-<h2>All Users</h2>
+<div class="row">
+    <div class="col-6">
+        <h4>All Users</h4>
+    </div>
+    <div class="col-6 text-end">
+        <a class="btn btn-outline-primary" asp-controller="ExcelTemplate" asp-action="Index">Manage templates</a>
+        <a class="btn btn-outline-primary" asp-controller="ExcelTemplate" asp-action="Create">Upload new template</a>
+    </div>
+</div>
+<hr />
 
 <table class="table">
     <thead>
@@ -28,36 +37,45 @@
     <tbody>
         @foreach (var user in Model)
         {
-            <tr>
-                <td>@user.Email</td>
-                <td>@user.IsActive</td>
-                <td>@user.CreatedAt.ToShortDateString()</td>
-                <td>@user.LoginCount</td>
+            <form 
+                asp-controller="ApplicationUsers" 
+                asp-action="UpdateStatus" 
+                method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@user.Id" />
+                <input type="hidden" name="isActive" value="false" />
 
-                <form asp-controller="ApplicationUsers" asp-action="UpdateStatus" method="post">
-
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@user.Id" />
-
-                    <input type="hidden" name="isActive" value="false" />
-
-                <td>
-                    <input type="checkbox" name="isActive" value="true" class="form-check-input" id="active_@user.Id" @(user.IsActive ? "checked" : "") />
-                    <label for="active_@user.Id">Active</label>
-                </td>
-
-                <td>
-                    <textarea name="adminNote" class="form-control" rows="2">@user.AdminNote</textarea>
-                </td>
-
-                <td>
-                    <button type="submit" class="btn btn-success btn-sm mt-2">Save</button>
-                </td>
-
-                </form>
-
-
-            </tr>
+                <tr>
+                    <td>@user.Email</td>
+                    <td>@user.IsActive</td>
+                    <td>@user.CreatedAt.ToShortDateString()</td>
+                    <td>@user.LoginCount</td>
+                    <td>                        
+                        <input 
+                            type="checkbox" 
+                            name="isActive" 
+                            value="true" 
+                            class="form-check-input" 
+                            id="active_@user.Id" @(user.IsActive ? "checked" : "") />
+                        <label for="active_@user.Id">Active</label>
+                    </td>
+                    <td>
+                        <textarea 
+                            name="adminNote" 
+                            class="form-control" 
+                            rows="2">@user.AdminNote
+                        </textarea>
+                    </td>
+                    <td>
+                        <button 
+                            type="submit" 
+                            class="btn btn-success btn-sm mt-2">
+                            Save
+                        </button>
+                    </td>                
+                </tr>
+            </form>
+            
         }
     </tbody>
 </table>

@@ -3,6 +3,7 @@ using System;
 using DraughtSurveyWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DraughtSurveyWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250808085326_AddBreadthForwardAndAftAtDraughtsInputModel")]
+    partial class AddBreadthForwardAndAftAtDraughtsInputModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.15");
@@ -389,54 +392,6 @@ namespace DraughtSurveyWebApp.Migrations
                         .IsUnique();
 
                     b.ToTable("DraughtsResults");
-                });
-
-            modelBuilder.Entity("DraughtSurveyWebApp.Models.ExcelTemplate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ContentType")
-                        .HasMaxLength(500)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("TEXT");
-
-                    b.Property<long?>("FileSizeBytes")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsPublic")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("LastModifiedAtUtc")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("OriginalFileName")
-                        .HasMaxLength(500)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("ExcelTemplates");
                 });
 
             modelBuilder.Entity("DraughtSurveyWebApp.Models.HydrostaticInput", b =>
@@ -898,16 +853,6 @@ namespace DraughtSurveyWebApp.Migrations
                         .IsRequired();
 
                     b.Navigation("DraughtSurveyBlock");
-                });
-
-            modelBuilder.Entity("DraughtSurveyWebApp.Models.ExcelTemplate", b =>
-                {
-                    b.HasOne("DraughtSurveyWebApp.Models.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("DraughtSurveyWebApp.Models.HydrostaticInput", b =>

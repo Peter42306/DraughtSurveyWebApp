@@ -41,6 +41,11 @@ namespace DraughtSurveyWebApp.ViewModels
 
         [Display(Name = "Distance Aft")]
         public double? DistanceAft { get; set; }
+                
+        
+        public double? BreadthForward { get; set; }
+        public double? BreadthAft { get; set; }
+
 
 
         [Display(Name = "Sea Water Density")]

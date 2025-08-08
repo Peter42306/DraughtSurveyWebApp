@@ -12,14 +12,20 @@ namespace DraughtSurveyWebApp.Data
         public DbSet<CargoResult> CargoResults { get; set; }
 
         public DbSet<DraughtSurveyBlock> DraughtSurveyBlocks { get; set; }
+
         public DbSet<DraughtsInput> DraughtsInputs { get; set; }
         public DbSet<DraughtsResults> DraughtsResults { get; set; }
+
         public DbSet<HydrostaticInput> HydrostaticInputs { get; set; }
         public DbSet<HydrostaticResults> HydrostaticResults { get; set; }        
+
         public DbSet<UserHydrostaticTableHeader> UserHydrostaticTableHeaders { get; set; }
         public DbSet<UserHydrostaticTableRow> UserHydrostaticTableRows { get; set; }
+
         public DbSet<DeductiblesInput> DeductiblesInputs { get; set; }
         public DbSet<DeductiblesResults> DeductiblesResults { get; set; }
+
+        public DbSet<ExcelTemplate> ExcelTemplates { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -41,6 +47,24 @@ namespace DraughtSurveyWebApp.Data
                 .WithOne(r => r.UserHydrostaticTableHeader)                                
                 .HasForeignKey(u => u.UserHydrostaticTableHeaderId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ExcelTemplate>(entity => 
+            {
+                entity.HasIndex(e => e.Name);
+
+                entity.HasOne(i => i.Owner)
+                    .WithMany()
+                    .HasForeignKey(i => i.OwnerId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            //modelBuilder.Entity<ExcelTemplate>()
+            //    .HasIndex(e => e.Name)
+            //    .HasOne(i => i.Owner)
+            //    .WithMany()
+            //    .HasForeignKey(i => i.OwnerId)
+            //    .OnDelete(DeleteBehavior.Restrict);
+                
 
             //modelBuilder.Entity<UserHydrostaticTableHeader>()
             //    .HasOne(u => u.ApplicationUser)

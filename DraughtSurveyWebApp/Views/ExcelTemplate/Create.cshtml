@@ -1,0 +1,52 @@
+﻿@model DraughtSurveyWebApp.ViewModels.ExcelTemplateCreateViewModel
+
+@{
+    ViewData["Title"] = "Upload Excel Template";
+}
+
+<h4>Upload Excel Template</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-2">
+                <label asp-for="Name" class="form-label">Excel Template Name</label>
+                <input asp-for="Name" class="form-control"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+                <div class="form-text">Will be shown in users' dropdown list</div>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="File" class="form-label">Excel File (.xlsx, .xls, .xlsm)</label>
+                <input asp-for="File" type="file" class="form-control" accept=".xlsx, .xls, .xlsm" />
+                <span asp-validation-for="File" class="text-danger"></span>
+                <div class="form-text">Max size 50 MB</div>
+            </div>
+
+            <div class="mb-2">
+                <input asp-for="IsPublic" class="form-check-input" />
+                <label asp-for="IsPublic" class="form-check-label">Public</label>
+            </div>
+            <hr />
+
+            <div class="mb-2">
+                <label asp-for="OwnerId" class="form-label">Owner</label>                
+                <select asp-for="OwnerId" class="form-select" asp-items="@Model.Owners">
+                    <option value="">Select owner</option>
+
+                </select>
+
+                <span asp-validation-for="OwnerId" class="text-danger"></span>
+                <div class="form-text">To be filled if NOT public</div>
+            </div>
+
+            <button type="submit" class="btn btn-outline-primary">Upload</button>
+            <a asp-action="Index" class="btn btn-outline-primary">Back</a>
+
+        </form>
+    </div>
+</div>
