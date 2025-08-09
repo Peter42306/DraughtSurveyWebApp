@@ -23,9 +23,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
+                        @* <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>                        
+                        </li>                         *@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Inspections" asp-action="Index">Inspections</a>
                         </li>
@@ -36,7 +36,10 @@
                         @if (User.IsInRole("Admin"))
                         {
                             <li>
-                                <a class="nav-link text-dark" asp-controller="ApplicationUsers" asp-action="Index">User Admin</a>
+                                <a class="nav-link text-dark" asp-controller="ApplicationUsers" asp-action="Index">Admin Panel</a>
+                            </li>
+                            <li>
+                                <a class="nav-link text-dark" asp-controller="ExcelTemplate" asp-action="Index">Excel Templates</a>
                             </li>
                         }                        
 

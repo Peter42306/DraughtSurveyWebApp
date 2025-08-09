@@ -1,0 +1,66 @@
+﻿@model DraughtSurveyWebApp.Models.ExcelTemplate
+
+@{
+    ViewData["Title"] = "Delete Excel Template";
+}
+
+<h4>Delete Excel Template</h4>
+<hr />
+
+<div class="row">
+    <div class="col-6">
+        <h4>Are you sure you want to delete this?</h4>
+    </div>
+    <div class="col-6 text-end">
+        <form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post">
+            <input type="hidden" asp-for="Id"/>
+            <button type="submit" class="btn btn-outline-danger">Delete</button>
+            <a asp-action="Index" class="btn btn-outline-primary">Cancel</a>
+        </form>
+    </div>
+</div>
+<hr />
+
+
+<div>
+    <dl class="row">
+        <dt class="col-6 col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-6 col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt class="col-6 col-sm-2">
+            @Html.DisplayNameFor(model => model.IsPublic)
+        </dt>
+        <dd class="col-6 col-sm-10">
+            @* @Html.DisplayFor(model => model.IsPublic) *@
+            @(Model.IsPublic ? "Public" : "Private")
+        </dd>
+
+        <dt class="col-6 col-sm-2">
+            @Html.DisplayNameFor(model => model.Owner)
+        </dt>
+        <dd class="col-6 col-sm-10">
+            @* @Html.DisplayFor(model => model.Owner.Email) *@
+            @(Model.IsPublic ? "-" : Model.Owner.Email)
+        </dd>
+
+        <dt class="col-6 col-sm-2">
+            @Html.DisplayNameFor(model => model.FileSizeBytes)            
+        </dt>
+        <dd class="col-6 col-sm-10">
+            @* @Html.DisplayFor(model => model.Name) *@
+            @(Model.FileSizeBytes.HasValue ? $"{Model.FileSizeBytes.Value/1024:0.#} KB" : "-")
+        </dd>
+
+        <dt class="col-6 col-sm-2">
+            @Html.DisplayNameFor(model => model.CreatedAtUtc)
+        </dt>
+        <dd class="col-6 col-sm-10">
+            @* @Html.DisplayFor(model => model.Name) *@
+            @(Model.CreatedAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm"))
+        </dd>
+    </dl>
+</div>

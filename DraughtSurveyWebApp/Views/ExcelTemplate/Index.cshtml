@@ -1,0 +1,59 @@
+﻿@model IEnumerable<DraughtSurveyWebApp.Models.ExcelTemplate>
+
+@{
+    ViewData["Title"] = "Upload Excel Template";
+}
+
+
+
+
+
+<div class="row">
+    <div class="col-6">
+        <h4>Excel Templates</h4>
+    </div>
+    <div class="col-6 text-end">
+        <a class="btn btn-outline-primary" asp-controller="ExcelTemplate" asp-action="Create">Upload new template</a>
+        <a class="btn btn-outline-primary" asp-controller="ApplicationUsers" asp-action="Index">Back</a>
+    </div>
+</div>
+<hr />
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No template uploaded yet.
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Visibility</th>
+                <th>Owner</th>
+                <th>Size</th>
+                <th>Created</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@(item.IsPublic ? "Public" : "Private")</td>
+                    <td>@(item.IsPublic ? "-" : item.Owner?.Email)</td>
+                    <td>@(item.FileSizeBytes.HasValue ? $"{item.FileSizeBytes.Value/1024d:0.#} KB" : "-")</td>
+                    <td>@(item.CreatedAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm"))</td>
+                    <td>
+                        <a asp-action="Download" asp-route-id="@item.Id" class="me-2">Download</a>                        
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

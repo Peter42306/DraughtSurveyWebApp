@@ -36,12 +36,12 @@
             <div class="mb-2">
                 <label asp-for="OwnerId" class="form-label">Owner</label>                
                 <select asp-for="OwnerId" class="form-select" asp-items="@Model.Owners">
-                    <option value="">Select owner</option>
+                    <option value="">No owner (public template)</option>
 
                 </select>
 
                 <span asp-validation-for="OwnerId" class="text-danger"></span>
-                <div class="form-text">To be filled if NOT public</div>
+                <div class="form-text">Leave empty to make the template public. Selecting an owner makes it private for that user.</div>
             </div>
 
             <button type="submit" class="btn btn-outline-primary">Upload</button>

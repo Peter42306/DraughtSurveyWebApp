@@ -11,6 +11,8 @@ using DraughtSurveyWebApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using DraughtSurveyWebApp.Services;
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
+using ClosedXML.Excel;
 
 namespace DraughtSurveyWebApp.Controllers
 {
@@ -20,16 +22,20 @@ namespace DraughtSurveyWebApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly SurveyCalculationsService _surveyCalculationsService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public InspectionsController(
             ApplicationDbContext context,
             SurveyCalculationsService surveyCalculationsService,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _surveyCalculationsService = surveyCalculationsService;
             _userManager = userManager;
+            _webHostEnvironment=webHostEnvironment;
         }
+
 
         // GET: Inspections
         public async Task<IActionResult> Index()
@@ -53,6 +59,7 @@ namespace DraughtSurveyWebApp.Controllers
 
             return View(inspections);
         }
+
 
         // GET: Inspections/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -99,11 +106,13 @@ namespace DraughtSurveyWebApp.Controllers
             return View(inspection);
         }
 
+
         // GET: Inspections/Create
         public IActionResult Create()
         {
             return View();
         }
+
 
         // POST: Inspections/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -173,6 +182,7 @@ namespace DraughtSurveyWebApp.Controllers
             return RedirectToAction(nameof(Index));            
         }
 
+
         // GET: Inspections/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -212,6 +222,7 @@ namespace DraughtSurveyWebApp.Controllers
 
             return View(viewModel);
         }
+
 
         // POST: Inspections/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -271,6 +282,7 @@ namespace DraughtSurveyWebApp.Controllers
             return Redirect($"{Url.Action("Details", "Inspections", new { id = viewModel.Id })}#draught-inspection-input");
         }
 
+
         // GET: Inspections/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -299,7 +311,8 @@ namespace DraughtSurveyWebApp.Controllers
             return View(inspection);
         }
 
-        // POST: Inspections/Delete/5
+
+        // POST: Inspections/Delete/5        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -327,6 +340,119 @@ namespace DraughtSurveyWebApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }        
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inspectionId"></param>
+        /// <param name="excelTemplateId"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> ExportExcel(int inspectionId, int excelTemplateId)
+        {
+            var inspection = await _context.Inspections
+                .AsNoTracking()
+                .Include(i => i.VesselInput)
+                .Include(i => i.CargoInput)
+                .Include(i => i.CargoResult)
+                .Include(i => i.DraughtSurveyBlocks)
+                .FirstOrDefaultAsync(i => i.Id == inspectionId);
+            if (inspection == null)
+            {
+                return NotFound();
+            }
+
+            var initial = inspection.DraughtSurveyBlocks
+                .FirstOrDefault(b => b.SurveyType == SurveyType.Initial);
+
+            var final = inspection.DraughtSurveyBlocks
+                .FirstOrDefault(b => b.SurveyType == SurveyType.Final);
+
+            var userId = _userManager.GetUserId(User);
+            var isAdmin = User.IsInRole("Admin");
+            if (!isAdmin && inspection?.ApplicationUserId != userId)
+            {
+                return Forbid();
+            }
+
+            var excelTemplate = await _context.ExcelTemplates
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == excelTemplateId);
+            if (excelTemplate == null)
+            {
+                return NotFound();
+            }
+
+            if (!isAdmin && !(excelTemplate.IsPublic || excelTemplate.OwnerId == userId))
+            {
+                return Forbid();
+            }
+
+            var excelTemplatePath = Path.Combine(
+                _webHostEnvironment.ContentRootPath,
+                excelTemplate.FilePath.Replace('/', Path.DirectorySeparatorChar)
+            );
+
+            if (!System.IO.File.Exists(excelTemplatePath))
+            {
+                return NotFound("Template file not found.");
+            }
+
+            var map = ExcelExportMapper.CreateMap(
+                inspection,
+                initial,
+                final
+            );
+
+            using var wb = new XLWorkbook(excelTemplatePath);
+            ExcelTemplateFiller.FillExcelByName( wb, map );
+
+            using var ms = new MemoryStream();
+            wb.SaveAs( ms );
+            ms.Position = 0;
+
+            const string mime = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            var downloadName = $"{(string.IsNullOrWhiteSpace(excelTemplate.Name) ? "Report" : excelTemplate.Name)}_filled.xlsx";
+            return File(ms, mime, downloadName);
+        }
+
+        
+        public async Task<IActionResult> ChooseExcelTemplate(int inspectionId)
+        {
+            var inspection = await _context.Inspections
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == inspectionId);
+            if (inspection == null) 
+            {
+                return NotFound(); 
+            }
+
+            var userId = _userManager.GetUserId(User);
+            var isAdmin = User.IsInRole("Admin");
+
+            var queue = _context.ExcelTemplates.AsNoTracking();
+            if (!isAdmin)
+            {
+                queue = queue.Where(t => t.IsPublic || t.OwnerId == userId);
+            }
+
+            var templates = await queue
+                .OrderBy(t => t.Name)
+                .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name})
+                .ToListAsync();
+
+            var viewModel = new ExcelTemplateUserSelectTemplate
+            {
+                InspectionId = inspectionId,
+                ExcelTemplates = templates,
+                SelectedTemplateId = templates.FirstOrDefault() is { } first 
+                    ? int.Parse(first.Value) 
+                    : (int?)null
+            };
+
+            return View(viewModel);
+        }
+
 
         /// <summary>
         /// 

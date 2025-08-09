@@ -8,7 +8,7 @@ namespace DraughtSurveyWebApp.ViewModels
         [Required, StringLength(100)]
         public string Name { get; set; } = string.Empty; // Name of the template visible to users in select dropdown
         
-        public bool IsPublic { get; set; } = false; // if true = available to all users
+        public bool IsPublic { get; set; } = true; // if true = available to all users
         
         public string? OwnerId { get; set; } // FK to ApplicationUser, null if public template
 

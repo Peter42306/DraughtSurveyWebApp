@@ -16,15 +16,18 @@ namespace DraughtSurveyWebApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<ExcelTemplateController> _logger;
 
         public ExcelTemplateController(
             ApplicationDbContext context,
             IWebHostEnvironment webHostEnvironment,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ILogger<ExcelTemplateController> logger)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
+            _logger=logger;
         }
 
         // List of all Excel templates
@@ -32,6 +35,7 @@ namespace DraughtSurveyWebApp.Controllers
         public async Task<IActionResult> Index()
         {
             var templates = await _context.ExcelTemplates
+                .Include(t => t.Owner)
                 .OrderByDescending(t => t.CreatedAtUtc)
                 .ToListAsync();
 
@@ -80,10 +84,13 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 ModelState.AddModelError(nameof(viewModel.File), "Please upload a file");
 
-                viewModel.Owners = await _context.Users
-                    .OrderBy(u => u.Email)
-                    .Select(u => new SelectListItem { Value = u.Id, Text = u.Email })
-                    .ToListAsync();
+                if (viewModel != null)
+                {
+                    viewModel.Owners = await _context.Users
+                        .OrderBy(u => u.Email)
+                        .Select(u => new SelectListItem { Value = u.Id, Text = u.Email })
+                        .ToListAsync();
+                }                    
 
                 return View(viewModel);
             }
@@ -170,8 +177,8 @@ namespace DraughtSurveyWebApp.Controllers
                 {
                     Name = viewModel.Name?.Trim() ?? "",
                     FilePath = relativePath,
-                    IsPublic = viewModel.IsPublic,
-                    OwnerId = viewModel.IsPublic ? null : viewModel.OwnerId, // if public - means without owner
+                    IsPublic = string.IsNullOrWhiteSpace(viewModel.OwnerId),
+                    OwnerId = string.IsNullOrWhiteSpace(viewModel.OwnerId) ? null : viewModel.OwnerId,
                     OriginalFileName = viewModel.File.FileName,
                     ContentType = contentType,
                     FileSizeBytes = viewModel.File.Length,
@@ -245,7 +252,7 @@ namespace DraughtSurveyWebApp.Controllers
         {
             var userId = _userManager.GetUserId(User);
 
-            var templates = await _context.ExcelTemplates
+            var templates = await _context.ExcelTemplates                
                 .Where(t => t.IsPublic || t.OwnerId == userId)
                 .OrderBy(t => t.Name)
                 .ToListAsync();
@@ -299,6 +306,76 @@ namespace DraughtSurveyWebApp.Controllers
         }
 
 
+        // GET:
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var template = await _context.ExcelTemplates
+                .Include(t => t.Owner)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (template == null)
+            {
+                return NotFound();
+            }
+
+            return View(template);
+        }
+
+        
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var template = await _context.ExcelTemplates.FirstOrDefaultAsync(x => x.Id == id);
+            if (template == null)
+            {
+                return NotFound();
+            }
+                        
+            var fullPath = Path.Combine(
+                _webHostEnvironment.ContentRootPath,
+                template.FilePath.Replace('/', Path.DirectorySeparatorChar));
+
+            try
+            {
+                _context.ExcelTemplates.Remove(template);
+                await _context.SaveChangesAsync();
+
+                try
+                {
+                    if (System.IO.File.Exists(fullPath))
+                    {
+                        System.IO.File.Delete(fullPath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, $"File from {fullPath} was not deleted", fullPath);
+                }
+
+                TempData["Success"] = "Template deleted";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException)
+            {
+                TempData["Error"] = "Cannot delete template dur to related data";
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                TempData["Error"] = "Unexpected error while deleting template";
+                return RedirectToAction(nameof(Index));
+            }
+
+        }
 
         //public IActionResult Index()
         //{
