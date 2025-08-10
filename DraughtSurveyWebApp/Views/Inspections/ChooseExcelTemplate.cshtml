@@ -1,0 +1,30 @@
+﻿@model DraughtSurveyWebApp.ViewModels.ExcelTemplateUserSelectTemplate
+
+@{
+    ViewData["Title"] = "Select Excel Template";
+}
+
+<h4>Choose Excel template for export</h4>
+
+<form asp-action="ChooseExcelTemplate" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="InspectionId"/>
+
+    <div class="mb-2">
+        <label class="form-label">Template</label>
+        <select asp-for="SelectedTemplateId" class="form-select" asp-items="Model.ExcelTemplates" required>
+            <option value="">Select</option>
+        </select>
+        <span asp-validation-for="SelectedTemplateId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-outline-primary">Download Filled Excel</button>
+    <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId" class="btn btn-outline-secondary">Cancel</a>
+
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

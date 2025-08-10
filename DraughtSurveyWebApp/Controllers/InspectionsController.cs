@@ -341,13 +341,7 @@ namespace DraughtSurveyWebApp.Controllers
             return RedirectToAction(nameof(Index));
         }        
 
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="inspectionId"></param>
-        /// <param name="excelTemplateId"></param>
-        /// <returns></returns>
+                
         public async Task<IActionResult> ExportExcel(int inspectionId, int excelTemplateId)
         {
             var inspection = await _context.Inspections
@@ -407,16 +401,19 @@ namespace DraughtSurveyWebApp.Controllers
             using var wb = new XLWorkbook(excelTemplatePath);
             ExcelTemplateFiller.FillExcelByName( wb, map );
 
-            using var ms = new MemoryStream();
+            var ms = new MemoryStream();
             wb.SaveAs( ms );
             ms.Position = 0;
 
             const string mime = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             var downloadName = $"{(string.IsNullOrWhiteSpace(excelTemplate.Name) ? "Report" : excelTemplate.Name)}_filled.xlsx";
+            
             return File(ms, mime, downloadName);
         }
 
-        
+
+
+        //GET:
         public async Task<IActionResult> ChooseExcelTemplate(int inspectionId)
         {
             var inspection = await _context.Inspections
@@ -445,13 +442,29 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 InspectionId = inspectionId,
                 ExcelTemplates = templates,
-                SelectedTemplateId = templates.FirstOrDefault() is { } first 
-                    ? int.Parse(first.Value) 
-                    : (int?)null
+                SelectedTemplateId = null
             };
 
             return View(viewModel);
         }
+
+        // POST:
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ChooseExcelTemplate(ExcelTemplateUserSelectTemplate viewModel)
+        {
+            if (!viewModel.SelectedTemplateId.HasValue)
+            {
+                ModelState.AddModelError(nameof(viewModel.SelectedTemplateId), "Please select a template");
+                return View(viewModel);
+            }
+
+            return RedirectToAction(
+                nameof(ExportExcel),
+                new { inspectionId = viewModel.InspectionId, excelTemplateId = viewModel.SelectedTemplateId.Value}
+            );
+        }
+
 
 
         /// <summary>

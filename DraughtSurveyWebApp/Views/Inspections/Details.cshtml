@@ -863,6 +863,15 @@ else
         <dd class="col-4 col-sm-8">@Model.CargoResult?.DifferenceWithSDWT_Percents?.ToString("N3")</dd>            
     </dl>
 
+    <a 
+        asp-action="ChooseExcelTemplate" 
+        asp-controller="Inspections" 
+        asp-route-inspectionId="@Model.Id"
+        class="btn btn-outline-primary"
+        >
+        Export Excel Report
+    </a>
+
     </details>   
 }
 else
@@ -913,7 +922,7 @@ else
                 }
 
         </div>
-    }
+    }    
 
     </details>       
     
