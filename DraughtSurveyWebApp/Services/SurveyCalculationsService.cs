@@ -781,6 +781,7 @@ namespace DraughtSurveyWebApp.Services
             result.TrimCorrected = trimCorrected;
             result.Heel = heel;
             result.HoggingSagging = hogSag;
+            result.LBD = lbd;
             result.MeanAdjustedDraught = meanAdjustedDraught;
             result.MeanAdjustedDraughtAfterKeelCorrection = meanAdjustedDraughtAfterKeelCorrection;
         }

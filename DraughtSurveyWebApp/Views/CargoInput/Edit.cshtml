@@ -48,6 +48,24 @@
                 <input asp-for="BerthNumber" class="form-control" />
                 <span asp-validation-for="BerthNumber" class="text-danger"></span>
             </div>
+
+            <div class="mb-2">
+                <label asp-for="Shipper"></label>
+                <input asp-for="Shipper" class="form-control" />
+                <span asp-validation-for="Shipper" class="text-danger"></span>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="Consignee"></label>
+                <input asp-for="Consignee" class="form-control" />
+                <span asp-validation-for="Consignee" class="text-danger"></span>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="DischargingPort">@(Model.OperationType == OperationType.Loading ? "Discharge Port" : "Load Port")</label>
+                <input asp-for="DischargingPort" class="form-control" />
+                <span asp-validation-for="DischargingPort" class="text-danger"></span>
+            </div>
             
         </form>
     </div>

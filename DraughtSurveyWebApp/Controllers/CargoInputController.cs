@@ -101,6 +101,9 @@ namespace DraughtSurveyWebApp.Controllers
                 DeclaredWeight = viewModel.DeclaredWeight,
                 LoadingTerminal = viewModel.LoadingTerminal,
                 BerthNumber = viewModel.BerthNumber,
+                Shipper = viewModel.Shipper,
+                Consignee = viewModel.Consignee,
+                DischargingPort = viewModel.DischargingPort,                
             };
 
             _context.CargoInputs.Add(cargo);
@@ -202,7 +205,11 @@ namespace DraughtSurveyWebApp.Controllers
                 CargoName = cargo.CargoName,
                 DeclaredWeight = cargo.DeclaredWeight,
                 LoadingTerminal = cargo.LoadingTerminal,
-                BerthNumber= cargo.BerthNumber
+                BerthNumber = cargo.BerthNumber,
+                Shipper = cargo.Shipper,
+                Consignee = cargo.Consignee,
+                DischargingPort = cargo.DischargingPort,
+                OperationType = cargo.Inspection.OperationType
             };
 
             return View(viewModel);
@@ -248,6 +255,9 @@ namespace DraughtSurveyWebApp.Controllers
                 cargo.DeclaredWeight = viewModel.DeclaredWeight;
                 cargo.LoadingTerminal = viewModel.LoadingTerminal;
                 cargo.BerthNumber = viewModel.BerthNumber;
+                cargo.Shipper = viewModel.Shipper;
+                cargo.Consignee = viewModel.Consignee;
+                cargo.DischargingPort = viewModel.DischargingPort;
             }
 
 
@@ -329,7 +339,10 @@ namespace DraughtSurveyWebApp.Controllers
                 dbValue.CargoName != vmValue.CargoName ||
                 dbValue.DeclaredWeight != vmValue.DeclaredWeight ||
                 dbValue.LoadingTerminal != vmValue.LoadingTerminal ||
-                dbValue.BerthNumber != vmValue.BerthNumber;
+                dbValue.BerthNumber != vmValue.BerthNumber ||
+                dbValue.Shipper != vmValue.Shipper ||
+                dbValue.Consignee != vmValue.Consignee ||
+                dbValue.DischargingPort != vmValue.DischargingPort;
         }
 
 

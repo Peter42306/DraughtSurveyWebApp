@@ -119,6 +119,7 @@ namespace DraughtSurveyWebApp.Controllers
                 TrimCorrected = results?.TrimCorrected,
                 Heel = results?.Heel,
                 HoggingSagging = results?.HoggingSagging,
+                LBD = results?.LBD,
                 MeanAdjustedDraught = results?.MeanAdjustedDraught,
                 MeanAdjustedDraughtAfterKeelCorrection = results?.MeanAdjustedDraughtAfterKeelCorrection  
             };

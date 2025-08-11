@@ -349,7 +349,12 @@ namespace DraughtSurveyWebApp.Controllers
                 .Include(i => i.VesselInput)
                 .Include(i => i.CargoInput)
                 .Include(i => i.CargoResult)
-                .Include(i => i.DraughtSurveyBlocks)
+                .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.DraughtsInput)
+                .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.DraughtsResults)
+                .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.HydrostaticInput)
+                .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.HydrostaticResults)
+                .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.DeductiblesInput)
+                .Include(i => i.DraughtSurveyBlocks).ThenInclude(b => b.DeductiblesResults)
                 .FirstOrDefaultAsync(i => i.Id == inspectionId);
             if (inspection == null)
             {
@@ -361,6 +366,7 @@ namespace DraughtSurveyWebApp.Controllers
 
             var final = inspection.DraughtSurveyBlocks
                 .FirstOrDefault(b => b.SurveyType == SurveyType.Final);
+            
 
             var userId = _userManager.GetUserId(User);
             var isAdmin = User.IsInRole("Admin");

@@ -19,6 +19,7 @@
         public double? TrimApparent { get; set; }
         public double? HoggingSagging { get; set; }
         public double? Heel { get; set; }
+        public double? LBD { get; set; }
 
         public double? TrimCorrected { get; set; }
         public double? MeanAdjustedDraught { get; set; }

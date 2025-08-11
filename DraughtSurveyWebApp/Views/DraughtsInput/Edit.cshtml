@@ -326,6 +326,8 @@
             <hr />
             <div class="row mb-2">
                 <div class="col-4">
+                    <label asp-for="LBD" class="small-label"></label>
+                    <input class="form-control bg-light" value="@Model.LBD?.ToString("0.000")" readonly />
                 </div>
                 <div class="col-4">
                     <label asp-for="HoggingSagging" class="small-label">

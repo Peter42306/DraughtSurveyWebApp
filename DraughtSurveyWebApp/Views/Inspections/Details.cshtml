@@ -114,11 +114,20 @@
                    <dt class="col-6 col-lg-7">Declared Weight</dt>
                    <dd class="col-6 col-lg-5">@Model.CargoInput.DeclaredWeight?.ToString("N3")</dd>
 
-                   <dt class="col-6 col-lg-7">Loading Terminal</dt>
+                   <dt class="col-6 col-lg-7">Terminal</dt>
                    <dd class="col-6 col-lg-5">@Model.CargoInput.LoadingTerminal</dd>
 
                    <dt class="col-6 col-lg-7">Berth No.</dt>
                    <dd class="col-6 col-lg-5">@Model.CargoInput.BerthNumber</dd>
+
+                   <dt class="col-6 col-lg-7">Shipper</dt>
+                   <dd class="col-6 col-lg-5">@Model.CargoInput.Shipper</dd>
+
+                   <dt class="col-6 col-lg-7">Consignee</dt>
+                   <dd class="col-6 col-lg-5">@Model.CargoInput.Consignee</dd>
+
+                   <dt class="col-6 col-lg-7">@(Model.OperationType == OperationType.Loading ? "Discharge Port" : "Load Port")</dt>
+                   <dd class="col-6 col-lg-5">@Model.CargoInput.DischargingPort</dd>
                </dl>    
                 }
                 else
@@ -267,6 +276,9 @@
 
             <dt class="col-6 col-sm-7">@((initialBlock.DraughtsInput.DraughtMidPS - initialBlock.DraughtsInput.DraughtMidSS) < 0 ? "Heel to SS" : "Heel to PS")</dt>
             <dd class="col-6 col-sm-5">@initialBlock.DraughtsResults.Heel?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-7">LBD</dt>
+            <dd class="col-6 col-sm-5">@initialBlock.DraughtsResults.LBD?.ToString("N3")</dd>
 
             <dt class="col-6 col-sm-7">Sea Water Density</dt>
             <dd class="col-6 col-sm-5">@initialBlock.DraughtsInput.SeaWaterDensity?.ToString("N4")</dd>
@@ -608,6 +620,9 @@ else
 
             <dt class="col-6 col-sm-7">@((finalBlock.DraughtsInput.DraughtMidPS - finalBlock.DraughtsInput.DraughtMidSS) < 0 ? "Heel to SS" : "Heel to PS")</dt>
             <dd class="col-6 col-sm-5">@finalBlock.DraughtsResults.Heel?.ToString("N3")</dd>
+
+            <dt class="col-6 col-sm-7">LBD</dt>
+            <dd class="col-6 col-sm-5">@finalBlock.DraughtsResults.LBD?.ToString("N3")</dd>
 
             <dt class="col-6 col-sm-7">Sea Water Density</dt>
             <dd class="col-6 col-sm-5">@finalBlock.DraughtsInput.SeaWaterDensity?.ToString("N4")</dd>

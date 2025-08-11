@@ -5,6 +5,7 @@ using DraughtSurveyWebApp.Interfaces;
 //using DraughtSurveyWebApp.Mappings;
 using DraughtSurveyWebApp.Models;
 using DraughtSurveyWebApp.Services;
+using DraughtSurveyWebApp.Middleware;
 
 namespace DraughtSurveyWebApp
 {
@@ -76,7 +77,9 @@ namespace DraughtSurveyWebApp
             app.UseStaticFiles();
 
             app.UseRouting();
+
             app.UseAuthentication();
+            app.UseMiddleware<SessionTrackingMiddleware>();
             app.UseAuthorization();
 
             app.MapControllerRoute(

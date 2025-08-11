@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using DraughtSurveyWebApp.Models;
+using DraughtSurveyWebApp.Data;
 
 namespace DraughtSurveyWebApp.Controllers
 {
@@ -9,10 +10,14 @@ namespace DraughtSurveyWebApp.Controllers
     public class ApplicationUsersController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext _applicationDbContext1;
 
-        public ApplicationUsersController(UserManager<ApplicationUser> userManager)
+        public ApplicationUsersController(
+            UserManager<ApplicationUser> userManager,
+            ApplicationDbContext applicationDbContext)
         {
             _userManager = userManager;
+            _applicationDbContext1 = applicationDbContext;
         }
 
         /// <summary>

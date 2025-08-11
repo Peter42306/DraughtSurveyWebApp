@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using DocumentFormat.OpenXml.Vml.Office;
 using DraughtSurveyWebApp.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace DraughtSurveyWebApp.Data
 {
@@ -27,6 +28,8 @@ namespace DraughtSurveyWebApp.Data
 
         public DbSet<ExcelTemplate> ExcelTemplates { get; set; }
 
+        public DbSet<UserSession> UserSessions => Set<UserSession>();
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -34,8 +37,8 @@ namespace DraughtSurveyWebApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
+            base.OnModelCreating(modelBuilder);         
+                        
             modelBuilder.Entity<Inspection>()
                 .HasOne(i => i.ApplicationUser)
                 .WithMany(u => u.Inspections)
@@ -58,13 +61,28 @@ namespace DraughtSurveyWebApp.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
+            modelBuilder.Entity<UserSession>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+                entity.HasIndex(x => new { x.UserId, x.StartedUtc });
+                entity.HasIndex(x => new { x.UserId, x.LastSeenUtc });
+
+                entity.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            });
+
+
+
+
             //modelBuilder.Entity<ExcelTemplate>()
             //    .HasIndex(e => e.Name)
             //    .HasOne(i => i.Owner)
             //    .WithMany()
             //    .HasForeignKey(i => i.OwnerId)
             //    .OnDelete(DeleteBehavior.Restrict);
-                
+
 
             //modelBuilder.Entity<UserHydrostaticTableHeader>()
             //    .HasOne(u => u.ApplicationUser)
