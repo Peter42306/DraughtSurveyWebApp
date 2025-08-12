@@ -26,6 +26,7 @@ namespace DraughtSurveyWebApp.Data
         public DbSet<DeductiblesResults> DeductiblesResults { get; set; }
 
         public DbSet<ExcelTemplate> ExcelTemplates { get; set; }
+        public DbSet<ExcelExportLog> ExcelExportLogs { get; set; }
 
         public DbSet<UserSession> UserSessions => Set<UserSession>();
 
@@ -78,6 +79,24 @@ namespace DraughtSurveyWebApp.Data
                     .WithMany()
                     .HasForeignKey(x => x.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<ExcelExportLog>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id).ValueGeneratedNever();
+                entity.HasIndex(x => x.CreatedUtc);
+                entity.HasIndex(x => x.UserId);
+
+                entity.HasOne(x => x.User)
+                    .WithMany()
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.ExcelTemplate)
+                    .WithMany()
+                    .HasForeignKey(x => x.TemplateId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
 

@@ -56,11 +56,17 @@
                         @if (User.IsInRole("Admin"))
                         {
                             <li>
-                                <a class="nav-link" asp-controller="ApplicationUsers" asp-action="Index">Admin Panel</a>
-                            </li>
-                            <li>
                                 <a class="nav-link" asp-controller="ExcelTemplate" asp-action="Index">Excel Templates</a>
                             </li>
+
+                            <li>
+                                <a class="nav-link" asp-controller="ApplicationUsers" asp-action="Index">Admin Panel</a>
+                            </li>
+
+                            <li>
+                                <a class="nav-link" asp-controller="Stats" asp-action="Index">Admin Stats</a>
+                            </li>
+                            
                         }                        
                     </ul>
 

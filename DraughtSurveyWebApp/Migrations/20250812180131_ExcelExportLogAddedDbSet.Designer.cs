@@ -3,6 +3,7 @@ using System;
 using DraughtSurveyWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DraughtSurveyWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250812180131_ExcelExportLogAddedDbSet")]
+    partial class ExcelExportLogAddedDbSet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.15");
@@ -411,8 +414,6 @@ namespace DraughtSurveyWebApp.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedUtc");
-
-                    b.HasIndex("TemplateId");
 
                     b.HasIndex("UserId");
 
@@ -964,23 +965,6 @@ namespace DraughtSurveyWebApp.Migrations
                         .IsRequired();
 
                     b.Navigation("DraughtSurveyBlock");
-                });
-
-            modelBuilder.Entity("DraughtSurveyWebApp.Models.ExcelExportLog", b =>
-                {
-                    b.HasOne("DraughtSurveyWebApp.Models.ExcelTemplate", "ExcelTemplate")
-                        .WithMany()
-                        .HasForeignKey("TemplateId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("DraughtSurveyWebApp.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("ExcelTemplate");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DraughtSurveyWebApp.Models.ExcelTemplate", b =>

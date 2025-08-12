@@ -411,6 +411,15 @@ namespace DraughtSurveyWebApp.Controllers
             wb.SaveAs( ms );
             ms.Position = 0;
 
+            _context.ExcelExportLogs.Add(new ExcelExportLog{
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                TemplateId = excelTemplateId,
+                CreatedUtc = DateTime.UtcNow
+            });
+            await _context.SaveChangesAsync();
+
+
             const string mime = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             var downloadName = $"{(string.IsNullOrWhiteSpace(excelTemplate.Name) ? "Report" : excelTemplate.Name)}_filled.xlsx";
             
