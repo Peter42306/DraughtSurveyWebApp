@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Vml.Office;
-using DraughtSurveyWebApp.Models;
+﻿using DraughtSurveyWebApp.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -64,13 +63,21 @@ namespace DraughtSurveyWebApp.Data
             modelBuilder.Entity<UserSession>(entity =>
             {
                 entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Id).ValueGeneratedNever();
+
+                entity.HasIndex(x => x.LastSeenUtc);
                 entity.HasIndex(x => new { x.UserId, x.StartedUtc });
                 entity.HasIndex(x => new { x.UserId, x.LastSeenUtc });
 
+                entity.Property(x => x.UserId).IsRequired().HasMaxLength(450);
+                entity.Property(x => x.Ip).HasMaxLength(64);
+                entity.Property(x => x.UserAgent).HasMaxLength(1024);
+
                 entity.HasOne<ApplicationUser>()
-                .WithMany()
-                .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                    .WithMany()
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
 

@@ -50,7 +50,7 @@ namespace DraughtSurveyWebApp.Middleware
                     UserId = userId,
                     StartedUtc = now,
                     LastSeenUtc = now,
-                    Ip = httpContext.Connection.RemoteIpAddress?.ToString(),
+                    Ip = GetClientIp(httpContext),
                     UserAgent = httpContext.Request.Headers["User-Agent"].ToString()
                 };
 
@@ -93,6 +93,27 @@ namespace DraughtSurveyWebApp.Middleware
 
             await _next(httpContext);
 
+
+        }
+
+        private static string GetClientIp(HttpContext httpContext)
+        {
+            // 1) X-Forwarded-For: может быть "client, proxy1, proxy2"
+            var xff = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(xff))
+            {
+                return xff.Split(',')[0].Trim();
+            }
+
+            // 2) X-Real-IP (некоторые прокси)
+            var xrip = httpContext.Request.Headers["X-Real-IP"].FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(xrip))
+            {
+                return xrip;
+            }
+
+            // 3) fallback — прямое подключение
+            return httpContext.Connection.RemoteIpAddress?.ToString() ?? "-";
 
         }
     }
