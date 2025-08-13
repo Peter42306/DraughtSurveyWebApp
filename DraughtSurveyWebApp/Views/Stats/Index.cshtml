@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Admin stats";
-    string M(int y, int m) => new DateTime(y, m, 1).ToString("yyyy-MM");
+    string M(int y, int m) => new DateTime(y, m, 1).ToString("yyyy/MM");
 }
 
 <h2>Admin Stats</h2>
@@ -79,7 +79,7 @@
 
 <h4>Monthly</h4>
 <div class="table-responsive">
-    <table class="table table-sm align-middle">
+    <table class="table">
         <thead>
             <tr>
                 <th class="text-nowrap">Month</th>
