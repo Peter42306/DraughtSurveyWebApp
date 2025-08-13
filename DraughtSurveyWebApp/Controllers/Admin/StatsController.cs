@@ -24,6 +24,8 @@ namespace DraughtSurveyWebApp.Controllers.Admin
             public int Month { get; set; }  // 1..12
             public int ActiveUsers { get; set; }
             public int Registrations { get; set; }
+            public int Logins { get; set; }
+            public int UniqueLogins { get; set; }
             public int Inspections { get; set; }
             public int HydrostaticTables { get; set; }
             public int ExcelExports { get; set; }
@@ -41,6 +43,12 @@ namespace DraughtSurveyWebApp.Controllers.Admin
             //public int HydroTotal { get; set; }
             public int ExportsThisMonth { get; set; }
             public int ExportsTotal { get; set; }
+
+            public int LoginsThisMonth { get; set; }
+            public int LoginsTotal { get; set; }
+            public int UniqueLoginsThisMonth { get; set; }
+            public int UniqueLoginsTotal { get; set; }
+
             public List<MonthlyRow> Monthly { get; set; } = new List<MonthlyRow>();
         }
 
@@ -66,13 +74,15 @@ namespace DraughtSurveyWebApp.Controllers.Admin
                 .Distinct()
                 .CountAsync();
 
-            // active users monthly
             var monthlyActiveUsers = await _context.UserSessions
                 .AsNoTracking()
-                .GroupBy(s => new { s.UserId, s.LastSeenUtc.Year, s.LastSeenUtc.Month })
-                .Select(g => new { g.Key.Year, g.Key.Month })
-                .GroupBy(x => new { x.Year, x.Month })
-                .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
+                .GroupBy(s => new { s.LastSeenUtc.Year, s.LastSeenUtc.Month })
+                .Select(g => new
+                {
+                    g.Key.Year,
+                    g.Key.Month,
+                    Count = g.Select(x => x.UserId).Distinct().Count(),
+                })
                 .ToListAsync();
 
             // registrations
@@ -90,6 +100,48 @@ namespace DraughtSurveyWebApp.Controllers.Admin
                 .GroupBy(u => new { u.CreatedAt.Year, u.CreatedAt.Month })
                 .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
                 .ToListAsync();
+
+            // logins
+            var loginsThisMonth = await _context.UserSessions
+                .AsNoTracking()
+                .Where(s => s.StartedUtc >= monthStart)
+                .CountAsync();
+
+            var loginsTotal = await _context.UserSessions
+                .AsNoTracking()
+                .CountAsync();
+
+            var monthlyLogins = await _context.UserSessions
+                .AsNoTracking()
+                .GroupBy(s => new { s.StartedUtc.Year, s.StartedUtc.Month })
+                .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
+                .ToListAsync();
+
+            // unique logins
+            var uniqueLoginsThisMonth = await _context.UserSessions
+                .AsNoTracking()
+                .Where(s => s.LastSeenUtc >= monthStart)
+                .Select(s => s.UserId)
+                .Distinct()
+                .CountAsync();
+
+            var uniqueLoginsTotal = await _context.UserSessions
+                .AsNoTracking()
+                .Select(s => s.UserId)
+                .Distinct()
+                .CountAsync();
+
+            var monthlyUniqueLogins = await _context.UserSessions
+                .AsNoTracking()
+                .GroupBy(s => new { s.StartedUtc.Year, s.StartedUtc.Month })
+                .Select(g => new
+                {
+                    g.Key.Year,
+                    g.Key.Month,
+                    Count = g.Select(x => x.UserId).Distinct().Count()
+                })
+                .ToListAsync();
+
 
             // inspections
             var inspectionsThisMonth = await _context.Inspections
@@ -142,6 +194,8 @@ namespace DraughtSurveyWebApp.Controllers.Admin
                     .Concat(monthlyRegistrations.Select(x => (x.Year, x.Month)))
                     .Concat(monthlyInspection.Select(x => (x.Year, x.Month)))
                     .Concat(monthlyExports.Select(x => (x.Year, x.Month)))
+                    .Concat(monthlyLogins.Select(x => (x.Year, x.Month)))
+                    .Concat(monthlyUniqueLogins.Select(x => (x.Year, x.Month)))
                     .Distinct()
                     .OrderBy(x => x.Year)
                         .ThenBy(x => x.Month)
@@ -157,7 +211,9 @@ namespace DraughtSurveyWebApp.Controllers.Admin
                     ActiveUsers = monthlyActiveUsers.FirstOrDefault(x => x.Year == k.Year && x.Month == k.Month)?.Count ?? 0,
                     Registrations = monthlyRegistrations.FirstOrDefault(x => x.Year == k.Year && x.Month == k.Month)?.Count ?? 0,
                     Inspections = monthlyInspection.FirstOrDefault(x => x.Year == k.Year && x.Month == k.Month)?.Count ?? 0,
-                    ExcelExports = monthlyExports.FirstOrDefault(x => x.Year == k.Year && x.Month == k.Month).Count
+                    ExcelExports = monthlyExports.FirstOrDefault(x => x.Year == k.Year && x.Month == k.Month).Count,
+                    Logins = monthlyLogins.FirstOrDefault(x => x.Year == k.Year && x.Month == k.Month)?.Count ?? 0,
+                    UniqueLogins = monthlyUniqueLogins.FirstOrDefault(x => x.Year == k.Year && x.Month == k.Month)?.Count ?? 0,
                 });
             }
 
@@ -171,6 +227,10 @@ namespace DraughtSurveyWebApp.Controllers.Admin
                 InspectionsTotal = inspectionsTotal,
                 ExportsThisMonth = exportsThisMonth,
                 ExportsTotal = exportsTotal,
+                LoginsThisMonth = loginsThisMonth,
+                LoginsTotal = loginsTotal,
+                UniqueLoginsThisMonth = uniqueLoginsThisMonth,
+                UniqueLoginsTotal = uniqueLoginsTotal,
                 Monthly = monthly
             };
 
@@ -180,10 +240,5 @@ namespace DraughtSurveyWebApp.Controllers.Admin
 
 
 
-
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
     }
 }

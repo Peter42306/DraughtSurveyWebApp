@@ -18,6 +18,7 @@
     <table class="table">
         <thead>
             <tr>
+                <th>#</th>
                 <th>Email</th>
                 <th>Created</th>                
                 <th>Last seen</th>
@@ -32,6 +33,10 @@
                 <th>Save</th>
             </tr>
         </thead>
+
+        @{
+            var index = 1;
+        }
         <tbody>
             @foreach (var user in Model)
             {
@@ -39,10 +44,12 @@
                       asp-action="UpdateStatus"
                       method="post">
                     @Html.AntiForgeryToken()
+
                     <input type="hidden" name="id" value="@user.Id" />
                     <input type="hidden" name="isActive" value="false" />
 
                 <tr>
+                    <td>@index</td>
                     <td>@user.Email</td>
 
                     <td>@user.CreatedAt.ToString("yyyy/MM/dd")</td>                    
@@ -111,6 +118,8 @@
                     </td>
                 </tr>
                 </form>
+
+                index++;
 
             }
         </tbody>

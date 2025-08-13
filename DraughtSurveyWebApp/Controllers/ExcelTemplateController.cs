@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DraughtSurveyWebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class ExcelTemplateController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -31,7 +31,7 @@ namespace DraughtSurveyWebApp.Controllers
         }
 
         // List of all Excel templates
-        [Authorize(Roles = "Admin")]
+        
         public async Task<IActionResult> Index()
         {
             var templates = await _context.ExcelTemplates
@@ -42,8 +42,7 @@ namespace DraughtSurveyWebApp.Controllers
             return View(templates);
         }
 
-        // GET:
-        [Authorize(Roles = "Admin")]
+        // GET:        
         public async Task<IActionResult> Create()
         {
             var model = new ExcelTemplateCreateViewModel
@@ -58,8 +57,7 @@ namespace DraughtSurveyWebApp.Controllers
 
         // POST:
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]        
         [RequestFormLimits(MultipartBodyLengthLimit =50_000_000)]
         [RequestSizeLimit(50_000_000)]
         public async Task<IActionResult> Create(ExcelTemplateCreateViewModel viewModel)
@@ -306,8 +304,7 @@ namespace DraughtSurveyWebApp.Controllers
         }
 
 
-        // GET:
-        [Authorize(Roles = "Admin")]
+        // GET:        
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -330,8 +327,7 @@ namespace DraughtSurveyWebApp.Controllers
         
         // POST
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]        
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var template = await _context.ExcelTemplates.FirstOrDefaultAsync(x => x.Id == id);

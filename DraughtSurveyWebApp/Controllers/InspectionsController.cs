@@ -40,22 +40,42 @@ namespace DraughtSurveyWebApp.Controllers
         // GET: Inspections
         public async Task<IActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var isAdmin = User.IsInRole("Admin");
+            var userId = _userManager.GetUserId(User);
 
-            if (user == null)
+            var query = _context.Inspections.AsQueryable();
+
+            if (isAdmin)
             {
-                return RedirectToAction("Login", "Account");
+                query = query.Include(i => i.ApplicationUser);
+            }
+            else
+            {
+                query = query.Where(i => i.ApplicationUserId == userId);
             }
 
-            var inspections = User.IsInRole("Admin")
-                ? await _context.Inspections
-                    .Include(i => i.ApplicationUser)
-                    .OrderByDescending(i => i.Id)
-                    .ToListAsync()
-                : await _context.Inspections
-                    .Where(i => i.ApplicationUserId == user.Id)
-                    .OrderByDescending(i => i.Id)
-                    .ToListAsync();                
+            var inspections = await query
+                .AsNoTracking()
+                .OrderByDescending(i => i.Id)
+                .ToListAsync();
+
+
+            //var user = await _userManager.GetUserAsync(User);
+
+            //if (user == null)
+            //{
+            //    return RedirectToAction("Login", "Account");
+            //}
+
+            //var inspections = User.IsInRole("Admin")
+            //    ? await _context.Inspections
+            //        .Include(i => i.ApplicationUser)
+            //        .OrderByDescending(i => i.Id)
+            //        .ToListAsync()
+            //    : await _context.Inspections
+            //        .Where(i => i.ApplicationUserId == user.Id)
+            //        .OrderByDescending(i => i.Id)
+            //        .ToListAsync();                
 
             return View(inspections);
         }

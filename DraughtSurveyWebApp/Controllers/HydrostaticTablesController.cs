@@ -25,29 +25,94 @@ namespace DraughtSurveyWebApp.Controllers
         // GET: /HydrostaticTables
         public async Task<IActionResult> Index()
         {
+            var isAdmin = User.IsInRole("Admin");
             var userId = _userManager.GetUserId(User);
 
-            var header = await _context.UserHydrostaticTableHeaders
-                .Where(h => h.ApplicationUserId == userId)
-                .Include(h => h.UserHydrostaticTableRows)
+            var query = _context.UserHydrostaticTableHeaders.AsQueryable();
+
+            if (isAdmin)
+            {
+                query = query.Include(h => h.ApplicationUser);
+            }
+            else
+            {
+                query = query.Where(h => h.ApplicationUserId == userId);
+            }
+
+            var headers = await query
+                .AsNoTracking()
+                .OrderByDescending(h => h.Id)
                 .ToListAsync();
 
-            return View(header);
+
+
+            //var user = await _userManager.GetUserAsync(User);
+
+            //if (user == null)
+            //{
+            //    return RedirectToAction("Login", "Account");
+            //}
+
+            //var headers = User.IsInRole("Admin")
+            //    ? await _context.UserHydrostaticTableHeaders
+            //        .Include(i => i.ApplicationUser)                    
+            //        .OrderByDescending(i => i.Id)
+            //        .ToListAsync()
+            //    : await _context.UserHydrostaticTableHeaders                    
+            //        .Where(i => i.ApplicationUserId == user.Id)
+            //        .OrderByDescending(i => i.Id)
+            //        .ToListAsync();
+            
+
+            //var userId = _userManager.GetUserId(User);
+
+            //var header = await _context.UserHydrostaticTableHeaders
+            //    .Where(h => h.ApplicationUserId == userId)
+            //    .Include(h => h.UserHydrostaticTableRows)
+            //    .ToListAsync();
+
+            return View(headers);
         }
 
         // GET: /HydrostaticTables/Details/1
         public async Task<IActionResult> Details(int id)
         {
+            var isAdmin = User.IsInRole("Admin");
             var userId = _userManager.GetUserId(User);
 
-            var header = await _context.UserHydrostaticTableHeaders
+            var query = _context.UserHydrostaticTableHeaders                
+                .Where(h => h.Id == id)
                 .Include(h => h.UserHydrostaticTableRows)
-                .FirstOrDefaultAsync(h => h.Id == id && h.ApplicationUserId == userId);
+                .AsQueryable();
+
+            if (isAdmin)
+            {
+                query = query.Include(h => h.ApplicationUser);
+            }
+            else
+            {
+                query = query.Where(h => h.ApplicationUserId == userId);
+            }
+
+            var header = await query
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
 
             if (header == null)
             {
                 return NotFound();
             }
+
+            //var userId = _userManager.GetUserId(User);
+
+            //var header = await _context.UserHydrostaticTableHeaders
+            //    .Include(h => h.UserHydrostaticTableRows)
+            //    .FirstOrDefaultAsync(h => h.Id == id && h.ApplicationUserId == userId);
+
+            //if (header == null)
+            //{
+            //    return NotFound();
+            //}
 
             return View(header);
         }
@@ -233,11 +298,5 @@ namespace DraughtSurveyWebApp.Controllers
             return RedirectToAction(nameof(Details), new { id = row.UserHydrostaticTableHeaderId});
         }
 
-
-
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
     }
 }

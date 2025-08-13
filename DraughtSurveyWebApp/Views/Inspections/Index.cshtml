@@ -16,11 +16,13 @@
             <th>Port</th>
             <th>Reference</th>
             <th>Operation</th>
-                @if (User.IsInRole("Admin"))
-                {
-                    <th>User</th>
-                    <th>Created at</th>
-                }
+
+            @if (User.IsInRole("Admin"))
+            {
+                <th>User</th>
+                <th>Created at</th>
+            }
+
             <th>Actions</th>
         </tr>
     </thead>
