@@ -99,6 +99,18 @@ namespace DraughtSurveyWebApp.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
+            modelBuilder.Entity<DraughtSurveyBlock>(entity =>
+            {
+                entity.Property(e => e.SurveyTimeStart)
+                    .HasColumnType("timestamp without time zone");
+
+                entity.Property(e => e.SurveyTimeEnd)
+                    .HasColumnType("timestamp without time zone");
+
+                entity.Property(e => e.CargoOperationsDateTime)
+                    .HasColumnType("timestamp without time zone");
+            });
+
 
 
 

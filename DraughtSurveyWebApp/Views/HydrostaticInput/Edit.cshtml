@@ -30,10 +30,19 @@
             <h6>@(Model.SurveyType == SurveyType.Initial ? "Initial Displacement, TPC, LCF" : "Final Displacement, TPC, LCF")</h6>                
                 <hr />
                 
-            @if (Model.DraughtBelow.HasValue && Model.DraughtAbove.HasValue &&
-                    !(Model.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(Model.DraughtBelow.Value, Model.DraughtAbove.Value) &&
-                    Model.MeanAdjustedDraughtAfterKeelCorrection < Math.Max(Model.DraughtBelow.Value, Model.DraughtAbove.Value))
-                    )
+
+            @{
+                const double tolerance = 0.0001;
+                bool outOfRange = false;
+                if (Model.DraughtBelow.HasValue && Model.DraughtAbove.HasValue)
+                    {
+                    var min = Math.Min(Model.DraughtBelow.Value, Model.DraughtAbove.Value);
+                    var max = Math.Max(Model.DraughtBelow.Value, Model.DraughtAbove.Value);
+
+                    outOfRange = !(Model.MeanAdjustedDraughtAfterKeelCorrection >= min - tolerance && Model.MeanAdjustedDraughtAfterKeelCorrection <= max + tolerance);
+                }
+            }
+            @if (outOfRange)
             {
                 <div class="alert alert-danger">
                     Mean draught is out of range of table draught values. Calculations may be inaccurate.

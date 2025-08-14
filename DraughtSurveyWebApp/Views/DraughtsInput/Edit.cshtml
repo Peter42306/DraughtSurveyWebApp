@@ -119,6 +119,19 @@
                 </div>
             </div>
 
+            @if (Model.Inspection != null &&
+                !Model.Inspection.notShowInputWarnings &&
+                Model.SeaWaterDensity.HasValue && !Model.Swell.HasValue)
+            {
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <div class="alert alert-warning">
+                            Please enter Swell.                            
+                        </div>
+                    </div>
+                </div>
+            }
+
 
 
             <div class="row mb-2">
@@ -440,6 +453,21 @@
 
 <script>
     function calculateSeaDraughts(){
+        const allFilled = [
+            "draught-forward-ps", 
+            "draught-forward-ss", 
+            "draught-aft-ps", 
+            "draught-aft-ss"
+        ].every(id => {
+            const el =document.getElementById(id);
+                return el && el.value.trim() !== "";
+            });
+
+            if(allFilled){
+                alert("All draught readings are filled. Please clear cells before the next sea side draught recalculation.");
+                return;
+            }
+
         const draughtMidPS = parseFloatOrNull("draught-mid-ps");
         const draughtMidSS = parseFloatOrNull("draught-mid-ss");
         const breadthMoulded = parseFloatOrNull("breadth-moulded");

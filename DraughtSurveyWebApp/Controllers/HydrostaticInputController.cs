@@ -251,12 +251,12 @@ namespace DraughtSurveyWebApp.Controllers
                 input.MTCMinus50Below = viewModel.MTCMinus50Below;
 
                 var imo = draughtSurveyBlock.Inspection.VesselInput?.IMO;
-                var vesseName = draughtSurveyBlock.Inspection.VesselName;
+                var vesseName = draughtSurveyBlock.Inspection.VesselName;                
 
                 if (!string.IsNullOrWhiteSpace(imo))
                 {
                     if (
-                        viewModel.DraughtAbove.HasValue &&
+                        viewModel.DraughtAbove.HasValue &&                        
                         viewModel.DisplacementAbove.HasValue &&
                         viewModel.TPCAbove.HasValue &&
                         viewModel.LCFAbove.HasValue &&
@@ -279,13 +279,13 @@ namespace DraughtSurveyWebApp.Controllers
                     }
 
                     if (
-                        viewModel.DraughtAbove.HasValue &&
-                        viewModel.DisplacementAbove.HasValue &&
-                        viewModel.TPCAbove.HasValue &&
-                        viewModel.LCFAbove.HasValue &&
+                        viewModel.DraughtBelow.HasValue &&                        
+                        viewModel.DisplacementBelow.HasValue &&
+                        viewModel.TPCBelow.HasValue &&
+                        viewModel.LCFBelow.HasValue &&
                         viewModel.IsLCFForward.HasValue &&
-                        viewModel.MTCPlus50Above.HasValue &&
-                        viewModel.MTCMinus50Above.HasValue
+                        viewModel.MTCPlus50Below.HasValue &&
+                        viewModel.MTCMinus50Below.HasValue
                         )
                     {
                         await AddOrUpdateUserHydrostaticTableRow(
@@ -303,7 +303,13 @@ namespace DraughtSurveyWebApp.Controllers
                 }                
             }
 
+
+
             _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
+            
+
+
+            
 
 
 
@@ -528,20 +534,7 @@ namespace DraughtSurveyWebApp.Controllers
 
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="imo"></param>
-        /// <param name="vesselName"></param>
-        /// <param name="user"></param>
-        /// <param name="draught"></param>
-        /// <param name="displacement"></param>
-        /// <param name="tpc"></param>
-        /// <param name="lcf"></param>
-        /// <param name="isLcfForward"></param>
-        /// <param name="mtcPlus50"></param>
-        /// <param name="mtcMinus50"></param>
-        /// <returns></returns>
+        
         private async Task AddOrUpdateUserHydrostaticTableRow(
             string imo,
             string vesselName,

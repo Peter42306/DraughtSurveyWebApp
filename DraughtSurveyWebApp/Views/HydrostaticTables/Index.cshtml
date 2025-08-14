@@ -12,7 +12,10 @@
             
             <th>Vessel</th>
             <th>IMO</th>            
-            <th>User</th>
+            @if (User.IsInRole("Admin"))
+            {
+                <th>User</th>
+            }            
             <th>Rows</th>
             <th>Step</th>
             <th></th>

@@ -2,6 +2,7 @@
 using DraughtSurveyWebApp.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Eventing.Reader;
+using static DraughtSurveyWebApp.Utils.Utils;
 
 namespace DraughtSurveyWebApp.Services
 {
@@ -172,9 +173,9 @@ namespace DraughtSurveyWebApp.Services
 
 
             if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
-                draughtAbove.HasValue &&
-                displacementAbove.HasValue &&
-                draughtBelow.HasValue &&
+                draughtAbove.HasValue && draughtAbove.Value !=0 &&
+                displacementAbove.HasValue && displacementAbove.Value !=0 &&
+                draughtBelow.HasValue && draughtBelow.Value !=0 &&
                 displacementBelow.HasValue)
             {
                 displacementFromTable = CalculateLinearInterpolation(
@@ -185,14 +186,18 @@ namespace DraughtSurveyWebApp.Services
                     meanAdjustedDraughtAfterKeelCorrection.Value);
             }
             else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
-                     draughtAbove.HasValue &&
-                     displacementAbove.HasValue)
+                     draughtAbove.HasValue && draughtAbove != null &&
+                     displacementAbove.HasValue && displacementAbove != null &&
+                     AreEqual(draughtAbove,meanAdjustedDraughtAfterKeelCorrection)
+                     )
             {
                 displacementFromTable = displacementAbove;
             }
             else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
-                     draughtBelow.HasValue &&
-                     displacementBelow.HasValue)
+                     draughtBelow.HasValue && draughtBelow != null &&
+                     displacementBelow.HasValue && displacementBelow.Value !=0 &&
+                     AreEqual(draughtBelow, meanAdjustedDraughtAfterKeelCorrection)
+                     )
             {
                 displacementFromTable = displacementBelow;
             }
@@ -217,13 +222,17 @@ namespace DraughtSurveyWebApp.Services
             }
             else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
                      draughtAbove.HasValue && draughtAbove.Value != 0 &&
-                     tpcAbove.HasValue && tpcAbove.Value != 0)
+                     tpcAbove.HasValue && tpcAbove.Value != 0 &&
+                     AreEqual(draughtAbove, meanAdjustedDraughtAfterKeelCorrection)
+                     )
             {
                 tPCFromTable = tpcAbove;
             }
             else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
                      draughtBelow.HasValue && draughtBelow.Value != 0 &&
-                     tpcBelow.HasValue && tpcBelow.Value != 0)
+                     tpcBelow.HasValue && tpcBelow.Value != 0 &&
+                     AreEqual(draughtBelow, meanAdjustedDraughtAfterKeelCorrection)
+                     )
             {
                 tPCFromTable = tpcBelow;
             }
@@ -248,13 +257,17 @@ namespace DraughtSurveyWebApp.Services
             }
             else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
                      draughtAbove.HasValue && draughtAbove.Value != 0 &&
-                     lcfAbove.HasValue && lcfAbove.Value != 0)
+                     lcfAbove.HasValue && lcfAbove.Value != 0 &&
+                     AreEqual(draughtAbove, meanAdjustedDraughtAfterKeelCorrection)
+                     )
             {
                 lCFFromTable = lcfAbove;
             }
             else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
                      draughtBelow.HasValue && draughtBelow.Value != 0 &&
-                     lcfBelow.HasValue && lcfBelow.Value != 0)
+                     lcfBelow.HasValue && lcfBelow.Value != 0 &&
+                     AreEqual(draughtBelow, meanAdjustedDraughtAfterKeelCorrection)
+                     )
             {
                 lCFFromTable = lcfBelow;
             }
@@ -292,13 +305,17 @@ namespace DraughtSurveyWebApp.Services
             }
             else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
                      draughtAbove.HasValue && draughtAbove.Value != 0 &&
-                     mtcPlus50Above.HasValue && mtcPlus50Above.Value != 0)
+                     mtcPlus50Above.HasValue && mtcPlus50Above.Value != 0 &&
+                     AreEqual(draughtAbove, meanAdjustedDraughtAfterKeelCorrection)
+                     )
             {
                 mTCPlus50FromTable = mtcPlus50Above;
             }
             else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
                      draughtBelow.HasValue && draughtBelow.Value != 0 &&
-                     mtcPlus50Below.HasValue && mtcPlus50Below.Value != 0)
+                     mtcPlus50Below.HasValue && mtcPlus50Below.Value != 0 &&
+                     AreEqual(draughtBelow, meanAdjustedDraughtAfterKeelCorrection)
+                    )
             {
                 mTCPlus50FromTable = mtcPlus50Below;
             }
@@ -325,13 +342,17 @@ namespace DraughtSurveyWebApp.Services
             }
             else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
                      draughtAbove.HasValue && draughtAbove.Value != 0 &&
-                     mtcMinus50Above.HasValue && mtcMinus50Above.Value != 0)
+                     mtcMinus50Above.HasValue && mtcMinus50Above.Value != 0 &&
+                     AreEqual(draughtAbove, meanAdjustedDraughtAfterKeelCorrection)
+                     )
             {
                 mTCMinus50FromTable = mtcMinus50Above;
             }
             else if (meanAdjustedDraughtAfterKeelCorrection.HasValue &&
                      draughtBelow.HasValue && draughtBelow.Value != 0 &&
-                     mtcMinus50Below.HasValue && mtcMinus50Below.Value != 0)
+                     mtcMinus50Below.HasValue && mtcMinus50Below.Value != 0 &&
+                     AreEqual(draughtBelow, meanAdjustedDraughtAfterKeelCorrection)
+                     )
             {
                 mTCMinus50FromTable = mtcMinus50Below;
             }

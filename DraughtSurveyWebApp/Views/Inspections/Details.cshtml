@@ -113,8 +113,8 @@
                             
                    <dt class="col-6 col-lg-7">Declared Weight</dt>
                    <dd class="col-6 col-lg-5">@Model.CargoInput.DeclaredWeight?.ToString("N3")</dd>
-
-                   <dt class="col-6 col-lg-7">Terminal</dt>
+                                      
+                   <dt class="col-6 col-lg-7">@(Model.OperationType == OperationType.Loading ? "Loading Terminal" : "Discharge Terminal")</dt>
                    <dd class="col-6 col-lg-5">@Model.CargoInput.LoadingTerminal</dd>
 
                    <dt class="col-6 col-lg-7">Berth No.</dt>
@@ -265,7 +265,7 @@
                 } *@
 
             <dt class="col-6 col-sm-7">Mean Adjusted Draught</dt>
-            <dd class="col-6 col-sm-5">@initialBlock.DraughtsResults.MeanAdjustedDraught?.ToString("N3")</dd>
+            <dd class="col-6 col-sm-5"><strong>@initialBlock.DraughtsResults.MeanAdjustedDraught?.ToString("N3")</strong></dd>
 
             <dt class="col-6 col-sm-7">@(initialBlock.DraughtsResults.HoggingSagging < 0 ? "Hogging" : "Sagging")</dt>
             <dd class="col-6 col-sm-5">
@@ -316,21 +316,28 @@
         </div>
         
 
-        <dl class="row">           
+        <dl class="row">       
+            
 
-            @if (initialBlock.HydrostaticInput != null &&
-                 initialBlock.HydrostaticInput.DraughtBelow.HasValue && initialBlock.HydrostaticInput.DraughtAbove.HasValue &&
-                 initialBlock.DraughtsResults != null &&
-                    !(
-                     initialBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(initialBlock.HydrostaticInput.DraughtBelow.Value, initialBlock.HydrostaticInput.DraughtAbove.Value) &&
-                     initialBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection < Math.Max(initialBlock.HydrostaticInput.DraughtBelow.Value, initialBlock.HydrostaticInput.DraughtAbove.Value)
-                    )                            
-                 )
-                {
-                    <div class="alert alert-danger">
-                        Mean draught is out of range of table draught values. Calculations may be inaccurate.
-                    </div>
+            @{
+                const double tolerance = 0.0001;
+                bool outOfRange = false;
+                if (initialBlock.HydrostaticInput.DraughtBelow.HasValue && initialBlock.HydrostaticInput.DraughtAbove.HasValue)
+                    {
+                    var min = Math.Min(initialBlock.HydrostaticInput.DraughtBelow.Value, initialBlock.HydrostaticInput.DraughtAbove.Value);
+                    var max = Math.Max(initialBlock.HydrostaticInput.DraughtBelow.Value, initialBlock.HydrostaticInput.DraughtAbove.Value);
+
+                    outOfRange = !(initialBlock.DraughtsResults?.MeanAdjustedDraughtAfterKeelCorrection >= min - tolerance && initialBlock.DraughtsResults?.MeanAdjustedDraughtAfterKeelCorrection <= max + tolerance);
                 }
+            }
+            @if (outOfRange)
+            {
+                <div class="alert alert-danger">
+                    Mean draught is out of range of table draught values. Calculations may be inaccurate.
+                </div>
+            }
+
+            
 
             <dt class="col-6 col-sm-7">Table Displacement</dt>
             <dd class="col-6 col-sm-5">@initialBlock.HydrostaticResults.DisplacementFromTable?.ToString("N3")</dd>
@@ -510,7 +517,7 @@ else
             @if(finalBlock.SurveyTimeStart.HasValue || finalBlock.SurveyTimeEnd.HasValue || finalBlock.CargoOperationsDateTime.HasValue)
         {
         
-        <div class="row" id="#final-draught-times">
+        <div class="row" id="final-draught-times">
             <div class="col-6">
                 <h4>Final Time Sheet</h4>
             </div>
@@ -659,21 +666,26 @@ else
             </div>
         </div>
 
-        <dl class="row">
+        <dl class="row">          
 
-            @if (finalBlock.HydrostaticInput != null &&
-                 finalBlock.HydrostaticInput.DraughtBelow.HasValue && finalBlock.HydrostaticInput.DraughtAbove.HasValue &&
-                 finalBlock.DraughtsResults != null &&
-                    !(
-                     finalBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection > Math.Min(finalBlock.HydrostaticInput.DraughtBelow.Value, finalBlock.HydrostaticInput.DraughtAbove.Value) &&
-                     finalBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection < Math.Max(finalBlock.HydrostaticInput.DraughtBelow.Value, finalBlock.HydrostaticInput.DraughtAbove.Value)
-                    )                            
-                  )
-                {
-                    <div class="alert alert-danger">
-                        Mean draught is out of range of table draught values. Calculations may be inaccurate.
-                    </div>
+            @{
+                const double tolerance = 0.0001;
+                bool outOfRange = false;
+                if (finalBlock.HydrostaticInput.DraughtBelow.HasValue && finalBlock.HydrostaticInput.DraughtAbove.HasValue)
+                    {
+                    var min = Math.Min(finalBlock.HydrostaticInput.DraughtBelow.Value, finalBlock.HydrostaticInput.DraughtAbove.Value);
+                    var max = Math.Max(finalBlock.HydrostaticInput.DraughtBelow.Value, finalBlock.HydrostaticInput.DraughtAbove.Value);
+
+                    outOfRange = !(finalBlock.DraughtsResults?.MeanAdjustedDraughtAfterKeelCorrection >= min - tolerance && finalBlock.DraughtsResults?.MeanAdjustedDraughtAfterKeelCorrection <= max + tolerance);
                 }
+            }
+            @if (outOfRange)
+            {
+                <div class="alert alert-danger">
+                    Mean draught is out of range of table draught values. Calculations may be inaccurate.
+                </div>
+            }
+            
 
             <dt class="col-6 col-sm-7">Table Displacement</dt>
             <dd class="col-6 col-sm-5">@finalBlock.HydrostaticResults.DisplacementFromTable?.ToString("N3")</dd>

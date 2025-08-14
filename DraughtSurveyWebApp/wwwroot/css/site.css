@@ -28,3 +28,8 @@ body {
 }
 
 
+:root[data-bs-theme="dark"] .form-control[readonly],
+:root[data-bs-theme="dark"] .form-control:disabled {            
+    font-weight:800;
+    color:#555;
+}

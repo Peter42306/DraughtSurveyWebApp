@@ -37,7 +37,7 @@
             </div>
 
             <div class="mb-2">
-                <label asp-for="LoadingTerminal"></label>
+                <label asp-for="LoadingTerminal">@(Model.OperationType == OperationType.Loading ? "Loading Terminal" : "Discharge Terminal")</label>                
                 <input asp-for="LoadingTerminal" class="form-control" />
                 <span asp-validation-for="LoadingTerminal" class="text-danger"></span>
             </div>
@@ -61,7 +61,7 @@
             </div>
 
             <div class="mb-2">
-                <label asp-for="DischargingPort"></label>
+                <label asp-for="DischargingPort">@(Model.OperationType == OperationType.Loading ? "Discharge Port" : "Load Port")</label>
                 <input asp-for="DischargingPort" class="form-control" />
                 <span asp-validation-for="DischargingPort" class="text-danger"></span>
             </div>
