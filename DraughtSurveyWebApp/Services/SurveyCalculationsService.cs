@@ -817,17 +817,20 @@ namespace DraughtSurveyWebApp.Services
             return result;
         }
 
+
         public double CalculateTrim(double forward, double aft)
         {
             double result = Math.Round((aft-forward), 3, MidpointRounding.AwayFromZero);
             return result;
         }
 
+
         public double CalculateHoggingSagging(double forward, double mid, double aft)
         {
             double result = Math.Round(mid-((forward+aft)/2), 3, MidpointRounding.AwayFromZero);
             return result;
         }
+
 
         public double CalculateHeel(double draughtMidPS, double draughtMidSS, double BM)
         {
@@ -838,11 +841,13 @@ namespace DraughtSurveyWebApp.Services
             return result;
         }
 
+
         public double CalculateRadToDeg(double radians)
         {
             double result = radians * (180 / Math.PI);
             return result;
         }
+
 
         public double CalculatLBD(double lbp, double distanceFwd, bool distanceFwdShiftedToFwd, double distanceAft, bool distanceAftShiftedToFwd)
         {
@@ -860,6 +865,7 @@ namespace DraughtSurveyWebApp.Services
 
             return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
+
 
         public double CalculateTrimCorrection(double distance, double apparentTrim, bool isDraughtShiftedToForward, double LBD)
         {
@@ -883,11 +889,13 @@ namespace DraughtSurveyWebApp.Services
             return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
+
         public double CalculateCorrectedDraught(double draughtApparentMean, double correctionForDistasnce)
         {
             double result = Math.Round(draughtApparentMean + correctionForDistasnce, 3, MidpointRounding.AwayFromZero);
             return result;
         }
+
 
         public double CalculateMeanOfMean(double draughtMeanFwd, double draughtMeanMid, double draughtMeanAft)
         {
@@ -895,11 +903,13 @@ namespace DraughtSurveyWebApp.Services
             return result;
         }
 
+
         public double CalculateMeanAdjustedDraughtAfterKeelCorrection(double meanAdjustedDraught, double keelCorrection)
         {           
             double result = meanAdjustedDraught + keelCorrection;
             return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
+
 
         public double CalculateDraughtForMTCPlus50(double tableDraught)
         {
@@ -907,11 +917,13 @@ namespace DraughtSurveyWebApp.Services
             return result;
         }
 
+
         public double CalculateDraughtForMTCMinus50(double tableDraught)
         {
             double result = tableDraught - 0.5;
             return result;
-        }        
+        }  
+        
 
         public double CalculateLinearInterpolation(double x0, double y0, double x1, double y1, double x)
         {
@@ -923,6 +935,7 @@ namespace DraughtSurveyWebApp.Services
             double y = y0 + ((y1 - y0) / (x1 - x0)) * (x - x0);
             return Math.Round(y, 3, MidpointRounding.AwayFromZero);
         }
+
 
         public double CalculateFirstTrimCorrection(double correctedTrim, double LCF, bool isLCFForward, double TPC, double LBP)
         {
@@ -961,6 +974,7 @@ namespace DraughtSurveyWebApp.Services
             return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
+
         public double CalculateSecondTrimCorrection(double correctedTrim, double MTC1, double MTC2, double LBP)
         {
             if (LBP == 0)
@@ -981,12 +995,14 @@ namespace DraughtSurveyWebApp.Services
             return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
+
         public double CalculateDisplacementCorrectedForTrim(double tableDisplacement, double firstTrimCorrection, double secondTrimCorrection)
         {           
             double result = tableDisplacement + firstTrimCorrection + secondTrimCorrection;
 
             return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
+
 
         public double CalculateDisplacementCorrectedForDensity(double displacementCorrectedForTrim, double seaWaterDensity)
         {            
@@ -995,6 +1011,7 @@ namespace DraughtSurveyWebApp.Services
             return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
+
         public double CalculateNettoDisplacement(double displacementCorrectedForDensity, double totalDeductibles)
         {
             double result = displacementCorrectedForDensity - totalDeductibles;
@@ -1002,12 +1019,14 @@ namespace DraughtSurveyWebApp.Services
             return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
 
+
         public double CalculateCargoPlusConstant(double nettoDisplacement, double lightShip)
         {
             double result = nettoDisplacement - lightShip;
 
             return Math.Round(result, 3, MidpointRounding.AwayFromZero);
         }
+
 
         public double CalculateTotalDeductibles(DeductiblesInput input)
         {
@@ -1023,9 +1042,6 @@ namespace DraughtSurveyWebApp.Services
         }
 
 
-        //internal double CalculateApparentMean(double? draughtFwdPS, double? draughtFwdSS)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        
     }
 }

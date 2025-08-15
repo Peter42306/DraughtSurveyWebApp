@@ -2,38 +2,28 @@
 {
     public static class Utils
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="tolerance"></param>
-        /// <returns></returns>
+        
         public static bool AreEqual(double? a, double? b, double tolerance = 0.0001)
         {
-            if (a.HasValue && b.HasValue)
+            if (!a.HasValue || !b.HasValue)
             {
-                return Math.Abs(a.Value - b.Value) < tolerance;
+                return false;
             }
 
-            return a.HasValue == b.HasValue;
+            return Math.Abs(a.Value - b.Value) <= tolerance;            
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
+        
         public static bool AreEqual(bool? a, bool? b)
         {
-            if (a.HasValue && b.HasValue)
+            if (!a.HasValue || !b.HasValue)
             {
-                return a.Value == b.Value;
+                return false;
             }
 
-            return a.HasValue == b.HasValue;
+            return a.Value == b.Value;
         }
+
 
         public static double? TryDetectTableStep(List<double>draughts)
         {

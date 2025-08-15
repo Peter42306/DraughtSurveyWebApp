@@ -303,15 +303,7 @@ namespace DraughtSurveyWebApp.Controllers
                 }                
             }
 
-
-
-            _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
-            
-
-
-            
-
-
+            _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);           
 
 
 
@@ -412,6 +404,7 @@ namespace DraughtSurveyWebApp.Controllers
                 !AreEqual(dbValue.MTCMinus50Below, viewModelValue.MTCMinus50Below);
         }
 
+
         private async Task AutoFillHydrostaticInputIfAvailable(DraughtSurveyBlock block, ApplicationUser user)
         {
             if (block == null || user == null)
@@ -483,9 +476,7 @@ namespace DraughtSurveyWebApp.Controllers
                         }
 
                     }
-                }                
-
-                
+                }                                
             }
            
 
@@ -608,7 +599,8 @@ namespace DraughtSurveyWebApp.Controllers
                 _context.UserHydrostaticTableRows.Add(newRow);
             }
 
-            await _context.SaveChangesAsync();            
+            await _context.SaveChangesAsync();  
+            
         }
 
 
