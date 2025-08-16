@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using static DraughtSurveyWebApp.Utils.Utils;
 
 namespace DraughtSurveyWebApp.Controllers
 {
@@ -154,6 +155,7 @@ namespace DraughtSurveyWebApp.Controllers
                 .Include(h => h.UserHydrostaticTableRows)
                 .FirstOrDefaultAsync(h => h.Id == row.UserHydrostaticTableHeaderId);
 
+            
             if (header == null)
             {
                 return NotFound();
@@ -176,6 +178,47 @@ namespace DraughtSurveyWebApp.Controllers
                 ModelState.AddModelError(nameof(row.Draught), "Please enter a valid draught value");
                 return View(row);
             }
+                       
+
+
+
+            bool allRowValuesEntered =
+                row.Displacement.HasValue &&
+                row.TPC.HasValue &&
+                row.LCF.HasValue &&
+                row.IsLcfForward.HasValue &&
+                row.MTCPlus50.HasValue &&
+                row.MTCMinus50.HasValue;
+
+            if (!allRowValuesEntered)
+            {
+                if (!row.Displacement.HasValue)
+                {
+                    ModelState.AddModelError(nameof(row.Displacement), "Required");
+                }
+                if (!row.TPC.HasValue)
+                {
+                    ModelState.AddModelError(nameof(row.TPC), "Required");
+                }
+                if (!row.LCF.HasValue)
+                {
+                    ModelState.AddModelError(nameof(row.IsLcfForward), "Required");
+                }
+                if (!row.IsLcfForward.HasValue)
+                {
+                    ModelState.AddModelError(nameof(row.IsLcfForward), "Required");
+                }
+                if (!row.MTCPlus50.HasValue)
+                {
+                    ModelState.AddModelError(nameof(row.MTCPlus50), "Required");
+                }
+                if (!row.MTCMinus50.HasValue)
+                {
+                    ModelState.AddModelError(nameof(row.MTCMinus50), "Required");
+                }
+                return View(row);
+            }
+
 
             var existingRow = await _context.UserHydrostaticTableRows
                 .FirstOrDefaultAsync(r => 

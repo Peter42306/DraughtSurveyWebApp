@@ -96,6 +96,7 @@ namespace DraughtSurveyWebApp.Controllers
             }
 
             var inspection = await _context.Inspections
+                .Include(i => i.Remarks)
                 .Include(i => i.VesselInput)
                 .Include(i => i.CargoInput)
                 .Include(i => i.CargoResult)
@@ -499,6 +500,52 @@ namespace DraughtSurveyWebApp.Controllers
                 new { inspectionId = viewModel.InspectionId, excelTemplateId = viewModel.SelectedTemplateId.Value}
             );
         }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditRemarks(int inspectionId, string text)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var inspection = await _context.Inspections
+                .Include(i => i.Remarks)
+                .FirstOrDefaultAsync(i => i.Id == inspectionId);
+
+            if (inspection == null)
+            {
+                return NotFound();
+            }
+
+            if (inspection.ApplicationUserId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            if (inspection.Remarks == null)
+            {
+                inspection.Remarks = new Remarks 
+                {
+                    InspectionId = inspectionId,
+                    Inspection = inspection,
+                    Text = text
+                };
+                _context.Remarks.Add(inspection.Remarks);
+            }
+            else
+            {
+                inspection.Remarks.Text = text;
+                _context.Remarks.Update(inspection.Remarks);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Details", new { id = inspectionId });
+        }
+
 
 
 

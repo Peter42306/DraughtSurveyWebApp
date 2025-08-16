@@ -60,8 +60,8 @@
                 <td>@row.MTCPlus50</td>
                 <td>@row.MTCMinus50</td>
                 <td>
-                    <a asp-action="EditRow" asp-route-id="@row.Id">Edit</a>
-                    <a asp-action="DeleteRow" asp-route-id="@row.Id">Delete</a>
+                    <a asp-action="EditRow" asp-route-id="@row.Id" class="btn btn-outline-primary btn-sm me-2 mb-1">Edit</a>
+                    <a asp-action="DeleteRow" asp-route-id="@row.Id" class="btn btn-outline-primary btn-sm me-2 mb-1">Delete</a>
                 </td>
             </tr>
         }

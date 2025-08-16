@@ -56,7 +56,7 @@
         {            
             <div class="d-flex justify-content-between align-content-between align-items-center mb-2" id="draught-vessel-input" >                    
                 <h4>Vessel Information</h4>                    
-                <a asp-action="Edit" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id">Edit</a>                    
+                <a asp-action="Edit" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id" class="btn btn-outline-primary">Edit</a>                    
             </div>    
             
             @if (TempData["VesselAutoFilled"] != null)
@@ -91,7 +91,7 @@
             {
                 <div class="d-flex justify-content-between align-content-between align-items-center mb-2">
                     <span class="text-muted">Vessel Information not entered yet</span>
-                    <a asp-action="Create" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id">Edit</a>
+                    <a asp-action="Create" asp-controller="VesselInput" asp-route-inspectionId="@Model.Id" class="btn btn-outline-primary">Edit</a>
                 </div>                
             }    
 
@@ -104,7 +104,7 @@
            {
                <div class="d-flex justify-content-between align-content-between align-items-center mb-2" id="draught-cargo-input">                        
                    <h4>Cargo Information</h4>                        
-                   <a asp-action="Edit" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Edit</a>                        
+                   <a asp-action="Edit" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id" class="btn btn-outline-primary">Edit</a>                        
                </div>        
 
                <dl class="row">
@@ -134,7 +134,7 @@
                 {
                     <div class="d-flex justify-content-between align-content-between align-items-center mb-2">
                         <span class="text-muted">Cargo Information not entered yet</span>
-                        <a asp-action="Create" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id">Edit</a>
+                        <a asp-action="Create" asp-controller="CargoInput" asp-route-inspectionId="@Model.Id" class="btn btn-outline-primary">Edit</a>
                     </div>                                      
                 }
         </div>            
@@ -172,7 +172,7 @@
                 <h4>Initial Time Sheet</h4>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@initialBlock.Id" >Edit Times</a>
+                <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@initialBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
         
@@ -198,7 +198,7 @@
                 <p>Initial times not entered yet</p>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Times</a>
+                <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@initialBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>        
         }
@@ -213,7 +213,7 @@
                 <h4>Initial Draughts</h4>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Draughts</a>
+                <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@initialBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
 
@@ -298,7 +298,7 @@
                 <p>Initial draughts not entered yet</p>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Draughts</a>
+                <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@initialBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
     }
@@ -311,7 +311,7 @@
                 <h4>Initial Hydrostatics</h4>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Hydrostatics</a>
+                <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@initialBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
         
@@ -322,22 +322,33 @@
             @{
                 const double tolerance = 0.0001;
                 bool outOfRange = false;
-                if (initialBlock.HydrostaticInput.DraughtBelow.HasValue && initialBlock.HydrostaticInput.DraughtAbove.HasValue)
-                    {
-                    var min = Math.Min(initialBlock.HydrostaticInput.DraughtBelow.Value, initialBlock.HydrostaticInput.DraughtAbove.Value);
-                    var max = Math.Max(initialBlock.HydrostaticInput.DraughtBelow.Value, initialBlock.HydrostaticInput.DraughtAbove.Value);
 
-                    outOfRange = !(initialBlock.DraughtsResults?.MeanAdjustedDraughtAfterKeelCorrection >= min - tolerance && initialBlock.DraughtsResults?.MeanAdjustedDraughtAfterKeelCorrection <= max + tolerance);
+                if (initialBlock.HydrostaticInput.DraughtBelow.HasValue && 
+                    initialBlock.HydrostaticInput.DraughtAbove.HasValue &&
+                    initialBlock.DraughtsResults != null &&
+                    initialBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection.HasValue)
+                    {
+                        var draught = initialBlock.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection.Value;
+                        var min = Math.Min(initialBlock.HydrostaticInput.DraughtBelow.Value, initialBlock.HydrostaticInput.DraughtAbove.Value);
+                        var max = Math.Max(initialBlock.HydrostaticInput.DraughtBelow.Value, initialBlock.HydrostaticInput.DraughtAbove.Value);
+
+                        bool isExactMatch = Math.Abs(draught - min) <= tolerance || Math.Abs(draught - max) <= tolerance;
+
+
+                    outOfRange = 
+                        !isExactMatch && 
+                        !(initialBlock.DraughtsResults?.MeanAdjustedDraughtAfterKeelCorrection >= min - tolerance && initialBlock.DraughtsResults?.MeanAdjustedDraughtAfterKeelCorrection <= max + tolerance);
                 }
             }
             @if (outOfRange)
             {
                 <div class="alert alert-danger">
-                    Mean draught is out of range of table draught values. Calculations may be inaccurate.
+                    Mean draught changed. Check & confirm your hydrostatic data.
                 </div>
             }
-
             
+
+
 
             <dt class="col-6 col-sm-7">Table Displacement</dt>
             <dd class="col-6 col-sm-5">@initialBlock.HydrostaticResults.DisplacementFromTable?.ToString("N3")</dd>
@@ -419,7 +430,7 @@
                 <p>Initial hydrostatics not entered yet</p>
             </div>
             <div class="col-5 text-end">
-                <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Hydrostatics</a>
+                <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@initialBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
     }
@@ -433,7 +444,7 @@
                 <h4>Initial Deductibles</h4>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Deductibles</a>
+                <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@initialBlock.Id" class="btn btn-outline-primary">Edit </a>
             </div>
         </div>
 
@@ -468,7 +479,7 @@
                 <p>Initial deductibles not entered yet</p>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@initialBlock.Id">Edit Deductibles</a>
+                <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@initialBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
     }
@@ -522,7 +533,7 @@ else
                 <h4>Final Time Sheet</h4>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@finalBlock.Id" >Edit Times</a>
+                <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@finalBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
         
@@ -548,7 +559,7 @@ else
                 <p>Final times not entered yet</p>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Times</a>
+                <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@finalBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>        
         }
@@ -564,7 +575,7 @@ else
                 <h4>Final Draughts</h4>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Draughts</a>
+                <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
 
@@ -616,7 +627,7 @@ else
                 } *@
 
             <dt class="col-6 col-sm-7">Mean Adjusted Draught</dt>
-            <dd class="col-6 col-sm-5">@finalBlock.DraughtsResults.MeanAdjustedDraught?.ToString("N3")</dd>
+            <dd class="col-6 col-sm-5"><strong>@finalBlock.DraughtsResults.MeanAdjustedDraught?.ToString("N3")</strong></dd>
 
             <dt class="col-6 col-sm-7">@(finalBlock.DraughtsResults.HoggingSagging < 0 ? "Hogging" : "Sagging")</dt>
             <dd class="col-6 col-sm-5">
@@ -649,7 +660,7 @@ else
                 <p>Final draughts not entered yet</p>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Draughts</a>
+                <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
     }
@@ -662,7 +673,7 @@ else
                 <h4>Final Hydrostatics</h4>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Hydrostatics</a>
+                <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@finalBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
 
@@ -682,7 +693,7 @@ else
             @if (outOfRange)
             {
                 <div class="alert alert-danger">
-                    Mean draught is out of range of table draught values. Calculations may be inaccurate.
+                    Mean draught changed. Check & confirm your hydrostatic data.
                 </div>
             }
             
@@ -695,6 +706,8 @@ else
 
             <dt class="col-6 col-sm-7">Table LCF</dt>
             <dd class="col-6 col-sm-5">
+
+
                     @{
                         var lcf = finalBlock.HydrostaticResults.LCFFromTable;
                         var lbp = finalBlock.Inspection.VesselInput?.LBP;
@@ -767,7 +780,7 @@ else
                 <p>Final hydrostatics not entered yet</p>
             </div>
             <div class="col-5 text-end">
-                <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Hydrostatics</a>
+                <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@finalBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
     }
@@ -781,7 +794,7 @@ else
                 <h4>Final Deductibles</h4>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Deductibles</a>
+                <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
 
@@ -816,7 +829,7 @@ else
                 <p>Final deductibles not entered yet</p>
             </div>
             <div class="col-6 text-end">
-                <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id">Edit Deductibles</a>
+                <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
     }
@@ -846,8 +859,13 @@ else
 
 
 
+<div class="row">
 
-@{
+
+    <!-- Results -->
+    <div class="col-sm-6">
+        <hr />
+        @{
     var initialBlockCargoCalulationsOpen = Model.DraughtSurveyBlocks.FirstOrDefault(ds => ds.SurveyType == SurveyType.Initial);
     var finallBlockCargoCalulationsOpen = Model.DraughtSurveyBlocks.FirstOrDefault(ds => ds.SurveyType == SurveyType.Final);
     var isCargoCalulationsOpen = 
@@ -862,32 +880,33 @@ else
     Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Final)
     )
 {
-    <hr />
+    
 
     
 
     <details @(isCargoCalulationsOpen ? "open" : "")>
         <summary class="h4 mb-2">
-            Cargo Calculations
+
+            Results
         </summary>
     
-    <hr />
+    
 
     <dl class="row">
-        <dt class="col-8 col-sm-4">Cargo as per Bill of Lading, mt</dt>
-        <dd class="col-4 col-sm-8">@Model.CargoInput.DeclaredWeight?.ToString("N3")</dd>
+        <dt class="col-8 col-sm-7">Cargo as per Bill of Lading, mt</dt>
+        <dd class="col-4 col-sm-5">@Model.CargoInput.DeclaredWeight?.ToString("N3")</dd>
         
-        <dt class="col-8 col-sm-4">Cargo as per draught survey, mt</dt>
-        <dd class="col-4 col-sm-8">@Model.CargoResult?.CargoByDraughtSurvey?.ToString("N3")</dd>
+        <dt class="col-8 col-sm-7">Cargo as per draught survey, mt</dt>
+        <dd class="col-4 col-sm-5">@Model.CargoResult?.CargoByDraughtSurvey?.ToString("N3")</dd>
         
-        <dt class="col-8 col-sm-4">Difference with Bill of Lading, mt</dt>
-        <dd class="col-4 col-sm-8">@Model.CargoResult?.DifferenceWithBL_Mt?.ToString("N3")</dd>            
+        <dt class="col-8 col-sm-7">Difference with Bill of Lading, mt</dt>
+        <dd class="col-4 col-sm-5">@Model.CargoResult?.DifferenceWithBL_Mt?.ToString("N3")</dd>            
         
-        <dt class="col-8 col-sm-4">Difference with Bill of Lading, %</dt>
-        <dd class="col-4 col-sm-8">@Model.CargoResult?.DifferenceWithBL_Percents?.ToString("N3")</dd>            
+        <dt class="col-8 col-sm-7">Difference with Bill of Lading, %</dt>
+        <dd class="col-4 col-sm-5">@Model.CargoResult?.DifferenceWithBL_Percents?.ToString("N3")</dd>            
         
-        <dt class="col-8 col-sm-4">Difference with SDWT, %</dt>
-        <dd class="col-4 col-sm-8">@Model.CargoResult?.DifferenceWithSDWT_Percents?.ToString("N3")</dd>            
+        <dt class="col-8 col-sm-7">Difference with SDWT, %</dt>
+        <dd class="col-4 col-sm-5">@Model.CargoResult?.DifferenceWithSDWT_Percents?.ToString("N3")</dd>            
     </dl>
 
     <a 
@@ -903,14 +922,14 @@ else
 }
 else
 {
-    <hr />
+    
 
     <details @(isCargoCalulationsOpen ? "open" : null)>
         <summary class="h4 mb-2">
             Results
         </summary>   
     
-    <hr />            
+
 
     @if(        
         !Model.DraughtSurveyBlocks.Any(ds => ds.SurveyType == SurveyType.Initial &&
@@ -926,8 +945,7 @@ else
         Model.CargoInput.DeclaredWeight == null)
     {
         <div class="alert alert-warning">
-            Please fill in the cargo quantity data.
-
+            Please fill in the cargo quantity data
 
                 @if (Model.CargoInput == null)
                 {
@@ -935,7 +953,7 @@ else
                         asp-controller="CargoInput" 
                         asp-action="Create" 
                         asp-route-inspectionId="@Model.Id">
-                        Create
+                        <i class="bi bi-pencil"></i>                        
                     </a>
                 }
                 else
@@ -944,7 +962,7 @@ else
                         asp-controller="CargoInput" 
                         asp-action="Edit" 
                         asp-route-inspectionId="@Model.Id">
-                        Edit
+                        <i class="bi bi-pencil"></i>
                     </a>
                 }
 
@@ -953,4 +971,36 @@ else
 
     </details>       
     
+    
 }
+
+
+    </div>
+
+    <!-- Remarks -->
+    <div class="col-sm-6">
+        <hr />
+        <details @(Model.Remarks != null &&  !string.IsNullOrWhiteSpace(Model.Remarks.Text) ? "open" : "")>
+            <summary class="h4 mb-2">
+                Remarks
+            </summary>
+
+            <form asp-action="EditRemarks" method="post">                
+                <input type="hidden" name="inspectionId" value="@Model.Id"/>
+
+                <div class="mb-3">
+                    <textarea name="text" class="form-control" rows="5">@Model.Remarks?.Text</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-outline-primary">Save</button>
+            </form>
+
+
+        </details>
+        
+        
+    </div>
+</div>
+
+
+

@@ -44,12 +44,12 @@
             <div class="row mb-2">
                 <div class="col-4">
                     <label asp-for="DraughtFwdPS" class="control-label small-label"></label>
-                    <input asp-for="DraughtFwdPS" class="form-control" type="number" step="0.01" />
+                    <input asp-for="DraughtFwdPS" class="form-control" type="number" step="0.001" />
                     <span asp-validation-for="DraughtFwdPS" class="text-danger"></span>
                 </div>
                 <div class="col-4">
                     <label asp-for="DraughtFwdSS" class="control-label small-label"></label>
-                    <input asp-for="DraughtFwdSS" class="form-control" type="number" step="0.01" />
+                    <input asp-for="DraughtFwdSS" class="form-control" type="number" step="0.001" />
                     <span asp-validation-for="DraughtFwdSS" class="text-danger"></span>
                 </div>
                 <div class="col-4">
@@ -61,12 +61,12 @@
             <div class="row mb-2">
                 <div class="col-4">
                     <label asp-for="DraughtMidPS" class="control-label small-label"></label>
-                    <input asp-for="DraughtMidPS" class="form-control" type="number" step="0.01" />
+                    <input asp-for="DraughtMidPS" class="form-control" type="number" step="0.001" />
                     <span asp-validation-for="DraughtMidPS" class="text-danger"></span>
                 </div>
                 <div class="col-4">
                     <label asp-for="DraughtMidSS" class="control-label small-label"></label>
-                    <input asp-for="DraughtMidSS" class="form-control" type="number" step="0.01" />
+                    <input asp-for="DraughtMidSS" class="form-control" type="number" step="0.001" />
                     <span asp-validation-for="DraughtMidSS" class="text-danger"></span>
                 </div>
                 <div class="col-4">
@@ -78,12 +78,12 @@
             <div class="row mb-2">
                 <div class="col-4">
                     <label asp-for="DraughtAftPS" class="control-label small-label"></label>
-                    <input asp-for="DraughtAftPS" class="form-control" type="number" step="0.01" />
+                    <input asp-for="DraughtAftPS" class="form-control" type="number" step="0.001" />
                     <span asp-validation-for="DraughtAftPS" class="text-danger"></span>
                 </div>
                 <div class="col-4">
                     <label asp-for="DraughtAftSS" class="control-label small-label"></label>
-                    <input asp-for="DraughtAftSS" class="form-control" type="number" step="0.01" />
+                    <input asp-for="DraughtAftSS" class="form-control" type="number" step="0.001" />
                     <span asp-validation-for="DraughtAftSS" class="text-danger"></span>
                 </div>
                 <div class="col-4">
@@ -100,7 +100,8 @@
             (Model.DraughtMidPS.HasValue && Model.DraughtMidSS.HasValue) && !Model.VesselInput.BM.HasValue)
             {
                 <div class="alert alert-warning">
-                    Enter missing data (BM).
+                    Enter BM
+                    <a asp-controller="VesselInput" asp-action="Edit" asp-route-inspectionId="@Model.InspectionId"><i class="bi bi-pencil"></i></a>
                 </div>
             }
 
@@ -147,16 +148,16 @@
                         <div class="row mb-2">
                             <div class="col-4">
                                 <label for="draught-forward-ps" class="control-label small-label">Forward PS</label>
-                                <input id="draught-forward-ps" class="form-control" type="number" step="0.01" />
+                                <input id="draught-forward-ps" class="form-control" type="number" step="0.001" />
                             </div>
                             <div class="col-4">
                                 <label asp-for="BreadthForward" for="breadth-forward" class="control-label small-label">Breadth</label>
-                                <input asp-for="BreadthForward" id="breadth-forward" class="form-control" type="number" step="0.01" />
+                                <input asp-for="BreadthForward" id="breadth-forward" class="form-control" type="number" step="0.001" />
                                 <span asp-validation-for="BreadthForward" class="text-danger"></span>
                             </div>
                             <div class="col-4">
                                 <label for="draught-forward-ss" class="control-label small-label">Forward SS</label>
-                                <input id="draught-forward-ss" class="form-control" type="number" step="0.01" />
+                                <input id="draught-forward-ss" class="form-control" type="number" step="0.001" />
                             </div>
                         </div>                       
 
@@ -178,16 +179,16 @@
                         <div class="row mb-2">
                             <div class="col-4">
                                 <label for="draught-aft-ps" class="control-label small-label">Aft PS</label>
-                                <input id="draught-aft-ps" class="form-control" type="number" step="0.01" />
+                                <input id="draught-aft-ps" class="form-control" type="number" step="0.001" />
                             </div>
                             <div class="col-4">
                                 <label asp-for="BreadthAft" for="breadth-aft" class="control-label small-label">Breadth</label>
-                                <input asp-for="BreadthAft" id="breadth-aft" class="form-control" type="number" step="0.01" />
+                                <input asp-for="BreadthAft" id="breadth-aft" class="form-control" type="number" step="0.001" />
                                 <span asp-validation-for="BreadthAft" class="text-danger"></span>
                             </div>
                             <div class="col-4">
                                 <label for="draught-aft-ss" class="control-label small-label">Aft SS</label>
-                                <input id="draught-aft-ss" class="form-control" type="number" step="0.01" />
+                                <input id="draught-aft-ss" class="form-control" type="number" step="0.001" />
                             </div>
                         </div>
 
@@ -231,7 +232,7 @@
               !Model.DistanceFwd.HasValue && !Model.DistanceMid.HasValue && !Model.DistanceAft.HasValue)
             {
                 <div class="alert alert-warning">
-                    Enter missing data (distances).
+                    Enter distances.
                 </div>
             }
 
@@ -244,7 +245,8 @@
                  !Model.VesselInput.LBP.HasValue)
             {
                 <div class="alert alert-warning">
-                    Enter missing data (LBP).
+                    Enter LBP
+                    <a asp-controller="VesselInput" asp-action="Edit" asp-route-inspectionId="@Model.InspectionId"><i class="bi bi-pencil"></i></a>                    
                 </div>
             }
 
@@ -380,7 +382,7 @@
                 !Model.SeaWaterDensity.HasValue)
             {
                 <div class="alert alert-warning">
-                    Enter missing data (sea water density)
+                    Enter Sea Water Density
                 </div>
             }
 

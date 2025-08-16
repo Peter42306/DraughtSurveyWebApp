@@ -217,7 +217,7 @@ namespace DraughtSurveyWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(DraughtsInputViewModel viewModel)
         {
-            _logger.LogWarning("Edit called for DraughtSurveyBlockId: {0} at {1}", viewModel.DraughtSurveyBlockId, DateTime.UtcNow);
+            
 
 
             var user = await _userManager.GetUserAsync(User);
@@ -309,6 +309,10 @@ namespace DraughtSurveyWebApp.Controllers
                 input.SeaWaterDensity = viewModel.SeaWaterDensity;
                 input.KeelCorrection = viewModel.KeelCorrection;
                 input.Swell = viewModel.Swell;
+
+                
+                await _context.SaveChangesAsync();
+                _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
             }
 
             _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
@@ -335,7 +339,7 @@ namespace DraughtSurveyWebApp.Controllers
             double? cargoByDraughtSurvey = null;
             double? differenceWithBL_Mt = null;
             double? differenceWithBL_Percents = null;
-            double? DifferenceWithSDWT_Percents = null;
+            double? differenceWithSDWT_Percents = null;
 
             // Calculate cargo by draught survey
             if (initialNetto.HasValue && finalNetto.HasValue)
@@ -355,6 +359,7 @@ namespace DraughtSurveyWebApp.Controllers
 
             // Calculate difference with Bill of Lading
             var declaredWeight = draughtSurveyBlock.Inspection.CargoInput?.DeclaredWeight;
+            _logger.LogWarning($"var declaredWeight = draughtSurveyBlock.Inspection.CargoInput?.DeclaredWeight; {declaredWeight}");
 
             if (cargoByDraughtSurvey.HasValue && declaredWeight.HasValue)
             {
@@ -364,10 +369,11 @@ namespace DraughtSurveyWebApp.Controllers
 
             // Calculate difference with SDWT
             var sdwt = draughtSurveyBlock.Inspection.VesselInput?.SDWT;
+            _logger.LogWarning($"var sdwt = draughtSurveyBlock.Inspection.VesselInput?.SDWT; {sdwt}");
 
-            if (cargoByDraughtSurvey.HasValue && sdwt.HasValue)
+            if (differenceWithBL_Mt.HasValue && sdwt.HasValue)
             {
-                DifferenceWithSDWT_Percents = Math.Round((cargoByDraughtSurvey.Value / sdwt.Value) * 100, 3, MidpointRounding.AwayFromZero);
+                differenceWithSDWT_Percents = Math.Round((differenceWithBL_Mt.Value / sdwt.Value) * 100, 3, MidpointRounding.AwayFromZero);
             }
 
 
@@ -375,7 +381,7 @@ namespace DraughtSurveyWebApp.Controllers
             draughtSurveyBlock.Inspection.CargoResult.CargoByDraughtSurvey = cargoByDraughtSurvey;
             draughtSurveyBlock.Inspection.CargoResult.DifferenceWithBL_Mt = differenceWithBL_Mt;
             draughtSurveyBlock.Inspection.CargoResult.DifferenceWithBL_Percents = differenceWithBL_Percents;
-            draughtSurveyBlock.Inspection.CargoResult.DifferenceWithSDWT_Percents = DifferenceWithSDWT_Percents;
+            draughtSurveyBlock.Inspection.CargoResult.DifferenceWithSDWT_Percents = differenceWithSDWT_Percents;
 
 
 

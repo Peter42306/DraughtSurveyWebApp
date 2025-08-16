@@ -37,7 +37,7 @@ namespace DraughtSurveyWebApp.Services
                 ["LS"] = inspection.VesselInput?.LS,
                 ["LBP"] = inspection.VesselInput?.LBP,                                
                 ["CargoByDraughtSurvey"] = inspection.CargoResult?.CargoByDraughtSurvey != null 
-                    ? $"TOTAL WEIGHT OF CARGO   {inspection.CargoResult?.CargoByDraughtSurvey}   MTS"
+                    ? $"TOTAL WEIGHT OF CARGO   {inspection.CargoResult?.CargoByDraughtSurvey:0.000}   MTS"
                     : $"TOTAL WEIGHT OF CARGO - MTS",         
 
                 // Initial draughts

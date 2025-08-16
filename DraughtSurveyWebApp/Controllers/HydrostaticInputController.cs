@@ -46,7 +46,7 @@ namespace DraughtSurveyWebApp.Controllers
                 .Include(r => r.DraughtsResults)
                 .Include(r => r.HydrostaticResults)
                 .Include(i => i.Inspection)
-                    .ThenInclude(i => i.VesselInput)
+                    .ThenInclude(i => i.VesselInput)                                       
                 .FirstOrDefaultAsync(b => b.Id == draughtSurveyBlockId);
 
             if (draughtSurveyBlock == null)
@@ -58,6 +58,8 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 return Forbid();
             }
+
+
 
 
             // Auto-fill hydrostatic input if available
@@ -84,6 +86,23 @@ namespace DraughtSurveyWebApp.Controllers
 
             double? draughtAbove = inputs?.DraughtAbove;
             double? draughtBelow = inputs?.DraughtBelow;
+
+
+
+
+
+            //const double tolerance = 0.0001;
+            //bool validHydrostatics = false;
+
+            //if (draughtSurveyBlock.DraughtsResults?.MeanAdjustedDraughtAfterKeelCorrection is double mean &&
+            //    draughtBelow.HasValue && draughtAbove.HasValue &&
+            //    draughtSurveyBlock.Inspection.user) 
+            //{
+
+            //}
+
+
+
 
 
             if (draughtAbove.HasValue)
@@ -250,11 +269,18 @@ namespace DraughtSurveyWebApp.Controllers
                 input.MTCMinus50Above = viewModel.MTCMinus50Above;
                 input.MTCMinus50Below = viewModel.MTCMinus50Below;
 
+                await _context.SaveChangesAsync();
+                _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);
+
+
                 var imo = draughtSurveyBlock.Inspection.VesselInput?.IMO;
                 var vesseName = draughtSurveyBlock.Inspection.VesselName;                
 
                 if (!string.IsNullOrWhiteSpace(imo))
                 {
+                    // if draught fro hydrostatic table were updated
+                    bool updated = false;
+
                     if (
                         viewModel.DraughtAbove.HasValue &&                        
                         viewModel.DisplacementAbove.HasValue &&
@@ -276,6 +302,7 @@ namespace DraughtSurveyWebApp.Controllers
                             viewModel.IsLCFForward,
                             viewModel.MTCPlus50Above,
                             viewModel.MTCMinus50Above);
+                        updated = true;
                     }
 
                     if (
@@ -299,9 +326,56 @@ namespace DraughtSurveyWebApp.Controllers
                             viewModel.IsLCFForward,
                             viewModel.MTCPlus50Below,
                             viewModel.MTCMinus50Below);
+                        updated = true;
                     }
-                }                
+
+                    // Update hydrostatic table step
+                    if (updated)
+                    {
+                        var header = await _context.UserHydrostaticTableHeaders
+                            .FirstOrDefaultAsync(
+                                h => h.ApplicationUserId == user.Id 
+                                && h.IMO == imo
+                             );
+
+                        if (header != null)
+                        {
+                            var draughtsFromHydrostaticTable = await _context.UserHydrostaticTableRows
+                                .Where(r => r.UserHydrostaticTableHeaderId == header.Id && r.Draught.HasValue)
+                                .Select(r => r.Draught!.Value)
+                                .ToListAsync();
+
+                            if (draughtsFromHydrostaticTable.Count >=2)
+                            {
+                                var step = TryDetectTableStep(draughtsFromHydrostaticTable);
+
+                                if (step.HasValue)
+                                {
+                                    var newStep = Math.Round(step.Value, 4, MidpointRounding.AwayFromZero);
+
+                                    // Update only if there is no step yet or if it has changed
+                                    if (!header.TableStep.HasValue || Math.Abs(header.TableStep.Value - newStep) > 0.0001)
+                                    {
+                                        header.TableStep = newStep;
+                                        await _context.SaveChangesAsync();
+                                        TempData["NewStepFound"] = $"New table step was calculated: {newStep}";
+                                    }
+                                }
+                            }
+
+                            
+
+                        }
+                        
+                    }
+
+
+                }
+                
+
             }
+
+
 
             _surveyCalculationsService.RecalculateAll(draughtSurveyBlock);           
 
@@ -328,7 +402,7 @@ namespace DraughtSurveyWebApp.Controllers
             double? cargoByDraughtSurvey = null;
             double? differenceWithBL_Mt = null;
             double? differenceWithBL_Percents = null;
-            double? DifferenceWithSDWT_Percents = null;
+            double? differenceWithSDWT_Percents = null;
 
             // Calculate cargo by draught survey
             if (initialNetto.HasValue && finalNetto.HasValue)
@@ -358,9 +432,9 @@ namespace DraughtSurveyWebApp.Controllers
             // Calculate difference with SDWT
             var sdwt = draughtSurveyBlock.Inspection.VesselInput?.SDWT;
 
-            if (cargoByDraughtSurvey.HasValue && sdwt.HasValue)
+            if (differenceWithBL_Mt.HasValue && sdwt.HasValue)
             {
-                DifferenceWithSDWT_Percents = Math.Round((cargoByDraughtSurvey.Value / sdwt.Value) * 100, 3, MidpointRounding.AwayFromZero);
+                differenceWithSDWT_Percents = Math.Round((differenceWithBL_Mt.Value / sdwt.Value) * 100, 3, MidpointRounding.AwayFromZero);
             }
 
 
@@ -368,7 +442,7 @@ namespace DraughtSurveyWebApp.Controllers
             draughtSurveyBlock.Inspection.CargoResult.CargoByDraughtSurvey = cargoByDraughtSurvey;
             draughtSurveyBlock.Inspection.CargoResult.DifferenceWithBL_Mt = differenceWithBL_Mt;
             draughtSurveyBlock.Inspection.CargoResult.DifferenceWithBL_Percents = differenceWithBL_Percents;
-            draughtSurveyBlock.Inspection.CargoResult.DifferenceWithSDWT_Percents = DifferenceWithSDWT_Percents;
+            draughtSurveyBlock.Inspection.CargoResult.DifferenceWithSDWT_Percents = differenceWithSDWT_Percents;
 
 
 
@@ -407,23 +481,26 @@ namespace DraughtSurveyWebApp.Controllers
 
         private async Task AutoFillHydrostaticInputIfAvailable(DraughtSurveyBlock block, ApplicationUser user)
         {
-            if (block == null || user == null)
+
+
+            if (block == null || block.DraughtsResults == null || user == null || !block.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection.HasValue)
             {
                 return;
             }
 
-            var draughtCalculated = block.DraughtsResults?.MeanAdjustedDraughtAfterKeelCorrection;
+            double? draughtCalculated = block.DraughtsResults.MeanAdjustedDraughtAfterKeelCorrection.Value;
             var imo = block.Inspection.VesselInput?.IMO;
 
-            if (!draughtCalculated.HasValue || string.IsNullOrWhiteSpace(imo))
+            if (string.IsNullOrWhiteSpace(imo))
             {
                 return;
             }
 
 
             var tableHeader = await _context.UserHydrostaticTableHeaders
-            .Include(h => h.UserHydrostaticTableRows)
-            .FirstOrDefaultAsync(h => h.ApplicationUserId == user.Id && h.IMO == imo);
+                .AsNoTracking()
+                .Include(h => h.UserHydrostaticTableRows)
+                .FirstOrDefaultAsync(h => h.ApplicationUserId == user.Id && h.IMO == imo);
 
 
             if (tableHeader == null || !tableHeader.UserHydrostaticTableRows.Any())
@@ -431,71 +508,102 @@ namespace DraughtSurveyWebApp.Controllers
                 return;
             }
 
-
-            var tableRows = tableHeader.UserHydrostaticTableRows                
-                .OrderBy(r => r.Draught)
-                .ToList();
-
-            double? tableStep = tableHeader.TableStep;
-            var draughtsInTableRows = tableRows.Select(r => r.Draught).ToList();
-
-            if (tableStep == null)
+            if (!tableHeader.TableStep.HasValue)
             {
-                return;                
+                return;
             }
 
-            double step = Math.Round(tableStep.Value, 4);
+
+
+
+            // if 2 values are needed, above and below
+            double tableStep = tableHeader.TableStep.Value;
+
             double tolerance = 0.0001;
 
-            UserHydrostaticTableRow? lowerRow = null;
-            UserHydrostaticTableRow? upperRow = null;
+            var lowerRow = tableHeader.UserHydrostaticTableRows
+                .Where(r => r.Draught.HasValue && r.Draught <= draughtCalculated)
+                .OrderByDescending(r => r.Draught)
+                .FirstOrDefault();
 
-            // Find the closest rows above and below the calculated draught within the step
-            for (int i = 0; i < tableRows.Count - 1; i++)
-            {                
-                var d1 = tableRows[i]; // above row
-                var d2 = tableRows[i + 1]; // below row                
+            var upperRow = tableHeader.UserHydrostaticTableRows
+                .Where(r => r.Draught.HasValue && r.Draught >= draughtCalculated)
+                .OrderBy(r => r.Draught)
+                .FirstOrDefault();
 
-                if (d2.Draught.HasValue && d1.Draught.HasValue)
-                {
-                    double delta = Math.Abs(d2.Draught.Value - d1.Draught.Value);
-
-                    // Check if the current step is within the tolerance of the defined step
-                    if (Math.Abs(delta - step) < tolerance)
-                    {
-                        double minDraught = Math.Min(d1.Draught.Value, d2.Draught.Value);
-                        double maxDraught = Math.Max(d1.Draught.Value, d2.Draught.Value);
-
-                        // Check if the calculated draught is within the range of current and next draught
-                        if (draughtCalculated.Value >= minDraught - tolerance &&
-                            draughtCalculated.Value <= maxDraught + tolerance)
-                        {
-                            lowerRow = d1.Draught < d2.Draught ? tableRows[i] : tableRows[i + 1];
-                            upperRow = d1.Draught < d2.Draught ? tableRows[i + 1] : tableRows[i];
-                            break;
-                        }
-
-                    }
-                }                                
-            }
-           
+            
 
             if (lowerRow == null || upperRow == null)
             {
                 return;
             }
 
-            if (lowerRow.Draught > upperRow.Draught)
+            //if (lowerRow.Draught < upperRow.Draught)
+            //{
+            //    var temp = lowerRow;
+            //    lowerRow = upperRow;
+            //    upperRow = temp;
+            //}
+
+
+            // draughtCalculated is out of range
+            if (lowerRow.Draught > draughtCalculated || upperRow.Draught < draughtCalculated)
             {
-                var temp = lowerRow;
-                lowerRow = upperRow;
-                upperRow = temp;
+                return;
             }
 
             
-            // Auto-fill the HydrostaticInput for the block
 
-            block.HydrostaticInput ??= new HydrostaticInput
+            // if exact matching calculatedDraught and lowerRow.Draught || upperRow.Draught
+            if (lowerRow.Id == upperRow.Id &&
+                block.HydrostaticInput != null &&
+                AreEqual(lowerRow.Draught, upperRow.Draught)
+                )
+            {
+                block.HydrostaticInput ??= new HydrostaticInput
+                {
+                    DraughtSurveyBlockId = block.Id,
+                    DraughtSurveyBlock = block
+                };
+
+                block.HydrostaticInput.DraughtBelow = lowerRow.Draught;
+                block.HydrostaticInput.DraughtAbove = null;
+
+                block.HydrostaticInput.DisplacementBelow = lowerRow.Displacement;
+                block.HydrostaticInput.DisplacementAbove = null;
+
+                block.HydrostaticInput.TPCBelow = lowerRow.TPC;
+                block.HydrostaticInput.TPCAbove = null;
+
+                block.HydrostaticInput.LCFBelow = lowerRow.LCF;
+                block.HydrostaticInput.LCFAbove = null;
+
+                block.HydrostaticInput.IsLCFForward = lowerRow.IsLcfForward;
+
+                block.HydrostaticInput.MTCPlus50Below = lowerRow.MTCPlus50;
+                block.HydrostaticInput.MTCPlus50Above = null;
+
+                block.HydrostaticInput.MTCMinus50Below = lowerRow.MTCMinus50;
+                block.HydrostaticInput.MTCMinus50Above = null;
+
+
+                TempData["AutoFillingNotice"] = "Autofilling was applied. Upper and lower values are the same";
+
+                return;
+            }
+
+            var delta = Math.Abs(upperRow.Draught!.Value - lowerRow.Draught!.Value);
+
+            if (Math.Abs(delta - tableStep) > tolerance)
+            {
+                return;
+            }
+
+                
+
+                // Auto-fill the HydrostaticInput for the block
+
+                block.HydrostaticInput ??= new HydrostaticInput
             {
                 DraughtSurveyBlockId = block.Id,
                 DraughtSurveyBlock = block
@@ -521,7 +629,7 @@ namespace DraughtSurveyWebApp.Controllers
             block.HydrostaticInput.MTCMinus50Below = lowerRow.MTCMinus50;
             block.HydrostaticInput.MTCMinus50Above = upperRow.MTCMinus50;
 
-            TempData["AutoFillingNotice"] = "Autofill applied from stored hydrostatic table";            
+            TempData["AutoFillingNotice"] = "Autofilling was applied";            
 
         }
 
@@ -561,13 +669,15 @@ namespace DraughtSurveyWebApp.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            
+            const double tolerance = 0.0001;
 
             var existingRow = await _context.UserHydrostaticTableRows
-                .FirstOrDefaultAsync(r =>
-                    r.UserHydrostaticTableHeaderId == tableHeader.Id &&
-                    r.Draught.HasValue &&
-                    Math.Abs(r.Draught.Value - draught.Value) < 0.001);
+                .Where(r => r.UserHydrostaticTableHeaderId == tableHeader.Id &&
+                       r.Draught.HasValue &&
+                       r.Draught.Value >= draught.Value - tolerance &&
+                       r.Draught.Value <= draught.Value + tolerance)
+                .OrderBy(r => Math.Abs(r.Draught!.Value - draught.Value))
+                .FirstOrDefaultAsync();
 
 
             if (existingRow != null)

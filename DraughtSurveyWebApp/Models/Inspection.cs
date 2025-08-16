@@ -26,6 +26,7 @@ namespace DraughtSurveyWebApp.Models
         public VesselInput? VesselInput { get; set; }        
         public CargoInput? CargoInput { get; set; }
         public CargoResult? CargoResult { get; set; }
+        public Remarks? Remarks { get; set; }
 
         public bool notShowInputWarnings { get; set; } = false;
         public bool notApplyAutoFillingHydrostatics { get; set; } = false;

@@ -10,6 +10,7 @@ namespace DraughtSurveyWebApp.Data
         public DbSet<VesselInput> VesselInputs { get; set; }
         public DbSet<CargoInput> CargoInputs { get; set; }
         public DbSet<CargoResult> CargoResults { get; set; }
+        public DbSet<Remarks> Remarks { get; set; }
 
         public DbSet<DraughtSurveyBlock> DraughtSurveyBlocks { get; set; }
 

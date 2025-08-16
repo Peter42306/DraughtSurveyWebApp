@@ -36,7 +36,7 @@
                 <td>@item.UserHydrostaticTableRows?.Count</td>
                 <td>@Math.Round(item.TableStep ?? 0, 3)</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">Details</a>
                 </td>
             </tr>
         }
