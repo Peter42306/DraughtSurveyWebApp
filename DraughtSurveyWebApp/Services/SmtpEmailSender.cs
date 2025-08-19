@@ -3,18 +3,22 @@ using DraughtSurveyWebApp.Models;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Mail;
+using System.Text;
 
 namespace DraughtSurveyWebApp.Services
 {
-    public class SmtpEmailSender : IEmailSender
+    public sealed class SmtpEmailSender : IEmailSender
     {
+        private readonly EmailOptions _emailOptions;
         private readonly SmtpSettings _smtpSettings;
-        private readonly ILogger<SmtpSettings> _logger;
+        private readonly ILogger<SmtpEmailSender> _logger;
 
         public SmtpEmailSender(
+            IOptions<EmailOptions> emailOptions,
             IOptions<SmtpSettings> smtpOptions, 
-            ILogger<SmtpSettings> logger)
+            ILogger<SmtpEmailSender> logger)
         {
+            _emailOptions = emailOptions.Value;
             _smtpSettings = smtpOptions.Value;
             _logger=logger;            
         }
@@ -23,21 +27,34 @@ namespace DraughtSurveyWebApp.Services
         {
             using var client = new SmtpClient(_smtpSettings.Host, _smtpSettings.Port)
             {
+                EnableSsl = true,
+                UseDefaultCredentials = false,
                 Credentials = new NetworkCredential(_smtpSettings.Username, _smtpSettings.Password),
-                EnableSsl = true
+                Timeout = 10000
             };
 
-            var mail = new MailMessage()
+            using var mail = new MailMessage()
             {
-                From = new MailAddress(_smtpSettings.From),
+                From = new MailAddress(_emailOptions.From, _emailOptions.FromName),
                 Subject = subject,
                 Body = body,
-                IsBodyHtml = true
+                IsBodyHtml = true,
+                SubjectEncoding = Encoding.UTF8,
+                BodyEncoding = Encoding.UTF8
             };
-
             mail.To.Add(to);
 
-            await client.SendMailAsync(mail);            
+            try
+            {
+                await client.SendMailAsync(mail);
+            }
+            catch (SmtpException ex)
+            {
+                _logger.LogError(ex, "SMTP send failed to {to}", to);
+                throw;
+            }
+
+                   
             
         }
     }

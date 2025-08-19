@@ -488,6 +488,41 @@ namespace DraughtSurveyWebApp.Migrations
                     b.ToTable("ExcelTemplates");
                 });
 
+            modelBuilder.Entity("DraughtSurveyWebApp.Models.FeedbackTicket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdminNotes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("FeedbackTickets");
+                });
+
             modelBuilder.Entity("DraughtSurveyWebApp.Models.HydrostaticInput", b =>
                 {
                     b.Property<int>("Id")
@@ -788,6 +823,12 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<double?>("DeclaredConstant")
                         .HasColumnType("double precision");
 
+                    b.Property<double?>("FWA")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("GRT")
+                        .HasColumnType("double precision");
+
                     b.Property<string>("IMO")
                         .IsRequired()
                         .HasColumnType("text");
@@ -801,7 +842,16 @@ namespace DraughtSurveyWebApp.Migrations
                     b.Property<double?>("LS")
                         .HasColumnType("double precision");
 
+                    b.Property<double?>("NRT")
+                        .HasColumnType("double precision");
+
                     b.Property<double?>("SDWT")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("SummerDraught")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("SummerTPC")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
@@ -1050,6 +1100,17 @@ namespace DraughtSurveyWebApp.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("DraughtSurveyWebApp.Models.FeedbackTicket", b =>
+                {
+                    b.HasOne("DraughtSurveyWebApp.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("DraughtSurveyWebApp.Models.HydrostaticInput", b =>

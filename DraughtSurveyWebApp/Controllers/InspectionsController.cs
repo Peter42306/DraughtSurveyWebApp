@@ -419,6 +419,11 @@ namespace DraughtSurveyWebApp.Controllers
                 return NotFound("Template file not found.");
             }
 
+            if (inspection == null || initial == null || final == null)
+            {
+                return NotFound();
+            }
+
             var map = ExcelExportMapper.CreateMap(
                 inspection,
                 initial,
@@ -543,7 +548,9 @@ namespace DraughtSurveyWebApp.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Details", new { id = inspectionId });
+            //return RedirectToAction("Details", new { id = inspectionId });
+            return Redirect($"{Url.Action("Details", "Inspections", new { id = inspectionId })}#app-notes");
+            
         }
 
 

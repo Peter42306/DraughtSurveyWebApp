@@ -29,7 +29,9 @@ namespace DraughtSurveyWebApp.Controllers
             var isAdmin = User.IsInRole("Admin");
             var userId = _userManager.GetUserId(User);
 
-            var query = _context.UserHydrostaticTableHeaders.AsQueryable();
+            var query = _context.UserHydrostaticTableHeaders
+                .Include(h => h.UserHydrostaticTableRows)
+                .AsQueryable();
 
             if (isAdmin)
             {
@@ -40,37 +42,10 @@ namespace DraughtSurveyWebApp.Controllers
                 query = query.Where(h => h.ApplicationUserId == userId);
             }
 
-            var headers = await query
-                .AsNoTracking()
+            var headers = await query                
                 .OrderByDescending(h => h.Id)
                 .ToListAsync();
-
-
-
-            //var user = await _userManager.GetUserAsync(User);
-
-            //if (user == null)
-            //{
-            //    return RedirectToAction("Login", "Account");
-            //}
-
-            //var headers = User.IsInRole("Admin")
-            //    ? await _context.UserHydrostaticTableHeaders
-            //        .Include(i => i.ApplicationUser)                    
-            //        .OrderByDescending(i => i.Id)
-            //        .ToListAsync()
-            //    : await _context.UserHydrostaticTableHeaders                    
-            //        .Where(i => i.ApplicationUserId == user.Id)
-            //        .OrderByDescending(i => i.Id)
-            //        .ToListAsync();
-            
-
-            //var userId = _userManager.GetUserId(User);
-
-            //var header = await _context.UserHydrostaticTableHeaders
-            //    .Where(h => h.ApplicationUserId == userId)
-            //    .Include(h => h.UserHydrostaticTableRows)
-            //    .ToListAsync();
+                      
 
             return View(headers);
         }

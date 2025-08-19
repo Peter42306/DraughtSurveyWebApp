@@ -1,0 +1,22 @@
+﻿@model DraughtSurveyWebApp.Models.FeedbackTicket
+
+@{
+    ViewData["Title"] = $"Ticket #{Model.Id}";
+}
+
+<div class="container mt-4">   
+
+    <h1 class="h4 mb-3">Ticket #@Model.Id</h1>
+
+    <p>@Model.CreatedUtc</p>
+    <p>@Model.UserEmail</p>
+    <p>@Model.Message</p>
+
+    <h2 class="h4 mb-3">Admin notes</h2>
+
+    <form asp-action="SavesNote" method="post">
+        <input type="hidden" name="id" value="@Model.Id"/>
+        <textarea name="adminNote" class="form-control" rows="5">@Model.AdminNotes</textarea>
+        <button type="submit" class="btn btn-outline-primary mt-2">Save</button>
+    </form>
+</div>

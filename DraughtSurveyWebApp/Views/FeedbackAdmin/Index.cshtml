@@ -1,0 +1,37 @@
+﻿@model IEnumerable<DraughtSurveyWebApp.Models.FeedbackTicket>
+
+@{
+    ViewData["Title"] = "Feedback tickets";
+}
+
+<div class="container ">
+    <h1 class="h4 mb-3">Feedback tickets</h1>
+
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th class="text-nowrap">Date (UTC)</th>
+                <th>User</th>
+                <th>Message</th>
+                <th class="text-nowrap">Admin Notes</th>
+                <th></th>
+            </tr>
+
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.CreatedUtc</td>
+                        <td>@item.UserEmail</td>
+                        <td>@(item.Message.Length >100 ? item.Message.Substring(0, 80) + "..." : item.Message)</td>
+                        <td>@(item.AdminNotes?.Length >100 ? item.AdminNotes.Substring(0, 80) + "..." : item.AdminNotes)</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary">Details</a>
+                        </td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

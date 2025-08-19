@@ -7,6 +7,7 @@ using DraughtSurveyWebApp.Models;
 using DraughtSurveyWebApp.Services;
 using DraughtSurveyWebApp.Middleware;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DraughtSurveyWebApp
 {
@@ -16,18 +17,25 @@ namespace DraughtSurveyWebApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            // Add user-secrets
+            if (builder.Environment.IsDevelopment())
+            {
+                builder.Configuration.AddUserSecrets<Program>();
+            }
+
+            // DB
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+            // Identity
             builder.Services
                 .AddDefaultIdentity<ApplicationUser>(options => 
                 { 
                     options.SignIn.RequireConfirmedAccount = true; 
                     options.User.RequireUniqueEmail = true;
-
                     options.Lockout.MaxFailedAccessAttempts = 5;
                     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                     options.Lockout.AllowedForNewUsers = true;
@@ -44,12 +52,36 @@ namespace DraughtSurveyWebApp
             });
             
             builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
 
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IImageService, ImageService>();
-            builder.Services.AddScoped<SurveyCalculationsService>();            
-            builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
-            builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
+            builder.Services.AddScoped<SurveyCalculationsService>();
+
+            // EMAIL: Options
+            builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("Email"));
+            builder.Services.Configure<SendGridOptions>(builder.Configuration.GetSection("SendGrid"));
+            builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
+
+            // EMAIL: provider
+            var emailProvider = builder.Configuration["Email:Provider"] ?? "SendGrid";
+
+
+            if (emailProvider.Equals("Smtp", StringComparison.OrdinalIgnoreCase))
+            {                
+                builder.Services.AddTransient<DraughtSurveyWebApp.Interfaces.IEmailSender, SmtpEmailSender>();                
+            }
+            else
+            {                
+                builder.Services.AddTransient<DraughtSurveyWebApp.Interfaces.IEmailSender, SendGridEmailSender>();                
+            }
+
+            builder.Services.AddTransient<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender>(sp =>
+            {
+                var inner = sp.GetRequiredService<DraughtSurveyWebApp.Interfaces.IEmailSender>();
+                return new IdentityEmailSenderAdapter(inner);                
+            });
+
             //builder.Services.AddAutoMapper(typeof(MappingProfile));
             
 
@@ -62,15 +94,14 @@ namespace DraughtSurveyWebApp
                 await DbInitializer.InitializeAsync(services);
             }
 
-            // Configure the HTTP request pipeline.
+            // Pipeline
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseExceptionHandler("/Home/Error");                
                 app.UseHsts();
             }
 
@@ -88,7 +119,31 @@ namespace DraughtSurveyWebApp
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
+            // Delete
+            app.MapGet("/debug/send-test", async (string to, DraughtSurveyWebApp.Interfaces.IEmailSender mail) =>
+            {
+                await mail.SendEmailAsync(to, "Email test", "<b>Hello from Draught Survey</b>");
+                return Results.Ok("Sent");
+            });
+
             app.Run();
+        }
+    }
+
+    // adapter
+    internal sealed class IdentityEmailSenderAdapter : Microsoft.AspNetCore.Identity.UI.Services.IEmailSender
+    {
+        private readonly DraughtSurveyWebApp.Interfaces.IEmailSender _inner;
+
+        public IdentityEmailSenderAdapter(DraughtSurveyWebApp.Interfaces.IEmailSender inner)
+        {
+            _inner = inner;
+        }
+
+
+        public Task SendEmailAsync(string email, string subject, string htmlMessage)
+        {
+            return _inner.SendEmailAsync(email, subject, htmlMessage);
         }
     }
 }

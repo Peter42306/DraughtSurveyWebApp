@@ -978,18 +978,27 @@ else
     </div>
 
     <!-- Remarks -->
-    <div class="col-sm-6">
+    @{
+        var remarksText = Model.Remarks?.Text ?? "";
+        var lineCount = remarksText.Split('\n').Length;
+        if(lineCount < 5)
+        {
+            lineCount = 5;
+        }
+    }
+
+    <div class="col-sm-6" id="app-notes">
         <hr />
         <details @(Model.Remarks != null &&  !string.IsNullOrWhiteSpace(Model.Remarks.Text) ? "open" : "")>
             <summary class="h4 mb-2">
-                Remarks
+                Notes
             </summary>
 
             <form asp-action="EditRemarks" method="post">                
                 <input type="hidden" name="inspectionId" value="@Model.Id"/>
 
                 <div class="mb-3">
-                    <textarea name="text" class="form-control" rows="5">@Model.Remarks?.Text</textarea>
+                    <textarea name="text" class="form-control" rows="@lineCount">@Model.Remarks?.Text</textarea>
                 </div>
 
                 <button type="submit" class="btn btn-outline-primary">Save</button>
