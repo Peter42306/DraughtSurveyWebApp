@@ -111,6 +111,30 @@ namespace DraughtSurveyWebApp
             app.UseRouting();
 
             app.UseAuthentication();
+
+            if (builder.Configuration.GetValue<bool>("Auth:Disable2FA", true))
+            {
+                var blocked = new[]
+                    {
+                        "/Identity/Account/Manage/TwoFactorAuthentication",
+                        "/Identity/Account/Manage/EnableAuthenticator",
+                        "/Identity/Account/Manage/Disable2fa",
+                        "/Identity/Account/Manage/ResetAuthenticator",
+                        "/Identity/Account/Manage/GenerateRecoveryCodes"
+                    };
+
+                app.Use(async (ctx, next) =>
+                {
+                    if (blocked.Any(p => ctx.Request.Path.StartsWithSegments(p, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        ctx.Response.StatusCode = StatusCodes.Status404NotFound;
+                        await ctx.Response.WriteAsync("Two-factor authentication is disabled.");
+                        return;
+                    }
+                    await next();
+                });
+            }
+
             app.UseMiddleware<SessionTrackingMiddleware>();
             app.UseAuthorization();
 
@@ -119,12 +143,7 @@ namespace DraughtSurveyWebApp
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
-            // Delete
-            app.MapGet("/debug/send-test", async (string to, DraughtSurveyWebApp.Interfaces.IEmailSender mail) =>
-            {
-                await mail.SendEmailAsync(to, "Email test", "<b>Hello from Draught Survey</b>");
-                return Results.Ok("Sent");
-            });
+            
 
             app.Run();
         }

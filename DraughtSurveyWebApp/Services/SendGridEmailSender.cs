@@ -49,9 +49,7 @@ namespace DraughtSurveyWebApp.Services
                 _logger.LogError("SendGrid failed for {To} / {Subject}: {Status} {Body}", 
                     to, subject, resp.StatusCode, details);
                 throw new InvalidOperationException($"SendGrid failed: {resp.StatusCode}");
-            }
-
-            
+            }            
         }
     }
 }
