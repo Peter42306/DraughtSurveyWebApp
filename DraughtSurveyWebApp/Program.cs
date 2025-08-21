@@ -91,6 +91,12 @@ namespace DraughtSurveyWebApp
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
+
+                // apply migrations
+                var db = services.GetRequiredService<ApplicationDbContext>();
+                await db.Database.MigrateAsync();
+
+                // roles/admin seeding
                 await DbInitializer.InitializeAsync(services);
             }
 

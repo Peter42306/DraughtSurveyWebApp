@@ -11,8 +11,8 @@
             <h4>Edit Draughts</h4>
         </div>
         <div class="col-6 text-end">
-            <button type="submit" class="btn btn-primary me-2">Save</button>
-            <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-outline-primary me-2">Save</button>
+            <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId" class="btn btn-outline-secondary">Cancel</a>
         </div>
     </div>
     @* <hr /> *@
@@ -280,7 +280,10 @@
                     <input class="form-control bg-light" value="@Model.DraughtCorrectionFwd?.ToString("0.000")" readonly />
                 </div>
                 <div class="col-3">
-                    <label asp-for="DraughtCorrectedFwd" class="small-label"></label>
+                    <label asp-for="DraughtCorrectedFwd" class="small-label">
+                        <span class="d-inline d-md-none">Corr-d Fwd</span>
+                        <span class="d-none d-md-inline">Corrected Fwd</span>
+                    </label>
                     <input class="form-control bg-light" value="@Model.DraughtCorrectedFwd?.ToString("0.000")" readonly />
                 </div>
             </div>
@@ -307,7 +310,10 @@
                     <input class="form-control bg-light" value="@Model.DraughtCorrectionMid?.ToString("0.000")" readonly />
                 </div>
                 <div class="col-3">
-                    <label asp-for="DraughtCorrectedMid" class="small-label"></label>
+                    <label asp-for="DraughtCorrectedMid" class="small-label">
+                        <span class="d-inline d-md-none">Corr-d Mid</span>
+                        <span class="d-none d-md-inline">Corrected Mid</span>
+                    </label>
                     <input class="form-control bg-light" value="@Model.DraughtCorrectedMid?.ToString("0.000")" readonly />
                 </div>
             </div>
@@ -333,7 +339,10 @@
                     <input class="form-control bg-light" value="@Model.DraughtCorrectionAft?.ToString("0.000")" readonly />
                 </div>
                 <div class="col-3">
-                    <label asp-for="DraughtCorrectedAft" class="small-label"></label>
+                    <label asp-for="DraughtCorrectedAft" class="small-label">
+                        <span class="d-inline d-md-none">Corr-d Aft</span>
+                        <span class="d-none d-md-inline">Corrected Aft</span>
+                    </label>
                     <input class="form-control bg-light" value="@Model.DraughtCorrectedAft?.ToString("0.000")" readonly />
                 </div>
             </div>

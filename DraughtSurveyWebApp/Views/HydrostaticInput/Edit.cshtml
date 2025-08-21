@@ -13,8 +13,8 @@
         </div>
         <div class="col-6 text-end">
             <div>
-                <button type="submit" class="btn btn-primary me-2">Save</button>            
-                <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-outline-primary me-2">Save</button>            
+                <a asp-controller="Inspections" asp-action="Details" asp-route-id="@Model.InspectionId" class="btn btn-outline-secondary">Cancel</a>
             </div>
         </div>
     </div>
@@ -96,7 +96,10 @@
 
                 <div class="row mb-2">
                     <div class="col-3">
-                        <label asp-for="MeanAdjustedDraughtAfterKeelCorrection" class="small-label"></label>
+                        <label asp-for="MeanAdjustedDraughtAfterKeelCorrection" class="small-label">
+                            <span class="d-inline d-md-none">Draught</span> <!-- показывается только на XS-SM -->
+                            <span class="d-none d-md-inline">Mean Draught</span> <!-- показывается на MD+ -->
+                        </label>
                         <input class="form-control bg-light" value="@Model.MeanAdjustedDraughtAfterKeelCorrection?.ToString("0.000")" readonly />
                     </div>
                     <div class="col-3">
@@ -289,14 +292,17 @@
 
                 <div class="row mb-2">                    
                     <div class="col-3">
-                        <label asp-for="FirstTrimCorrection" class="small-label"></label>
-                        <input class="form-control bg-light" value="@Model.FirstTrimCorrection?.ToString("0.000")" readonly/>
-                            @* value="@(Model.FirstTrimCorrection.HasValue
-                                ? Math.Abs(Model.FirstTrimCorrection.Value).ToString("0.000") 
-                                : string.Empty)" readonly /> *@
+                        <label asp-for="FirstTrimCorrection" class="small-label">
+                            <span class="d-inline d-md-none">1st Corr.</span> <!-- показывается только на XS-SM -->
+                            <span class="d-none d-md-inline">1st Correction</span> <!-- показывается на MD+ -->
+                        </label>
+                        <input class="form-control bg-light" value="@Model.FirstTrimCorrection?.ToString("0.000")" readonly/>                            
                     </div>                    
                     <div class="col-3">
-                        <label asp-for="SecondTrimCorrection" class="small-label"></label>
+                        <label asp-for="SecondTrimCorrection" class="small-label">
+                            <span class="d-inline d-md-none">2nd Corr.</span> <!-- показывается только на XS-SM -->
+                            <span class="d-none d-md-inline">2nd Correction</span> <!-- показывается на MD+ -->
+                        </label>
                         <input class="form-control bg-light" value="@Model.SecondTrimCorrection?.ToString("0.000")" readonly />
                     </div>
                     <div class="col-6">
@@ -378,7 +384,10 @@
                     )
                 {
                     <div class="alert alert-warning">
-                        Please enter Light Ship.
+                        Please enter Light Ship
+                        <a asp-controller="VesselInput" asp-action="Edit" asp-route-inspectionId="@Model.InspectionId">
+                        <i class="bi bi-pencil"></i>
+                        </a>
                     </div>
                 }
 

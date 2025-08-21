@@ -152,8 +152,8 @@
     <hr />
     @* <h4>Initial Draught Survey</h4> *@
 
-    <details open>
 
+    <details @(Model.VesselInput != null ? "open" : "")>
 
         <summary class="h4 mb-2">
             Initial Draught Survey
@@ -194,10 +194,10 @@
         { 
         
         <div class="row">
-            <div class="col-6">
+            <div class="col-8">
                 <p>Initial times not entered yet</p>
             </div>
-            <div class="col-6 text-end">
+            <div class="col-4 text-end">
                 <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@initialBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>        
@@ -294,10 +294,10 @@
     {
         <hr />
         <div class="row">
-            <div class="col-6">
+            <div class="col-8">
                 <p>Initial draughts not entered yet</p>
             </div>
-            <div class="col-6 text-end">
+            <div class="col-4 text-end">
                 <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@initialBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
@@ -426,10 +426,10 @@
     {
         <hr />
         <div class="row">
-            <div class="col-7">
+            <div class="col-8">
                 <p>Initial hydrostatics not entered yet</p>
             </div>
-            <div class="col-5 text-end">
+            <div class="col-4 text-end">
                 <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@initialBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
@@ -475,10 +475,10 @@
     {
         <hr />
         <div class="row">
-            <div class="col-6">
+            <div class="col-8">
                 <p>Initial deductibles not entered yet</p>
             </div>
-            <div class="col-6 text-end">
+            <div class="col-4 text-end">
                 <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@initialBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
@@ -555,10 +555,10 @@ else
         { 
         
         <div class="row">
-            <div class="col-6">
+            <div class="col-8">
                 <p>Final times not entered yet</p>
             </div>
-            <div class="col-6 text-end">
+            <div class="col-4 text-end">
                 <a asp-action="EditTimes" asp-controller="DraughtSurveyBlock" asp-route-draughtSurveyBlockId="@finalBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>        
@@ -656,10 +656,10 @@ else
     {
         <hr />
         <div class="row">
-            <div class="col-6">
+            <div class="col-8">
                 <p>Final draughts not entered yet</p>
             </div>
-            <div class="col-6 text-end">
+            <div class="col-4 text-end">
                 <a asp-action="Edit" asp-controller="DraughtsInput" asp-route-draughtSurveyBlockId="@finalBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
@@ -776,10 +776,10 @@ else
     {
         <hr />
         <div class="row">
-            <div class="col-7">
+            <div class="col-8">
                 <p>Final hydrostatics not entered yet</p>
             </div>
-            <div class="col-5 text-end">
+            <div class="col-4 text-end">
                 <a asp-action="Edit" asp-controller="HydrostaticInput" asp-route-draughtSurveyBlockId="@finalBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>
@@ -825,10 +825,10 @@ else
     {
         <hr />
         <div class="row">
-            <div class="col-6">
+            <div class="col-8">
                 <p>Final deductibles not entered yet</p>
             </div>
-            <div class="col-6 text-end">
+            <div class="col-4 text-end">
                 <a asp-action="Edit" asp-controller="DeductiblesInput" asp-route-draughtSurveyBlockId="@finalBlock.Id" class="btn btn-outline-primary">Edit</a>
             </div>
         </div>

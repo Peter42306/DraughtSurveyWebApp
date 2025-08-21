@@ -27,4 +27,9 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\gallery\" />
+    <Folder Include="wwwroot\images\home\" />
+  </ItemGroup>
+
 </Project>
