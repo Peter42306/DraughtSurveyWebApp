@@ -15,27 +15,41 @@ namespace DraughtSurveyWebApp.Services
                 ["CompanyReference"] = string.IsNullOrWhiteSpace(inspection.CompanyReference)
                     ? "DRAFT SURVEY REPORT"
                     : $"DRAFT SURVEY REPORT No. {inspection.CompanyReference}",
+
                 ["Vessel"] = inspection.VesselName,
-                ["CargoName"] = inspection.CargoInput?.CargoName,
+
+                ["CargoName"] = string.IsNullOrWhiteSpace(inspection.CargoInput?.CargoName) 
+                    ? "-" 
+                    : inspection.CargoInput?.CargoName,
+
                 ["DeclaredWeight"] = inspection.CargoInput?.DeclaredWeight,
+
                 ["Shipper"] = string.IsNullOrWhiteSpace(inspection.CargoInput?.Shipper)
                     ? "-"
                     : inspection.CargoInput?.Shipper,                
+
                 ["Consignee"] = string.IsNullOrWhiteSpace(inspection.CargoInput?.Consignee) 
                     ? "-" 
-                    : inspection.CargoInput?.Consignee,                
+                    : inspection.CargoInput?.Consignee,
 
                 ["Port"] = inspection.Port,
+
                 ["PresentPort"] = inspection.OperationType == OperationType.Loading 
                     ? "Load Port"
                     : "Discharge Port",
-                ["DischargingPort"] = inspection.CargoInput?.DischargingPort,
+
+                ["DischargingPort"] = string.IsNullOrWhiteSpace(inspection.CargoInput?.DischargingPort) 
+                    ? "-" 
+                    : inspection.CargoInput?.DischargingPort,
+
                 ["LoadingOrDestinationPort"] = inspection.OperationType == OperationType.Loading
                     ? "Discharge Port"
                     : "Load Port",
 
                 ["LS"] = inspection.VesselInput?.LS,
+
                 ["LBP"] = inspection.VesselInput?.LBP,                                
+
                 ["CargoByDraughtSurvey"] = inspection.CargoResult?.CargoByDraughtSurvey != null 
                     ? $"TOTAL WEIGHT OF CARGO   {inspection.CargoResult?.CargoByDraughtSurvey:0.000}   MTS"
                     : $"TOTAL WEIGHT OF CARGO - MTS",         
@@ -44,7 +58,7 @@ namespace DraughtSurveyWebApp.Services
                 ["DraughtFwdPS_Initial"] = initialDraughtSurveyBlock.DraughtsInput?.DraughtFwdPS,
                 ["DraughtFwdSS_Initial"] = initialDraughtSurveyBlock.DraughtsInput?.DraughtFwdSS,
                 ["DraughtMeanFwd_Initial"] = initialDraughtSurveyBlock.DraughtsResults?.DraughtMeanFwd,
-                ["DraughtCorrectionFwd_Initial"] = initialDraughtSurveyBlock.DraughtsResults?.DraughtCorrectedFwd,
+                ["DraughtCorrectionFwd_Initial"] = initialDraughtSurveyBlock.DraughtsResults?.DraughtCorrectionFwd,
                 ["DraughtCorrectedFwd_Initial"] = initialDraughtSurveyBlock.DraughtsResults?.DraughtCorrectedFwd,
 
                 ["DraughtMidPS_Initial"] = initialDraughtSurveyBlock.DraughtsInput?.DraughtMidPS,
@@ -107,7 +121,7 @@ namespace DraughtSurveyWebApp.Services
                 ["DraughtFwdPS_Final"] = finalDraughtSurveyBlock.DraughtsInput?.DraughtFwdPS,
                 ["DraughtFwdSS_Final"] = finalDraughtSurveyBlock.DraughtsInput?.DraughtFwdSS,
                 ["DraughtMeanFwd_Final"] = finalDraughtSurveyBlock.DraughtsResults?.DraughtMeanFwd,
-                ["DraughtCorrectionFwd_Final"] = finalDraughtSurveyBlock.DraughtsResults?.DraughtCorrectedFwd,
+                ["DraughtCorrectionFwd_Final"] = finalDraughtSurveyBlock.DraughtsResults?.DraughtCorrectionFwd,
                 ["DraughtCorrectedFwd_Final"] = finalDraughtSurveyBlock.DraughtsResults?.DraughtCorrectedFwd,
 
                 ["DraughtMidPS_Final"] = finalDraughtSurveyBlock.DraughtsInput?.DraughtMidPS,

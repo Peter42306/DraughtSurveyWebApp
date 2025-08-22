@@ -8,6 +8,8 @@ using DraughtSurveyWebApp.Services;
 using DraughtSurveyWebApp.Middleware;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.DataProtection;
+using System.Net;
 
 namespace DraughtSurveyWebApp
 {
@@ -16,6 +18,10 @@ namespace DraughtSurveyWebApp
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo("/var/www/draught-survey.p.zalizko.site/appdata/keys"))
+                .SetApplicationName("DraughtSurveyWebApp");
 
             // Add user-secrets
             if (builder.Environment.IsDevelopment())
@@ -49,6 +55,9 @@ namespace DraughtSurveyWebApp
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied";
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 options.SlidingExpiration = true;
+
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
             });
             
             builder.Services.AddControllersWithViews();
@@ -101,6 +110,12 @@ namespace DraughtSurveyWebApp
             }
 
             // Pipeline
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto,
+                KnownProxies = { IPAddress.Loopback, IPAddress.IPv6Loopback }
+            });
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
@@ -112,8 +127,9 @@ namespace DraughtSurveyWebApp
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
+            app.UseStaticFiles();
+            
             app.UseRouting();
 
             app.UseAuthentication();
