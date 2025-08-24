@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Disallow: /Identity/
+Disallow: /Inspections/
+Disallow: /HydrostaticTables/
+Disallow: /ExcelTemplate/
+Disallow: /ApplicationUsers/
+Disallow: /Stats/
+Disallow: /FeedbackAdmin/
+
+Sitemap: https://draught-survey.p.zalizko.site/sitemap.xml
