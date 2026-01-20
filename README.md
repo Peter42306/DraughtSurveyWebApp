@@ -52,7 +52,7 @@ A production-ready ASP.NET Core MVC web application used by ship officers and ma
 
 **Frontend**
 
-- Razor Pages
+- Razor Views (MVC)
 - Server-side validation with domain rules
 - Bootstrap-based responsive layout
 
