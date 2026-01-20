@@ -4,7 +4,7 @@ A production-ready ASP.NET Core MVC web application used by ship officers and ma
 
 ## Project highlights
 
-- Production-ready ASP.NET Core MVC application deployed on Linux (Nginx + systemd)
+- ASP.NET Core MVC application deployed on Linux (Nginx + systemd)
 - End-to-end workflow: create inspection → input data → validation → calculations → Excel export
 - Authentication & authorization: ASP.NET Core Identity with roles (User/Admin), email confirmation, password recovery
 - Reuse of vessel master data between inspections (LBP, light ship, draft marks distances, etc.)
