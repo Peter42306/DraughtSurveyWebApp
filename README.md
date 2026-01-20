@@ -45,7 +45,7 @@ A production-ready ASP.NET Core MVC web application used by ship officers and ma
 ## Technology stack
 
 **Backend / Web**
-- ASP.NET Core MVC + Razor Views
+- ASP.NET Core MVC
 - ASP.NET Core Identity + Roles
 - Entity Framework Core (Code First, migrations)
 - PostgreSQL
