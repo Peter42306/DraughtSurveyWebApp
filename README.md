@@ -191,3 +191,7 @@ DraughtSurveyWebApp/
 │
 └─ DraughtSurveyWebApp.Tests/                  # Test project
 ```
+
+## Project status
+
+This is a live, deployed, and actively used web application, built as a practical tool for ship officers and marine surveyors to perform draught survey inspections and cargo quantity calculations in real operational conditions.
