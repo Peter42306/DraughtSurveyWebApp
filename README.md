@@ -6,11 +6,17 @@ A production-ready ASP.NET Core MVC web application used by ship officers and ma
 
 - ASP.NET Core MVC application deployed on Linux (Nginx + systemd)
 - End-to-end workflow: create inspection → input data → validation → calculations → Excel export
-- Authentication & authorization: ASP.NET Core Identity with roles (User/Admin), email confirmation, password recovery
+- Authentication & authorization:
+  - ASP.NET Core Identity
+  - Email confirmation, password recovery
+  - Roles (User/Admin)
+- Admin panel for inspections, statistics, and feedback management
+- Responsive and mobile-friendly design
+- Server-side data validation & consistency
 - Reuse of vessel master data between inspections (LBP, light ship, draft marks distances, etc.)
-- Data consistency & validation: cross-checking user input using hydrostatic tables (guard rails for calculations)
 - Hydrostatic tables per vessel (IMO): import/store and reuse for future inspections
 - Excel export using reusable templates (public/private) for reporting and printing
+- Deployed and running in production
 
 ## Screenshots
 
