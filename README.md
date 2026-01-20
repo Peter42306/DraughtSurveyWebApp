@@ -50,9 +50,9 @@ A production-ready ASP.NET Core MVC web application used by ship officers and ma
 - Entity Framework Core (Code First, migrations)
 - PostgreSQL
 
-**Frontend / UI**
+**Frontend**
 
-- ASP.NET Core MVC with Razor Views
+- Razor Pages
 - Server-side validation with domain rules
 - Bootstrap-based responsive layout
 
