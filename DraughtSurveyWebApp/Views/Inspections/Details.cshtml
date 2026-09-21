@@ -546,7 +546,7 @@ else
             <dd class="col-6 col-sm-5">@finalBlock.SurveyTimeEnd?.ToString("yyyy-MM-dd HH:mm")</dd>
 
             <dt class="col-6 col-sm-7">
-                @(Model.OperationType == OperationType.Loading ? "Loading commenced" : "Discharging commenced")
+                @(Model.OperationType == OperationType.Loading ? "Loading completed" : "Discharging completed")
             </dt>
             <dd class="col-6 col-sm-5">@finalBlock.CargoOperationsDateTime?.ToString("yyyy-MM-dd HH:mm")</dd>
         </dl>

@@ -7,6 +7,7 @@ namespace DraughtSurveyWebApp.ViewModels
     {
         public int InspectionId { get; set; }
         public int DraughtSurveyBlockId { get; set; }
+        public SurveyType SurveyType { get; set; }
 
         [Display(Name = "Survey commenced")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", ApplyFormatInEditMode = true)]
@@ -16,7 +17,7 @@ namespace DraughtSurveyWebApp.ViewModels
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", ApplyFormatInEditMode = true)]
         public DateTime? SurveyTimeEnd { get; set; }
 
-        [Display(Name = "Cargo Operations commenced")]
+        //[Display(Name = "Cargo Operations commenced")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", ApplyFormatInEditMode = true)]
         public DateTime? CargoOperationsDateTime { get; set; }
         

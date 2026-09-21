@@ -57,6 +57,7 @@ namespace DraughtSurveyWebApp.Controllers
             {
                 DraughtSurveyBlockId = draughtSurveyBlock.Id,
                 InspectionId = draughtSurveyBlock.InspectionId,
+                SurveyType = draughtSurveyBlock.SurveyType,
                 SurveyTimeStart = draughtSurveyBlock.SurveyTimeStart,
                 SurveyTimeEnd = draughtSurveyBlock.SurveyTimeEnd,
                 CargoOperationsDateTime = draughtSurveyBlock.CargoOperationsDateTime
@@ -72,13 +73,7 @@ namespace DraughtSurveyWebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditTimes(EditSurveyTimesViewModel viewModel)
-        {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.InspectionId = viewModel.InspectionId;
-                return View(viewModel);
-            }
-
+        {            
             var draughtSurveyBlock = await _context.DraughtSurveyBlocks
                 .Include(b => b.Inspection)
                 .FirstOrDefaultAsync(b => b.Id == viewModel.DraughtSurveyBlockId);
@@ -99,6 +94,15 @@ namespace DraughtSurveyWebApp.Controllers
                 return Forbid();
             }
 
+            viewModel.SurveyType = draughtSurveyBlock.SurveyType;
+            viewModel.InspectionId = draughtSurveyBlock.InspectionId;
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.InspectionId = viewModel.InspectionId;
+                return View(viewModel);
+            }
+
             var input = draughtSurveyBlock;
 
             bool changed = IsTimesInputChanged(input, viewModel);
@@ -111,10 +115,24 @@ namespace DraughtSurveyWebApp.Controllers
                 ModelState.AddModelError("SurveyTimeEnd", "Survey end time cannot be ealier than start time.");
             }
 
-            if (viewModel.SurveyTimeEnd.HasValue && viewModel.CargoOperationsDateTime.HasValue &&
+            if (draughtSurveyBlock.SurveyType == SurveyType.Initial &&
+                viewModel.SurveyTimeEnd.HasValue && 
+                viewModel.CargoOperationsDateTime.HasValue &&
                 viewModel.CargoOperationsDateTime < viewModel.SurveyTimeEnd)
             {
-                ModelState.AddModelError("CargoOperationsDateTime", "Cargo operations cannot be started before survey completed.");
+                ModelState.AddModelError(
+                    nameof(viewModel.CargoOperationsDateTime), 
+                    "Cargo operations cannot be started before the initial survey is completed.");
+            }
+
+            if (draughtSurveyBlock.SurveyType == SurveyType.Final &&
+                viewModel.SurveyTimeStart.HasValue &&
+                viewModel.CargoOperationsDateTime.HasValue &&
+                viewModel.CargoOperationsDateTime > viewModel.SurveyTimeStart)
+            {
+                ModelState.AddModelError(
+                    nameof(viewModel.CargoOperationsDateTime), 
+                    "Cargo operations must be completed before the final survey starts.");
             }
 
             if (!ModelState.IsValid)
