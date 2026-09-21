@@ -11,11 +11,19 @@ namespace DraughtSurveyWebApp.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IConfiguration _configuration;
 
-        public ContactController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public ContactController(
+            ApplicationDbContext context, 
+            UserManager<ApplicationUser> userManager,
+            IHttpClientFactory httpClientFactory,
+            IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
+            _httpClientFactory = httpClientFactory;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -30,6 +38,7 @@ namespace DraughtSurveyWebApp.Controllers
         public async Task<IActionResult> SendFeedback(FeedbackTicketViewModel viewModel)
         {
             var msg = viewModel.Message.Trim();
+
             if (string.IsNullOrWhiteSpace(msg) || msg.Length < 5)
             {
                 ModelState.AddModelError(nameof(viewModel.Message), "Please enter at least 5 characters");
@@ -49,12 +58,47 @@ namespace DraughtSurveyWebApp.Controllers
 
             var email = await _userManager.GetEmailAsync(user) ?? "(no email)";
 
+            var request = new FeedbackRequestDto
+            {
+                AppKey = _configuration["ContactFormApi:AppKey"]!,
+                UserId = user.Id,
+                SenderEmail = email,
+                Type = 1,
+                Subject = "Draught Survey Web App feedback",
+                Body = msg
+            };
+
+            var client = _httpClientFactory.CreateClient("ContactFormApi");
+
+            try
+            {
+                var response = await client.PostAsJsonAsync("api/feedback", request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    ModelState.AddModelError(
+                        string.Empty,
+                        "Your message could not be sent. Please try again.");
+
+                    return View(nameof(Index), viewModel);
+                }
+            }
+            catch (HttpRequestException)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "The feedback service is currently unavailable. Please try again later.");
+
+                return View(nameof(Index), viewModel);
+            }
+                       
+
             var ticket = new FeedbackTicket
             {
                 ApplicationUserId = user.Id,
                 ApplicationUser = user,
                 UserEmail = email,
-                Message = viewModel.Message.Trim()
+                Message = msg
             };
 
             _context.FeedbackTickets.Add(ticket);

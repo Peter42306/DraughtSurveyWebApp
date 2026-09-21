@@ -63,6 +63,12 @@ namespace DraughtSurveyWebApp
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
+            builder.Services.AddHttpClient("ContactFormApi", client =>
+            {
+                client.BaseAddress = new Uri(
+                    builder.Configuration["ContactFormApi:BaseUrl"]!);
+            });
+
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IImageService, ImageService>();
             builder.Services.AddScoped<SurveyCalculationsService>();
